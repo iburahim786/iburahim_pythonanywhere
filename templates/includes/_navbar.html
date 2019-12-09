@@ -1,0 +1,49 @@
+  <nav class="navbar navbar-expand-md navbar-dark bg-dark">
+      <a class="navbar-brand" href="#">NetIQ Access Manager</a>
+  <div class="collapse navbar-collapse" id="navbarsExampleDefault">
+    <ul class="navbar-nav mr-auto">
+      <li class="nav-item active">
+        <a class="nav-link" href="/">Home <span class="sr-only">(current)</span></a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" href="/about">About</a>
+      </li>
+        <li class="nav-item">
+        <a class="nav-link disabled" href="#" tabindex="-1" aria-disabled="true">User Details</a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" href="/implink" tabindex="-1" aria-disabled="true">Important Link</a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" href="/articles" tabindex="-1" aria-disabled="true">Articles</a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" href="/contactus" tabindex="-1" aria-disabled="true">Contact Us</a>
+      </li>
+<!--      <li class="nav-item dropdown">-->
+<!--        <a class="nav-link dropdown-toggle" href="/dropdown" id="dropdown01" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Dropdown</a>-->
+<!--        <div class="dropdown-menu" aria-labelledby="dropdown01">-->
+<!--          <a class="dropdown-item" href="/implink">Important Link</a>-->
+<!--          <a class="dropdown-item" href="/articles">Articles</a>-->
+<!--          <a class="dropdown-item" href="/contactus">Contact Us</a>-->
+<!--        </div>-->
+<!--      </li>-->
+    </ul>
+
+     <ul class="nav navbar-nav navbar-right">
+<!--       <li><a class="nav-link" href="/register" tabindex="-1" aria-disabled="true">Register</a></li>-->
+          {% if session.logged_in %}
+            <li><a class="nav-link" href="/">{{ session.username }}</a></li>
+            <li><a class="nav-link" href="/dashboard">Dashboard</a></li>
+            <li><a class="nav-link" href="/logout">Logout</a></li>
+          {% else %}
+            <li><a class="nav-link" href="/register">Register</a></li>
+            <li><a class="nav-link" href="/login">Login</a></li>
+          {% endif %}
+     </ul>
+<!--      <form class="form-inline my-2 my-lg-0">-->
+<!--      <input class="form-control mr-sm-2" type="text" placeholder="Search" aria-label="Search">-->
+<!--      <button class="btn btn-secondary my-2 my-sm-0" type="submit">Search</button>-->
+    </form>
+    </div>
+</nav>
