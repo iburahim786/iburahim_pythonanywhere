@@ -2,6 +2,47 @@
 
 {% block body %}
     <h1>Dashboard <small> Welcome {{ session.name }} !</small></h1>
+
+<!--    <br>-->
+    <form class="form-inline"  action="/send_mail" method="post">
+          <a class="btn btn-success" href="/add_update"> Add Updates</a>
+         <input class="btn btn-primary"  style="margin:10px" onclick="alert('Mail Send Successfully!')" type="submit" value="SendMail" >
+<!--         <a class="btn btn-primary" style="margin:10px" onclick="alert('Mail Send Successfully!')" href="#"> Send Mail</a>-->
+    </form>
+<!--    <form action="{{ url_for('send_mail')}}" method="post">-->
+<!--                        <input type="hidden" name="method" value="SENDMAIL">-->
+<!--                        <input type="submit" value="SendMail" class="btn btn-Success">-->
+<!--                    </form>-->
+    <hr>
+    <table class="table table-striped">
+        <tr>
+            <th>ID</th>
+            <th>Name</th>
+            <th>Author</th>
+            <th>Created Date</th>
+            <th>Last Updated Date</th>
+            <th></th>
+            <th></th>
+        </tr>
+        {% for tupdate in tupdates %}
+            <tr>
+                <td>{{ tupdate.id }}</td>
+                <td>{{ tupdate.name }}</td>
+                <td>{{ tupdate.author }}</td>
+                <td>{{ tupdate.create_date }}</td>
+                <td>{{ tupdate.update_date }}</td>
+                <td><a href="edit_update/{{ tupdate.id }}" class="btn btn-default pull-right">Edit</a></td>
+<!--                <a href="#" class="btn btn-danger">Delete</a>-->
+                <td>
+                    <form action="{{ url_for('delete_update', id=tupdate.id)}}" method="post">
+                        <input type="hidden" name="method" value="DELETE">
+                        <input type="submit" value="Delete" class="btn btn-danger">
+                    </form>
+                </td>
+            </tr>
+        {% endfor %}
+    </table>
+    <hr>
     <a class="btn btn-success" href="/add_article"> Add Article</a>
     <hr>
     <table class="table table-striped">

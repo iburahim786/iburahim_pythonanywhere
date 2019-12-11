@@ -4,7 +4,11 @@ from flask_mysqldb import MySQL
 from wtforms import Form, StringField, TextAreaField, PasswordField, validators
 from passlib.hash import sha256_crypt
 from functools import wraps
-
+import smtplib
+from email.mime.multipart import MIMEMultipart
+from email.mime.text import MIMEText
+import os, sys
+from django.template.loader import get_template, render_to_string
 
 app = Flask(__name__)
 
@@ -19,6 +23,8 @@ app.config['MYSQL_CURSORCLASS'] = 'DictCursor'
 
 # init MYSQL
 mysql = MySQL(app)
+
+sys.path.append('C:/Users/mis/PycharmProjects/NewApp')
 
 
 # Home Page
@@ -65,6 +71,40 @@ def article(id):
     article = cur.fetchone()
 
     return render_template('article.html', article=article)
+
+
+# Team Updates page
+@app.route('/tupdates')
+def tupdates():
+    # Create cursor
+    cur = mysql.connection.cursor()
+
+    # Get articles
+    result = cur.execute("SELECT * FROM tupdates")
+
+    tupdates = cur.fetchall()
+
+    if result > 0:
+        return render_template('tupdates.html', tupdates=tupdates)
+    else:
+        msg = "No Updates Found"
+        return render_template('tupdates.html', msg=msg)
+    # Cursor Close
+    cur.close()
+
+
+# Individual update page
+@app.route('/tupdate/<string:id>/')
+def tupdate(id):
+    # Create cursor
+    cur = mysql.connection.cursor()
+
+    # Get article
+    result = cur.execute("SELECT * FROM tupdates WHERE id = %s", [id])
+
+    tupdate = cur.fetchone()
+
+    return render_template('tupdate.html', tupdate=tupdate)
 
 
 # Registration Form Class
@@ -151,27 +191,41 @@ def is_logged_in(f):
         else:
             flash('Unauthorized, Please login', 'danger')
             return redirect(url_for('login'))
+
     return wrap
 
 
-# Dashboard page
+# Article Dashboard page
 @app.route('/dashboard')
 @is_logged_in
 def dashboard():
     # Create cursor
     cur = mysql.connection.cursor()
+    cur1 = mysql.connection.cursor()
 
     # Get articles
     result = cur.execute("SELECT * FROM articles")
     articles = cur.fetchall()
 
-    if result > 0:
-        return render_template('dashboard.html', articles=articles)
-    else:
+    result1 = cur1.execute("SELECT * FROM tupdates")
+    tupdates = cur1.fetchall()
+
+    if result > 0 and result1 > 0:
+        return render_template('dashboard.html', tupdates=tupdates, articles=articles)
+    elif result == 0 and result1 > 0:
         msg = "No Articles Found"
+        return render_template('dashboard.html', tupdates=tupdates, msg=msg)
+    elif result > 0 and result1 <= 0:
+        msg = "No Updates Found"
+        return render_template('dashboard.html', articles=articles, msg=msg)
+    else:
+        msg = "No Updates/Articles Found"
         return render_template('dashboard.html', msg=msg)
+
     # Cursor Close
+    cur1.close()
     cur.close()
+    cur1.close()
 
 
 # Log out page
@@ -263,6 +317,174 @@ def delete_article(id):
     return redirect(url_for('dashboard'))
 
 
+#########################################################################################################
+
+
+# Update Form Class
+class TeamUpdateForm(Form):
+    name = StringField('Name', [validators.length(min=1, max=200)])
+    body = TextAreaField('Body', [validators.length(min=30)])
+
+
+@app.route('/add_update', methods=['GET', 'POST'])
+@is_logged_in
+def add_update():
+    form = TeamUpdateForm(request.form)
+    if request.method == 'POST' and form.validate():
+        name = form.name.data
+        body = form.body.data
+
+        # Create Cursor
+        cur = mysql.connection.cursor()
+        # Execute
+        cur.execute("INSERT INTO tupdates(name, body, author) VALUES(%s, %s, %s)", (name, body, session['username']))
+        # Commit DB
+        cur.connection.commit()
+        # Close Connection
+        cur.close()
+
+        flash("User updates created/added", 'success')
+
+        return redirect(url_for('dashboard'))
+    return render_template('add_update.html', form=form)
+
+
+@app.route('/edit_update/<string:id>', methods=['GET', 'POST'])
+@is_logged_in
+def edit_update(id):
+    # Create Cursor
+    cur = mysql.connection.cursor()
+    # Get article by id
+    result = cur.execute("SELECT * FROM tupdates WHERE id = %s", [id])
+    tupdate = cur.fetchone()
+    # Get form
+    form = TeamUpdateForm(request.form)
+    # Populate the article form fields
+    form.name.data = tupdate['name']
+    form.body.data = tupdate['body']
+    if request.method == 'POST' and form.validate():
+        name = request.form['name']
+        body = request.form['body']
+        # Create Cursor
+        cur = mysql.connection.cursor()
+        # Execute
+        cur.execute("UPDATE tupdates SET name=%s, body=%s WHERE id=%s", (name, body, id))
+        # Commit DB
+        cur.connection.commit()
+        # Close Connection
+        cur.close()
+
+        flash("Updated successfully", 'success')
+
+        return redirect(url_for('dashboard'))
+    return render_template('edit_update.html', form=form)
+
+
+@app.route('/delete_update/<string:id>', methods=['POST'])
+@is_logged_in
+def delete_update(id):
+    # Create Cursor
+    cur = mysql.connection.cursor()
+
+    # Execute
+    cur.execute("DELETE FROM tupdates WHERE id=%s", [id])
+
+    # Commit DB
+    cur.connection.commit()
+
+    # Close Connection
+    cur.close()
+
+    flash("Updates Deleted", 'success')
+
+    return redirect(url_for('dashboard'))
+
+
+@app.route('/contactus')
+def contactus():
+    return render_template('contact_us.html')
+
+
+@app.route('/mail')
+def mail_content():
+    cur = mysql.connection.cursor()
+    html_page = ""
+    # Get updates
+    result = cur.execute("SELECT * FROM articles")
+
+    team_updates = cur.fetchall()
+
+    return render_template('mail_content.html', team_updates=team_updates)
+
+
+@app.route('/send_mail', methods=['POST'])
+@is_logged_in
+def send_mail(to):
+    me = "nam-qa-update@microfocus.com"
+    you = "mohamediburahimsha.s@microfocus.com"
+    # Create cursor
+    cur = mysql.connection.cursor()
+    #
+    # # Get updates
+    result = cur.execute("SELECT * FROM tupdates")
+    #
+    team_updates = cur.fetchall()
+    app.logger.info(team_updates)
+
+    #
+    # template = get_template('templates/mail_content.html')
+    #
+    # html = template.render({'team_updates': team_updates})
+
+    # Create message container - the correct MIME type is multipart/alternative.
+    message = MIMEMultipart('alternative')
+    message['Subject'] = "Link"
+    message['From'] = me
+    message['To'] = you
+    html = """\
+    <!DOCTYPE html>
+    <html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <title>Updates Mail</title>
+    </head>
+    <body>
+          <h1>Weekly Team Updates</h1>
+          <hr>"""
+    for d in team_updates:
+        name = d['name']
+        body = d['body']
+    # for d in team_updates:
+        html = html + "<h2>"
+        html = html + name + "</h2>"
+        html = html + "<div>"
+        html = html + body + "</div>"
+        html = html + "<hr>"
+
+    html = html + """</body>
+    </html>
+    """
+    # Record the MIME types of both parts - text/plain and text/html.
+    # part1 = MIMEText(text, 'plain')
+    part2 = MIMEText(html, 'html')
+
+    # Attach parts into message container.
+    # According to RFC 2046, the last part of a multipart message, in this case
+    # the HTML message, is best and preferred.
+    # msg.attach(part1)
+    message.attach(part2)
+
+    # Send the message via local SMTP server.
+    s = smtplib.SMTP('smtp.microfocus.com:25')
+    # sendmail function takes 3 arguments: sender's address, recipient's address
+    # and message to send - here it is sent as one string.
+    s.sendmail(me, you, message.as_string())
+    s.quit()
+    msg = "Message sent Successfully"
+    return render_template('dashboard.html', msg=msg)
+
+
 if __name__ == '__main__':
     app.secret_key = 'novell@123'
+    os.environ['DJANGO_SETTINGS_MODULE'] = 'mysite.settings'
     app.run(debug=True)

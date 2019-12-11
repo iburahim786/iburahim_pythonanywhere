@@ -1,0 +1,10 @@
+{% extends 'layout.html' %}
+
+{% block body %}
+   <h1>Team Members Updates</h1>
+   <ul class="list-group">
+       {% for tupdate in tupdates %}
+       <li class="list-group-item"><a href="tupdate/{{tupdate.id}}">{{tupdate.name}}</a></li>
+       {% endfor%}
+    </ul>
+{% endblock%}
