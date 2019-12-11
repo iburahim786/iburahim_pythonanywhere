@@ -8,7 +8,6 @@ import smtplib
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
 import os, sys
-from django.template.loader import get_template, render_to_string
 
 app = Flask(__name__)
 
