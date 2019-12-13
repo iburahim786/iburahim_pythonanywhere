@@ -5,12 +5,11 @@ from wtforms import Form, StringField, TextAreaField, PasswordField, validators
 from wtforms.fields.html5 import EmailField
 from passlib.hash import sha256_crypt
 from functools import wraps
-from flask_mail import Message, Mail
 import smtplib
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
 from datetime import timedelta
-import os, re
+import os
 
 from flask_login import LoginManager, login_user, logout_user, login_required
 
