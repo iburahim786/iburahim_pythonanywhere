@@ -2,12 +2,17 @@ from flask import Flask, render_template, flash, url_for, session, logging, requ
 # from data import Articles
 from flask_mysqldb import MySQL
 from wtforms import Form, StringField, TextAreaField, PasswordField, validators
+from wtforms.fields.html5 import EmailField
 from passlib.hash import sha256_crypt
 from functools import wraps
+from flask_mail import Message, Mail
 import smtplib
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
-import os, sys
+from datetime import timedelta
+import os, re
+
+from flask_login import LoginManager, login_user, logout_user, login_required
 
 app = Flask(__name__)
 
@@ -23,7 +28,19 @@ app.config['MYSQL_CURSORCLASS'] = 'DictCursor'
 # init MYSQL
 mysql = MySQL(app)
 
-sys.path.append('C:/Users/mis/PycharmProjects/NewApp')
+# Add sql secret key
+app.secret_key = 'novell@123'
+
+# Define Flask-login configuration
+
+# login_mgr = LoginManager(app)
+# login_mgr.login_message = "Please login to access dashboard page"
+# login_mgr.login_view = 'login'
+# login_mgr.refresh_view = 'login'
+# login_mgr.needs_refresh_message = (
+#     u"Session timed-out, please re-login"
+# )
+# login_mgr.needs_refresh_message_category = "info"
 
 
 # Home Page
@@ -108,9 +125,10 @@ def tupdate(id):
 
 # Registration Form Class
 class RegisterForm(Form):
-    name = StringField('Name', [validators.length(min=1, max=50)])
-    username = StringField('Username', [validators.length(min=4, max=25)])
-    email = StringField('Email', [validators.length(min=6, max=50)])
+    name = StringField('Name', [validators.length(min=1, max=50), validators.DataRequired()])
+    username = StringField('Username', [validators.length(min=4, max=25), validators.DataRequired(), validators.Regexp
+    ('^\w+$', message="Username must contain only letters numbers or underscore")])
+    email = EmailField('Email', [validators.length(min=4, max=50), validators.DataRequired(), validators.Email()])
     password = PasswordField('Password', [validators.data_required(),
                                           validators.EqualTo('confirm', message='Passwords do not match')])
     confirm = PasswordField('Confirm Password')
@@ -128,14 +146,19 @@ def register():
 
         # Create a Cursor
         cur = mysql.connection.cursor()
-        cur.execute("INSERT INTO users(name, email, username, password) VALUES(%s, %s, %s, %s)",
-                    (name, email, username, password))
-        # Commit to DB
-        mysql.connection.commit()
-        # Close Connection
-        cur.close()
-        flash('You are now registered and can log in', 'success')
-        return redirect(url_for('home'))
+        cur.execute('SELECT * FROM users WHERE username = %s', [username])
+        account = cur.fetchone()
+        # If account exists show error and validation checks
+        if account:
+            error = 'Account already exists!'
+            return render_template('register.html', form=form, error=error)
+        else:
+            cur.execute("INSERT INTO users(name, email, username, password) VALUES(%s, %s, %s, %s)",
+                        (name, email, username, password))
+            mysql.connection.commit()
+            flash('You are now registered and can log in', 'success')
+            cur.close()
+            return redirect(url_for('home'))
     return render_template('register.html', form=form)
 
 
@@ -167,12 +190,14 @@ def login():
                 session['name'] = name
 
                 flash("You are now logged in", 'success')
+                cur.close()
                 return redirect(url_for('dashboard'))
             else:
-                error = 'Invalid login'
+                error = 'Incorrect username/password!'
+                cur.close()
                 return render_template('login.html', error=error)
             # Close connection
-            cur.close()
+            # cur.close()
 
         else:
             error = 'Username not found'
@@ -194,7 +219,19 @@ def is_logged_in(f):
     return wrap
 
 
-# Article Dashboard page
+def is_logged_in_admin(f):
+    @wraps(f)
+    def wrap(*args, **kwargs):
+        if 'admin' == session['username']:
+            return f(*args, **kwargs)
+        else:
+            flash('Unauthorized, Please login with admin user', 'danger')
+            return redirect(url_for('dashboard'))
+
+    return wrap
+
+
+# Dashboard page
 @app.route('/dashboard')
 @is_logged_in
 def dashboard():
@@ -418,7 +455,7 @@ def mail_content():
 
 @app.route('/send_mail', methods=['POST'])
 @is_logged_in
-def send_mail(to):
+def send_mail():
     me = "nam-qa-update@microfocus.com"
     you = "mohamediburahimsha.s@microfocus.com"
     # Create cursor
@@ -437,7 +474,7 @@ def send_mail(to):
 
     # Create message container - the correct MIME type is multipart/alternative.
     message = MIMEMultipart('alternative')
-    message['Subject'] = "Link"
+    message['Subject'] = "Weekly Staff Updates"
     message['From'] = me
     message['To'] = you
     html = """\
@@ -453,7 +490,6 @@ def send_mail(to):
     for d in team_updates:
         name = d['name']
         body = d['body']
-    # for d in team_updates:
         html = html + "<h2>"
         html = html + name + "</h2>"
         html = html + "<div>"
@@ -479,11 +515,73 @@ def send_mail(to):
     # and message to send - here it is sent as one string.
     s.sendmail(me, you, message.as_string())
     s.quit()
-    msg = "Message sent Successfully"
-    return render_template('dashboard.html', msg=msg)
+    flash("Message sent Successfully", 'success')
+    return redirect(url_for('dashboard'))
+
+
+@app.before_request
+def make_session_permanent():
+    session.permanent = True
+    app.permanent_session_lifetime = timedelta(minutes=1)
+
+
+@app.route('/url')
+def url():
+    return render_template('imp_links.html')
+
+
+@app.errorhandler(404)
+def not_found_error(error):
+    return render_template('404.html'), 404
+
+
+@app.errorhandler(500)
+def internal_error(error):
+    session.rollback()
+    return render_template('500.html'), 500
+
+
+# User Details page
+@app.route('/user_details')
+@is_logged_in
+@is_logged_in_admin
+def user_details():
+    # Create cursor
+    cur = mysql.connection.cursor()
+
+    # Get articles
+    result = cur.execute("SELECT distinct id,name,username,register_date FROM users")
+    users = cur.fetchall()
+
+    if result > 0:
+        return render_template('user_details.html', users=users)
+    else:
+        msg = "No users Found"
+        return render_template('user_details.html', msg=msg)
+
+
+@app.route('/delete_user/<string:id>', methods=['POST'])
+@is_logged_in
+@is_logged_in_admin
+def delete_user(id):
+    # Create Cursor
+    cur = mysql.connection.cursor()
+
+    # Execute
+    cur.execute("DELETE FROM users WHERE id=%s", [id])
+
+    # Commit DB
+    cur.connection.commit()
+
+    # Close Connection
+    cur.close()
+
+    flash("User Deleted Successfully!", 'success')
+
+    return redirect(url_for('user_details'))
 
 
 if __name__ == '__main__':
-    app.secret_key = 'novell@123'
-    os.environ['DJANGO_SETTINGS_MODULE'] = 'mysite.settings'
     app.run(debug=True)
+    os.environ['MAIL_SERVER'] = "smtp.microfocus.com"
+    os.environ['MAIL_PORT'] = 25

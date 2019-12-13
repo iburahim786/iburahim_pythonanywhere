@@ -15,7 +15,7 @@
         <a class="nav-link" href="/tupdates" tabindex="-1" aria-disabled="true">Team Updates</a>
       </li>
       <li class="nav-item">
-        <a class="nav-link" href="/implink" tabindex="-1" aria-disabled="true">Important Link</a>
+        <a class="nav-link" href="/url123" tabindex="-1" aria-disabled="true">Important Link</a>
       </li>
       <li class="nav-item">
         <a class="nav-link" href="/articles" tabindex="-1" aria-disabled="true">Articles</a>
@@ -36,13 +36,22 @@
      <ul class="nav navbar-nav navbar-right">
 <!--       <li><a class="nav-link" href="/register" tabindex="-1" aria-disabled="true">Register</a></li>-->
           {% if session.logged_in %}
-            <li><a class="nav-link" href="/">{{ session.username }}</a></li>
-            <li><a class="nav-link" href="/dashboard">Dashboard</a></li>
-            <li><a class="nav-link" href="/logout">Logout</a></li>
+             {% if 'admin' == session.username %}
+                <li><a class="nav-link" href="/">{{ session.username }}</a></li>
+                <li><a class="nav-link" href="/dashboard">Dashboard</a></li>
+                <li><a class="nav-link" href="/user_details">Users</a></li>
+                <li><a class="nav-link" href="/logout">Logout</a></li>
+             {% else %}
+                <li><a class="nav-link" href="/">{{ session.username }}</a></li>
+                <li><a class="nav-link" href="/dashboard">Dashboard</a></li>
+<!--                <li><a class="nav-link" href="/user_details">Users</a></li>-->
+                <li><a class="nav-link" href="/logout">Logout</a></li>
+             {% endif %}
           {% else %}
             <li><a class="nav-link" href="/register">Register</a></li>
             <li><a class="nav-link" href="/login">Login</a></li>
           {% endif %}
+
      </ul>
 <!--      <form class="form-inline my-2 my-lg-0">-->
 <!--      <input class="form-control mr-sm-2" type="text" placeholder="Search" aria-label="Search">-->

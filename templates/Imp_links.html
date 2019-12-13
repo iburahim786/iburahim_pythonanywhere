@@ -1,0 +1,90 @@
+{% extends 'layout.html' %}
+
+{% block body %}
+<div class="container">
+  <h1>Important URLs</h1>
+  <form>
+    <div class="form-group">
+      <label>Description:</label>
+      <input type="text" name="name" class="form-control" value="" required="">
+    </div>
+
+    <div class="form-group">
+      <label>URL:</label>
+      <input type="text" name="url" class="form-control" value="" required="">
+    </div>
+
+    <button type="submit" class="btn btn-success save-btn">Add</button>
+
+  </form>
+  <br/>
+  <table class="table table-bordered data-table">
+    <thead>
+      <th>Description</th>
+      <th>URL</th>
+      <th width="200px">Action</th>
+    </thead>
+    <tbody>
+
+    </tbody>
+  </table>
+
+</div>
+{% endblock %}
+
+{% block javascript %}
+<script type="text/javascript">
+    $("form").submit(function(e){
+        e.preventDefault();
+        var name = {{ input[name='name'] }}.val();
+        var url = {{ input[name='url'] }}.val();
+
+       {{ .data-table tbody }}.append("<tr data-name='"+name+"' data-url='"+url+"'><td>"+name+"</td><td>"+url+"</td><td><button class='btn btn-info btn-xs btn-edit'>Edit</button><button class='btn btn-danger btn-xs btn-delete'>Delete</button></td></tr>");
+
+        {{ input[name='name'] }} .val('');
+        {{ input[name='url']" }} .val('');
+    });
+
+    $("body").on("click", ".btn-delete", function(){
+        $(this).parents("tr").remove();
+    });
+
+    $("body").on("click", ".btn-edit", function(){
+        var name = $(this).parents("tr").attr('data-name');
+        var url = $(this).parents("tr").attr('data-url');
+
+        $(this).parents("tr").find("td:eq(0)").html('<input name="edit_name" value="'+name+'">');
+        $(this).parents("tr").find("td:eq(1)").html('<input name="edit_url" value="'+url+'">');
+
+        $(this).parents("tr").find("td:eq(2)").prepend("<button class='btn btn-info btn-xs btn-update'>Update</button><button class='btn btn-warning btn-xs btn-cancel'>Cancel</button>")
+        $(this).hide();
+    });
+
+    $("body").on("click", ".btn-cancel", function(){
+        var name = $(this).parents("tr").attr('data-name');
+        var url = $(this).parents("tr").attr('data-url');
+
+        $(this).parents("tr").find("td:eq(0)").text(name);
+        $(this).parents("tr").find("td:eq(1)").text(url);
+
+        $(this).parents("tr").find(".btn-edit").show();
+        $(this).parents("tr").find(".btn-update").remove();
+        $(this).parents("tr").find(".btn-cancel").remove();
+    });
+
+    $("body").on("click", ".btn-update", function(){
+        var name = $(this).parents("tr").find("input[name='edit_name']").val();
+        var url = $(this).parents("tr").find("input[name='edit_url']").val();
+
+        $(this).parents("tr").find("td:eq(0)").text(name);
+        $(this).parents("tr").find("td:eq(1)").text(url);
+
+        $(this).parents("tr").attr('data-name', name);
+        $(this).parents("tr").attr('data-url', url);
+
+        $(this).parents("tr").find(".btn-edit").show();
+        $(this).parents("tr").find(".btn-cancel").remove();
+        $(this).parents("tr").find(".btn-update").remove();
+    });
+</script>
+{% endblock %}

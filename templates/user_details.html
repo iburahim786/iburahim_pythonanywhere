@@ -1,0 +1,32 @@
+{% extends 'layout.html' %}
+
+{% block body %}
+    <h1>User Details <small> Welcome {{ session.name }} !</small></h1>
+    <hr>
+    <table class="table table-striped">
+        <tr>
+            <th>S.No</th>
+            <th>Name</th>
+            <th>Username</th>
+            <th>Register Date</th>
+            <th>Action</th>
+        </tr>
+        {% set count = [1] %}
+        {% for user in users %}
+            <tr>
+                <td>{{ count }}</td>
+                <td>{{ user.name }}</td>
+                <td>{{ user.username }}</td>
+                <td>{{ user.register_date }}</td>
+                <td>
+                    <form action="{{ url_for('delete_user', id=user.id)}}" method="post">
+                        <input type="hidden" name="method" value="DELETE">
+                        <input type="submit" value="Delete" class="btn btn-danger">
+                    </form>
+                </td>
+            </tr>
+            {% if count.append(count.pop() + 1) %}{% endif %} {# increment count by 1 #}
+        {% endfor %}
+    </table>
+    <hr>
+{% endblock%}
