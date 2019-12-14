@@ -4,6 +4,8 @@
     <list default="true" id="5ca02063-fbe4-443a-bb83-bd9745e6e841" name="Default Changelist" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/app.py" beforeDir="false" afterPath="$PROJECT_DIR$/app.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/templates/tupdate.html" beforeDir="false" afterPath="$PROJECT_DIR$/templates/tupdate.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/templates/tupdates.html" beforeDir="false" afterPath="$PROJECT_DIR$/templates/tupdates.html" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -252,7 +254,14 @@
       <option name="project" value="LOCAL" />
       <updated>1576356463391</updated>
     </task>
-    <option name="localTasksCounter" value="10" />
+    <task id="LOCAL-00010" summary="New updates">
+      <created>1576356775032</created>
+      <option name="number" value="00010" />
+      <option name="presentableId" value="LOCAL-00010" />
+      <option name="project" value="LOCAL" />
+      <updated>1576356775032</updated>
+    </task>
+    <option name="localTasksCounter" value="11" />
     <servers />
   </component>
   <component name="VcsManagerConfiguration">
@@ -268,10 +277,10 @@
       <screen x="0" y="0" width="1536" height="824" />
     </state>
     <state x="504" y="214" key="#com.intellij.fileTypes.FileTypeChooser/0.0.1536.824@0.0.1536.824" timestamp="1576338322868" />
-    <state x="424" y="6" key="CommitChangelistDialog2" timestamp="1576356435915">
+    <state x="424" y="6" key="CommitChangelistDialog2" timestamp="1576356765761">
       <screen x="0" y="0" width="1536" height="824" />
     </state>
-    <state x="424" y="6" key="CommitChangelistDialog2/0.0.1536.824@0.0.1536.824" timestamp="1576356435915" />
+    <state x="424" y="6" key="CommitChangelistDialog2/0.0.1536.824@0.0.1536.824" timestamp="1576356765761" />
     <state x="826" y="129" key="FileChooserDialogImpl" timestamp="1575888818491">
       <screen x="0" y="0" width="1536" height="824" />
     </state>
@@ -311,11 +320,11 @@
     <state x="555" y="17" key="SettingsEditor/0.0.1536.824/1920.0.1920.1040@0.0.1536.824" timestamp="1576155829032" />
     <state x="2614" y="21" key="SettingsEditor/0.0.1536.824/1920.0.1920.1040@1920.0.1920.1040" timestamp="1575980765512" />
     <state x="222" y="101" key="SettingsEditor/0.0.1536.824@0.0.1536.824" timestamp="1576273968798" />
-    <state x="361" y="144" key="Vcs.Push.Dialog.v2" timestamp="1576356442269">
+    <state x="361" y="144" key="Vcs.Push.Dialog.v2" timestamp="1576356787451">
       <screen x="0" y="0" width="1536" height="824" />
     </state>
     <state x="361" y="144" key="Vcs.Push.Dialog.v2/0.0.1536.824/1920.0.1920.1040@0.0.1536.824" timestamp="1576060767996" />
-    <state x="361" y="144" key="Vcs.Push.Dialog.v2/0.0.1536.824@0.0.1536.824" timestamp="1576356442269" />
+    <state x="361" y="144" key="Vcs.Push.Dialog.v2/0.0.1536.824@0.0.1536.824" timestamp="1576356787451" />
     <state x="465" y="235" key="com.intellij.ide.util.TipDialog" timestamp="1576097650845">
       <screen x="0" y="0" width="1536" height="824" />
     </state>

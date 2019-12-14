@@ -5,6 +5,18 @@
    <ul class="list-group">
        {% for tupdate in tupdates %}
        <li class="list-group-item"><a href="tupdate/{{tupdate.id}}">{{tupdate.name}}</a></li>
+<!--            <li class="list-group-item">-->
+<!--                <a data-toggle="collapse" data-target="#{{tupdate.id}}"><h4>{{tupdate.name}}</h4>-->
+<!--                </a>-->
+<!--                <div id="{{tupdate.id}}" class="collapse">-->
+<!--                    <small>Created by {{ tupdate.author }} on {{ tupdate.create_date}} Last Modified: {{ tupdate.update_date}}</small>-->
+<!--                     <hr>-->
+<!--                     {{ tupdate.body | safe}}-->
+<!--                </div>-->
+<!--            </li>-->
        {% endfor%}
     </ul>
+<!--      <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"></script>-->
+<!--      <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.3/umd/popper.min.js"></script>-->
+<!--      <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.1/js/bootstrap.min.js"></script>-->
 {% endblock%}
