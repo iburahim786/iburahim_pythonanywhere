@@ -245,6 +245,9 @@ def dashboard():
     result1 = cur1.execute("SELECT * FROM tupdates")
     tupdates = cur1.fetchall()
 
+    cur.close()
+    cur1.close()
+
     if result > 0 and result1 > 0:
         return render_template('dashboard.html', tupdates=tupdates, articles=articles)
     elif result == 0 and result1 > 0:
@@ -256,11 +259,8 @@ def dashboard():
     else:
         msg = "No Updates/Articles Found"
         return render_template('dashboard.html', msg=msg)
-
-    # Cursor Close
-    cur1.close()
-    cur.close()
-    cur1.close()
+    # # Cursor Close
+    # cur1.close()
 
 
 # Log out page
@@ -337,18 +337,13 @@ def edit_article(id):
 def delete_article(id):
     # Create Cursor
     cur = mysql.connection.cursor()
-
     # Execute
     cur.execute("DELETE FROM articles WHERE id=%s", [id])
-
     # Commit DB
     cur.connection.commit()
-
     # Close Connection
     cur.close()
-
     flash("Article Deleted", 'success')
-
     return redirect(url_for('dashboard'))
 
 
@@ -440,16 +435,16 @@ def contactus():
     return render_template('contact_us.html')
 
 
-@app.route('/mail')
-def mail_content():
-    cur = mysql.connection.cursor()
-    html_page = ""
-    # Get updates
-    result = cur.execute("SELECT * FROM articles")
-
-    team_updates = cur.fetchall()
-
-    return render_template('mail_content.html', team_updates=team_updates)
+# @app.route('/mail')
+# def mail_content():
+#     cur = mysql.connection.cursor()
+#     html_page = ""
+#     # Get updates
+#     result = cur.execute("SELECT * FROM articles")
+#
+#     team_updates = cur.fetchall()
+#
+#     return render_template('mail_content.html', team_updates=team_updates)
 
 
 @app.route('/send_mail', methods=['POST'])
@@ -521,12 +516,7 @@ def send_mail():
 @app.before_request
 def make_session_permanent():
     session.permanent = True
-    app.permanent_session_lifetime = timedelta(minutes=1)
-
-
-@app.route('/url')
-def url():
-    return render_template('imp_links.html')
+    app.permanent_session_lifetime = timedelta(minutes=2)
 
 
 @app.errorhandler(404)
@@ -536,7 +526,8 @@ def not_found_error(error):
 
 @app.errorhandler(500)
 def internal_error(error):
-    session.rollback()
+    cur = mysql.connection.cursor()
+    cur.session.rollback()
     return render_template('500.html'), 500
 
 
@@ -580,7 +571,91 @@ def delete_user(id):
     return redirect(url_for('user_details'))
 
 
+@app.route('/url_links')
+def url_links():
+    # Create cursor
+    cur = mysql.connection.cursor()
+
+    # Get articles
+    result = cur.execute("SELECT * FROM urls")
+    urls = cur.fetchall()
+
+    if result > 0:
+        return render_template('imp_links.html', urls=urls)
+    else:
+        msg = "No links Found"
+        return render_template('imp_links.html', msg=msg)
+
+
+# URL Form Class
+class URLUpdateForm(Form):
+    url_name = StringField('URL Name', [validators.length(min=1, max=200)])
+    url = StringField('URL', [validators.length(min=5)])
+
+
+@app.route('/add_url', methods=['GET', 'POST'])
+def add_url():
+    form = URLUpdateForm(request.form)
+    if request.method == 'POST' and form.validate():
+        url_name = form.url_name.data
+        url = form.url.data
+        # Create Cursor
+        cur = mysql.connection.cursor()
+        # Execute
+        cur.execute("INSERT INTO urls(url_name, url) VALUES(%s, %s)", (url_name, url))
+        # Commit DB
+        cur.connection.commit()
+        # Close Connection
+        cur.close()
+        flash("URL added", 'success')
+        return redirect(url_for('url_links'))
+    return render_template('add_url.html', form=form)
+
+
+@app.route('/edit_url/<string:id>', methods=['GET', 'POST'])
+@is_logged_in
+def edit_url(id):
+    # Create Cursor
+    cur = mysql.connection.cursor()
+    # Get article by id
+    result = cur.execute("SELECT * FROM urls WHERE id = %s", [id])
+    url = cur.fetchone()
+    # Get form
+    form = URLUpdateForm(request.form)
+    # Populate the article form fields
+    form.url_name.data = url['url_name']
+    form.url.data = url['url']
+    if request.method == 'POST' and form.validate():
+        url_name = request.form['url_name']
+        url = request.form['url']
+        # Create Cursor
+        cur = mysql.connection.cursor()
+        # Execute
+        cur.execute("UPDATE urls SET url_name=%s, url=%s WHERE id=%s", (url_name, url, id))
+        # Commit DB
+        cur.connection.commit()
+        # Close Connection
+        cur.close()
+        flash("Updated successfully", 'success')
+        return redirect(url_for('url_links'))
+    return render_template('edit_url.html', form=form)
+
+
+@app.route('/delete_url/<string:id>', methods=['POST'])
+@is_logged_in
+@is_logged_in_admin
+def delete_url(id):
+    # Create Cursor
+    cur = mysql.connection.cursor()
+    # Execute
+    cur.execute("DELETE FROM urls WHERE id=%s", [id])
+    # Commit DB
+    cur.connection.commit()
+    # Close Connection
+    cur.close()
+    flash("URL Deleted Successfully!", 'success')
+    return redirect(url_for('url_links'))
+
+
 if __name__ == '__main__':
     app.run(debug=True)
-    os.environ['MAIL_SERVER'] = "smtp.microfocus.com"
-    os.environ['MAIL_PORT'] = 25

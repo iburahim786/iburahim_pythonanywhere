@@ -1,90 +1,33 @@
 {% extends 'layout.html' %}
 
 {% block body %}
-<div class="container">
-  <h1>Important URLs</h1>
-  <form>
-    <div class="form-group">
-      <label>Description:</label>
-      <input type="text" name="name" class="form-control" value="" required="">
-    </div>
+    <h2>URL List </h2>
 
-    <div class="form-group">
-      <label>URL:</label>
-      <input type="text" name="url" class="form-control" value="" required="">
-    </div>
-
-    <button type="submit" class="btn btn-success save-btn">Add</button>
-
-  </form>
-  <br/>
-  <table class="table table-bordered data-table">
-    <thead>
-      <th>Description</th>
-      <th>URL</th>
-      <th width="200px">Action</th>
-    </thead>
-    <tbody>
-
-    </tbody>
-  </table>
-
-</div>
-{% endblock %}
-
-{% block javascript %}
-<script type="text/javascript">
-    $("form").submit(function(e){
-        e.preventDefault();
-        var name = {{ input[name='name'] }}.val();
-        var url = {{ input[name='url'] }}.val();
-
-       {{ .data-table tbody }}.append("<tr data-name='"+name+"' data-url='"+url+"'><td>"+name+"</td><td>"+url+"</td><td><button class='btn btn-info btn-xs btn-edit'>Edit</button><button class='btn btn-danger btn-xs btn-delete'>Delete</button></td></tr>");
-
-        {{ input[name='name'] }} .val('');
-        {{ input[name='url']" }} .val('');
-    });
-
-    $("body").on("click", ".btn-delete", function(){
-        $(this).parents("tr").remove();
-    });
-
-    $("body").on("click", ".btn-edit", function(){
-        var name = $(this).parents("tr").attr('data-name');
-        var url = $(this).parents("tr").attr('data-url');
-
-        $(this).parents("tr").find("td:eq(0)").html('<input name="edit_name" value="'+name+'">');
-        $(this).parents("tr").find("td:eq(1)").html('<input name="edit_url" value="'+url+'">');
-
-        $(this).parents("tr").find("td:eq(2)").prepend("<button class='btn btn-info btn-xs btn-update'>Update</button><button class='btn btn-warning btn-xs btn-cancel'>Cancel</button>")
-        $(this).hide();
-    });
-
-    $("body").on("click", ".btn-cancel", function(){
-        var name = $(this).parents("tr").attr('data-name');
-        var url = $(this).parents("tr").attr('data-url');
-
-        $(this).parents("tr").find("td:eq(0)").text(name);
-        $(this).parents("tr").find("td:eq(1)").text(url);
-
-        $(this).parents("tr").find(".btn-edit").show();
-        $(this).parents("tr").find(".btn-update").remove();
-        $(this).parents("tr").find(".btn-cancel").remove();
-    });
-
-    $("body").on("click", ".btn-update", function(){
-        var name = $(this).parents("tr").find("input[name='edit_name']").val();
-        var url = $(this).parents("tr").find("input[name='edit_url']").val();
-
-        $(this).parents("tr").find("td:eq(0)").text(name);
-        $(this).parents("tr").find("td:eq(1)").text(url);
-
-        $(this).parents("tr").attr('data-name', name);
-        $(this).parents("tr").attr('data-url', url);
-
-        $(this).parents("tr").find(".btn-edit").show();
-        $(this).parents("tr").find(".btn-cancel").remove();
-        $(this).parents("tr").find(".btn-update").remove();
-    });
-</script>
-{% endblock %}
+    <form class="form-inline"  action="/send_mail" method="post">
+          <a class="btn btn-success" href="/add_url"> Add URLs</a>
+    </form>
+    <br>
+    <table class="table table-striped" style="height:10px" >
+        <tr style="height:20px;" >
+            <th>ID</th>
+            <th style="width:80%">URL Name</th>
+            <th style="width:100%;text-align:middle">Actions</th>
+        </tr>
+        {% set count = [1] %}
+        {% for url_data in urls %}
+            <tr style="text-align:left">
+                <td>{{ count }}</td>
+                <td><a href="{{ url_data.url }}">{{ url_data.url_name }}</a></td>
+                <td>
+                    <form action="{{ url_for('delete_url', id=url_data.id)}}" method="post">
+                        <a href="edit_url/{{ url_data.id }}" class="btn btn-primary pull-right">Edit</a>
+                        <input type="hidden" name="method" value="DELETE">
+                        <input type="submit" style="margin:1px;height:35px" value="Delete" class="btn btn-danger">
+                    </form>
+                </td>
+            </tr>
+          {% if count.append(count.pop() + 1) %}{% endif %} {# increment count by 1 #}
+        {% endfor %}
+    </table>
+    <hr>
+{% endblock%}
