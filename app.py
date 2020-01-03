@@ -516,7 +516,7 @@ def send_mail():
 @app.before_request
 def make_session_permanent():
     session.permanent = True
-    app.permanent_session_lifetime = timedelta(minutes=2)
+    app.permanent_session_lifetime = timedelta(minutes=5)
 
 
 @app.errorhandler(404)
