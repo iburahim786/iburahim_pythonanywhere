@@ -83,7 +83,7 @@ def articles():
     if result > 0:
         return render_template('articles.html', articles=articles)
     else:
-        msg = "No Articles Found from DB"
+        msg = "No Articles Found"
         return render_template('articles.html', msg=msg)
 
 
@@ -104,7 +104,7 @@ def tupdates():
     if result > 0:
         return render_template('tupdates.html', tupdates=tupdates)
     else:
-        msg = "No Updates Found from DB"
+        msg = "No Updates Found"
         return render_template('tupdates.html', msg=msg)
 
 
