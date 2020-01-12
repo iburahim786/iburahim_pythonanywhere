@@ -1,7 +1,10 @@
 {% extends 'layout.html' %}
 
 {% block body %}
-     <h1>Register</h1>
+     <br>
+     <h2 >Register</h2>
+     <hr>
+     <br>
     {% from "includes/_formhelpers.html" import render_field %}
      <form method="POST" action="">
          <div class="form-group">
@@ -21,4 +24,33 @@
          </div>
          <p><input type="submit" class="btn btn-primary" value="submit"></p>
      </form>
+<!--         <form action="" style="max-width:500px;margin:auto">-->
+<!--          <div class="input-container">-->
+<!--            <i class="fa fa-user icon"></i>-->
+<!--            <input class="input-field" type="text" placeholder="Name" name="name" value="{{request.form.name }}">-->
+<!--          </div>-->
+<!--          <div class="input-container">-->
+<!--            <i class="fa fa-user icon"></i>-->
+<!--            <input class="input-field" type="text" placeholder="Username" name="username"-->
+<!--                   value="{{request.form.username }}">-->
+<!--          </div>-->
+<!--          <div class="input-container">-->
+<!--            <i class="fa fa-envelope icon"></i>-->
+<!--            <input class="input-field" type="text" placeholder="Email" name="email" value="{{request.form.email }}">-->
+<!--          </div>-->
+
+<!--          <div class="input-container">-->
+<!--            <i class="fa fa-key icon"></i>-->
+<!--            <input class="input-field" type="password" placeholder="Password" name="password"-->
+<!--                   value="{{request.form.password }}">-->
+<!--          </div>-->
+
+<!--           <div class="input-container">-->
+<!--            <i class="fa fa-key icon"></i>-->
+<!--            <input class="input-field" type="password" placeholder="Confirm Password" name="confirm"-->
+<!--               value="{{request.form.confirm }}">-->
+<!--          </div>-->
+
+<!--          <button type="submit" class="btn">Register</button>-->
+<!--        </form>-->
 {% endblock%}

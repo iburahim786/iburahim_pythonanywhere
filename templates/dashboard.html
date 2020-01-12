@@ -1,32 +1,36 @@
 {% extends 'layout.html' %}
 
 {% block body %}
-    <h1>Dashboard <small> Welcome {{ session.name }} !</small></h1>
-
-<!--    <br>-->
+    <br>
+    <h2>Dashboard <small> Hello! {{ session.name }} !</small></h2>
+    <hr>
+    <br>
+        <h3>Team Update</h3>
+    <hr>
     <form class="form-inline"  action="/send_mail" method="post">
-          <a class="btn btn-success" href="/add_update"> Add Updates</a>
+          <a class="btn btn-success" href="/add_update"> + Add Updates</a>
          <input class="btn btn-primary"  style="margin:10px" onclick="alert('Mail Send Successfully!')" type="submit" value="SendMail" >
     </form>
     <hr>
     <table class="table table-striped">
         <tr>
-            <th>ID</th>
+            <th>S.No</th>
             <th>Name</th>
             <th>Username</th>
             <th>Created Date</th>
             <th>Last Updated Date</th>
-            <th></th>
-            <th></th>
+            <th colspan="2" >Action</th>
+<!--            <th></th>-->
         </tr>
+        {% set count = [1] %}
         {% for tupdate in tupdates %}
             <tr>
-                <td>{{ tupdate.id }}</td>
+                <td>{{ count }}</td>
                 <td>{{ tupdate.name }}</td>
                 <td>{{ tupdate.author }}</td>
-                <td>{{ tupdate.create_date }}</td>
-                <td>{{ tupdate.update_date }}</td>
-                <td><a href="edit_update/{{ tupdate.id }}" class="btn btn-default pull-right">Edit</a></td>
+                <td>{{ tupdate.date_posted }}</td>
+                <td>{{ tupdate.date_updated }}</td>
+                <td><a href="edit_update/{{ tupdate.id }}" class="btn btn-info">Edit</a></td>
 <!--                <a href="#" class="btn btn-danger">Delete</a>-->
                 <td>
                     <form action="{{ url_for('delete_update', id=tupdate.id)}}" method="post">
@@ -35,27 +39,34 @@
                     </form>
                 </td>
             </tr>
+        {% if count.append(count.pop() + 1) %}{% endif %} {# increment count by 1 #}
         {% endfor %}
     </table>
     <hr>
-    <a class="btn btn-success" href="/add_article"> Add Article</a>
+    <br>
+    <br>
+
+    <h3>Articles</h3>
+    <hr>
+    <a class="btn btn-success" href="/add_article"> + Add Article</a>
     <hr>
     <table class="table table-striped">
         <tr>
-            <th>ID</th>
+            <th>S.No</th>
             <th>Title</th>
             <th>Author</th>
             <th>Date</th>
-            <th></th>
-            <th></th>
+            <th colspan="2" >Action</th>
+<!--            <th></th>-->
         </tr>
+        {% set count = [1] %}
         {% for article in articles %}
             <tr>
-                <td>{{ article.id }}</td>
+                <td>{{ count }}</td>
                 <td>{{ article.title }}</td>
                 <td>{{ article.author }}</td>
-                <td>{{ article.create_date }}</td>
-                <td><a href="edit_article/{{ article.id }}" class="btn btn-default pull-right">Edit</a></td>
+                <td>{{ article.date_posted }}</td>
+                <td><a href="edit_article/dashboard/{{ article.id }}" class="btn btn-info">Edit</a></td>
 <!--                <a href="#" class="btn btn-danger">Delete</a>-->
                 <td>
                     <form action="{{ url_for('delete_article', id=article.id)}}" method="post">
@@ -64,6 +75,7 @@
                     </form>
                 </td>
             </tr>
+        {% if count.append(count.pop() + 1) %}{% endif %} {# increment count by 1 #}
         {% endfor %}
     </table>
     <hr>

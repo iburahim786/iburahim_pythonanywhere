@@ -1,10 +1,17 @@
 {% extends 'layout.html' %}
 
 {% block body %}
-    <h1>{{ article.title }}</h1>
-    <small>Written by {{ article.author }} on {{ article.create_date}}</small>
+    <br>
+    <h2>{{ article.title }}</h2>
+    <small>Written by {{ article.author }} on {{ article.date_posted}}</small>
     <hr>
     <div>
          {{ article.body | safe}}
     </div>
+    <hr>
+    <p> <a href="{{ url_for('articles') }}">Back</a>
+        {% if session.logged_in %}
+        <a style="margin:40px" href="{{ url_for('edit_article', page='articles', id=article.id) }}">Edit</a>
+        {% endif %}
+    </p>
 {% endblock%}

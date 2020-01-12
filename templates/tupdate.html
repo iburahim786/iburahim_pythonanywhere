@@ -1,8 +1,10 @@
 {% extends 'layout.html' %}
 
 {% block body %}
-    <h1>{{ tupdate.name }}</h1>
-    <small>Created by {{ tupdate.author }} on {{ tupdate.create_date}} Last Modified: {{ tupdate.update_date}}</small>
+    <br>
+    <h2>{{ tupdate.name }}</h2>
+    <small>Created by {{ tupdate.author }} on {{ tupdate.date_posted}} &#8192;&#8192;&#8192;&#8192;&#8192;&#8192;&#8192;
+        Last Modified: {{ tupdate.date_updated}}</small>
     <hr>
     <div>
          {{ tupdate.body | safe}}

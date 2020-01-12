@@ -1,15 +1,17 @@
 {% extends 'layout.html' %}
 
 {% block body %}
+    <br>
     <h2>URL List </h2>
-
+    <hr>
+    <br>
     <form class="form-inline"  action="/send_mail" method="post">
-          <a class="btn btn-success" href="/add_url"> Add URLs</a>
+          <a class="btn btn-success" href="/add_url"> + Add URLs</a>
     </form>
     <br>
     <table class="table table-striped" style="height:10px" >
         <tr style="height:20px;" >
-            <th>ID</th>
+            <th>S.No</th>
             <th style="width:80%">URL Name</th>
             <th style="width:100%;text-align:middle">Actions</th>
         </tr>
