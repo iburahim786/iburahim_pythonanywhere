@@ -62,6 +62,15 @@ class Urls(db.Model):
         return 'Urls ' + str(self.id)
 
 
+class Tasks(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    task = db.Column(db.String(255), nullable=False)
+    status = db.Column(db.String(100), nullable=False)
+
+    def __repr__(self):
+        return 'Urls ' + str(self.id)
+
+
 # Home Page
 @app.route('/')
 def home():
@@ -543,6 +552,46 @@ def delete_url(id):
     db.session.commit()
     flash("URL Deleted Successfully!", 'success')
     return redirect(url_for('url_links'))
+
+
+@app.route('/add_task', methods=['GET', 'POST'])
+def add_task():
+    if request.method == 'POST':
+        task = request.form['task']
+        status = request.form['status']
+        # Execute
+        tasks = Tasks(task=task, status=status)
+        db.session.add(tasks)
+        # Commit DB
+        db.session.commit()
+        flash("Task added", 'success')
+        return redirect('/add_task')
+    else:
+        all_tasks = Tasks.query.all()
+        return render_template('dynamic_table.html', tasks=all_tasks)
+
+
+@app.route('/edit_task/<string:task_id>', methods=['GET', 'POST'])
+def edit_task(task_id):
+    task_edit = Tasks.query.get_or_404(task_id)
+    if request.method == 'POST':
+        task_edit.task = request.form['task']
+        task_edit.status = request.form['status']
+        db.session.commit()
+        flash("Task Edited", 'success')
+        return redirect('/add_task')
+    else:
+        return render_template('edit_task.html', tasks=task_edit)
+
+
+@app.route('/delete_task/<string:task_id>', methods=['GET', 'POST'])
+def delete_task(task_id):
+    task_delete = Tasks.query.get_or_404(task_id)
+    db.session.delete(task_delete)
+    # Commit DB
+    db.session.commit()
+    flash("Task Deleted Successfully!", 'success')
+    return redirect(url_for('add_task'))
 
 
 if __name__ == '__main__':
