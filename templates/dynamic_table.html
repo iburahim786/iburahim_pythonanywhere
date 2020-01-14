@@ -1,0 +1,75 @@
+{% extends 'layout.html' %}
+{% block body %}
+<div class="container">
+  <br>
+  <h2>ToDO Task List</h2>
+    <hr>
+      <form action="/add_task" method="post" >
+        <div class="form-group">
+          <label>Task:</label>
+          <input type="text" name="task" id="task" class="form-control" value="" required="">
+        </div>
+        <div class="form-group">
+          <select class="form-control" name="status" id="status" style="width:150px;display:inline">
+              <option value="none" selected disabled hidden>
+          Task Status
+              <option value="N">New</option>
+              <option value="P">In Progress</option>
+              <option value="C">Completed</option>
+          </select>
+          <button type="submit" style="margin-left:30px;height:35px;display:inline" class="btn btn-success"  value="Add">Add</button>
+        </div>
+<!--        <button type="submit" style="display:inline" class="btn btn-success float-right"  value="Add">Add</button>-->
+      </form>
+        <hr>
+    <br>
+  <table class="table table-bordered data-table">
+    <thead >
+      <tr>
+        <th bgcolor="#ccccff" width="15px">S.No</th>
+        <th bgcolor="#ccccff">Task</th>
+        <th bgcolor="#ccccff" style="text-align:center" width="100px">Status</th>
+        <th bgcolor="#ccccff" style="text-align:center" width="200px">Action</th>
+      </tr>
+    </thead>
+       {% set count = [1] %}
+        {% for task_data in tasks %}
+            <tr >
+                <td bgcolor="#EAF2F8">{{ count }}</td>
+                <td bgcolor="#EAF2F8">{{ task_data.task }}</td>
+                {% if task_data.status == 'N' %}
+                     <td bgcolor="#EAF2F8">
+                          <form style="text-align:center">
+                              <input type="submit" style="height:35px" value="{{task_data.status}}" class="btn btn-secondary">
+                          </form>
+                     </td>
+                {% elif task_data.status == 'P' %}
+                     <td bgcolor="#EAF2F8">
+                          <form style="text-align:center">
+                              <input type="submit" style="height:35px" value="{{task_data.status}}" class="btn btn-warning">
+                          </form>
+                     </td>
+                {% else %}
+                     <td bgcolor="#EAF2F8">
+                          <form style="text-align:center">
+                              <input type="submit" style="height:35px" value="{{task_data.status}}" class="btn btn-success">
+                          </form>
+                     </td>
+                {% endif %}
+                <td bgcolor="#EAF2F8">
+                    <form style="text-align:center" action="{{ url_for('delete_task', task_id=task_data.id)}}" method="post">
+                        <a href="edit_task/{{ task_data.id }}" style="height:35px" class="btn btn-primary pull-right">Edit</a>
+                        <input type="hidden" name="method" value="DELETE">
+                        <input type="submit" style="margin-left:20px;height:35px" value="Delete" class="btn btn-danger">
+                    </form>
+                </td>
+            </tr>
+          {% if count.append(count.pop() + 1) %}{% endif %} {# increment count by 1 #}
+        {% endfor %}
+    </table>
+    <tbody>
+    
+    </tbody>
+  </table>
+</div>
+{% endblock %}
