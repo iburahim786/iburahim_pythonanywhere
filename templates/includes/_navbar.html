@@ -2,20 +2,23 @@
       <a class="navbar-brand" href="/">NetIQ Access Manager</a>
   <div class="collapse navbar-collapse" id="navbarsExampleDefault">
     <ul class="navbar-nav mr-auto">
-      <li class="nav-item active">
+      <li class="nav-item">
         <a class="nav-link" href="/">Home <span class="sr-only">(current)</span></a>
       </li>
       <li class="nav-item">
         <a class="nav-link" href="/about">About</a>
       </li>
-<!--      <li class="nav-item">-->
-<!--        <a class="nav-link disabled" href="#" tabindex="-1" aria-disabled="true">User Details</a>-->
-<!--      </li>-->
+      <li class="nav-item">
+        <a class="nav-link" href="/add_user_task" tabindex="-1" aria-disabled="true">Tasks</a>
+      </li>
       <li class="nav-item">
         <a class="nav-link" href="/tupdates" tabindex="-1" aria-disabled="true">Team Updates</a>
       </li>
       <li class="nav-item">
         <a class="nav-link" href="/url_links" tabindex="-1" aria-disabled="true">URLs</a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" href="/add_task" tabindex="-1" aria-disabled="true">ToDos</a>
       </li>
       <li class="nav-item">
         <a class="nav-link" href="/articles" tabindex="-1" aria-disabled="true">Articles</a>
@@ -49,7 +52,7 @@
              {% endif %}
           {% else %}
             <li><a class="nav-link" href="/register">Register</a></li>
-            <li><a class="nav-link" href="/login">Login</a></li>
+            <li><a class="nav-link" href="/login">Sign in</a></li>
           {% endif %}
 
      </ul>

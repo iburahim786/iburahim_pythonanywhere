@@ -1,4 +1,5 @@
 from flask import Flask, render_template, flash, url_for, session, logging, request, redirect
+from flask_mysqldb import MySQL
 from flask_sqlalchemy import SQLAlchemy
 from wtforms import Form, StringField, TextAreaField, PasswordField, validators
 from wtforms.fields.html5 import EmailField
@@ -8,13 +9,26 @@ import smtplib
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
 from datetime import timedelta, datetime
+from sqlalchemy import create_engine, text
 
 app = Flask(__name__)
-app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///posts.db'
+# app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///posts.db'
+app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql://root:novell@123@localhost/mysqlalchemy'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 db = SQLAlchemy(app)
 
 app.secret_key = 'novell@123'
+
+#engine = create_engine('mysql://root:novell@123@localhost/mysqlalchemy')
+
+app.config['MYSQL_HOST'] = 'localhost'
+app.config['MYSQL_USER'] = 'root'
+app.config['MYSQL_PASSWORD'] = 'novell@123'
+app.config['MYSQL_DB'] = 'mysqlalchemy'
+app.config['MYSQL_CURSORCLASS'] = 'DictCursor'
+
+# init MYSQL
+mysql = MySQL(app)
 
 
 class BlogPost(db.Model):
@@ -57,6 +71,17 @@ class Urls(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     url_name = db.Column(db.String(100), nullable=False)
     url = db.Column(db.String(255), nullable=False)
+
+    def __repr__(self):
+        return 'Urls ' + str(self.id)
+
+
+class Tasks(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(100))
+    task = db.Column(db.String(255), nullable=False)
+    status = db.Column(db.String(100), nullable=False)
+    comments = db.Column(db.Text)
 
     def __repr__(self):
         return 'Urls ' + str(self.id)
@@ -128,28 +153,53 @@ class RegisterForm(Form):
 
 
 # Register
+# @app.route('/register', methods=['GET', 'POST'])
+# def register():
+#     form = RegisterForm(request.form)
+#     if request.method == 'POST' and form.validate():
+#         name = form.name.data
+#         email = form.email.data
+#         username = form.username.data
+#         password = sha256_crypt.encrypt(str(form.password.data))
+#
+#         # Create a Cursor
+#         account = Users.query.filter_by(username=username).first()
+#         # If account exists show error and validation checks
+#         if account:
+#             error = 'Account already exists!'
+#             return render_template('register.html', form=form, error=error)
+#         else:
+#             user = Users(name=name, email=email, username=username, password=password)
+#             db.session.add(user)
+#             db.session.commit()
+#             flash('You are now registered and can log in', 'success')
+#             return redirect(url_for('home'))
+#     return render_template('register.html', form=form)
+
+
+# Register
 @app.route('/register', methods=['GET', 'POST'])
 def register():
-    form = RegisterForm(request.form)
-    if request.method == 'POST' and form.validate():
-        name = form.name.data
-        email = form.email.data
-        username = form.username.data
-        password = sha256_crypt.encrypt(str(form.password.data))
-
-        # Create a Cursor
+    if request.method == 'POST':
+        name = request.form['name']
+        username = request.form['username']
+        email = request.form['email']
+        password = sha256_crypt.encrypt(str(request.form['password']))
+        # Execute
         account = Users.query.filter_by(username=username).first()
         # If account exists show error and validation checks
         if account:
             error = 'Account already exists!'
-            return render_template('register.html', form=form, error=error)
+            return render_template('register.html', error=error)
         else:
             user = Users(name=name, email=email, username=username, password=password)
             db.session.add(user)
+            # Commit DB
             db.session.commit()
             flash('You are now registered and can log in', 'success')
-            return redirect(url_for('home'))
-    return render_template('register.html', form=form)
+            return redirect('/')
+    else:
+        return render_template('register.html')
 
 
 # User Login
@@ -543,6 +593,73 @@ def delete_url(id):
     db.session.commit()
     flash("URL Deleted Successfully!", 'success')
     return redirect(url_for('url_links'))
+
+
+@app.route('/add_task', methods=['GET', 'POST'])
+def add_task():
+    if request.method == 'POST':
+        task = request.form['task']
+        name = request.form['name']
+        status = request.form['status']
+        # Execute
+        tasks = Tasks(task=task, name=name, status=status)
+        db.session.add(tasks)
+        # Commit DB
+        db.session.commit()
+        flash("Task added", 'success')
+        return redirect('/add_task')
+    else:
+        all_tasks = Tasks.query.all()
+        return render_template('dynamic_table.html', tasks=all_tasks)
+
+
+@app.route('/edit_task/<string:task_id>', methods=['GET', 'POST'])
+def edit_task(task_id):
+    task_edit = Tasks.query.get_or_404(task_id)
+    if request.method == 'POST':
+        task_edit.task = request.form['task']
+        task_edit.name = request.form['name']
+        task_edit.status = request.form['status']
+        task_edit.comments = request.form['comments']
+        db.session.commit()
+        flash("Task Edited", 'success')
+        return redirect('/add_user_task')
+    else:
+        return render_template('edit_task.html', tasks=task_edit)
+
+
+@app.route('/delete_task/<string:task_id>', methods=['GET', 'POST'])
+def delete_task(task_id):
+    task_delete = Tasks.query.get_or_404(task_id)
+    db.session.delete(task_delete)
+    # Commit DB
+    db.session.commit()
+    flash("Task Deleted Successfully!", 'success')
+    return redirect('/add_user_task')
+
+
+@app.route('/add_user_task', methods=['GET', 'POST'])
+def add_user_task():
+    # connection = engine.connect()
+    # results = connection.execute("SELECT name, COUNT( name ) x FROM Tasks GROUP BY name HAVING x >0")
+    cur = mysql.connection.cursor()
+    results1 = cur.execute("SELECT name, COUNT( name ) x FROM Tasks GROUP BY name HAVING x >0")
+    results = cur.fetchall()
+    if request.method == 'POST':
+        task = request.form['task']
+        name = request.form['name']
+        status = request.form['status']
+        # Execute
+        tasks = Tasks(task=task, name=name, status=status)
+        db.session.add(tasks)
+        # Commit DB
+        db.session.commit()
+        flash("User task added", 'success')
+        return redirect('/add_user_task')
+    else:
+        all_tasks = Tasks.query.all()
+        all_users = Users.query.all()
+        return render_template('user_task_list.html', tasks=all_tasks, users=all_users, total_tasks=results)
 
 
 if __name__ == '__main__':

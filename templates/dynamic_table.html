@@ -1,0 +1,95 @@
+{% extends 'layout.html' %}
+{% block body %}
+<div class="container">
+  <br>
+  <h2>ToDO Task List</h2>
+    <hr>
+      <form action="/add_task" method="post" >
+        <div class="form-group">
+          <label>Task:</label>
+          <input type="text" name="task" id="task" class="form-control" value="" required="">
+        </div>
+        <div class="form-group">
+          <select class="form-control" name="status" id="status" style="width:150px;display:inline" required="">
+              <option value="" selected disabled hidden>
+          Task Status
+              <option value="N">New</option>
+              <option value="P">In Progress</option>
+              <option value="C">Completed</option>
+              <option value="B">Blocked</option>
+          </select>
+          <select class="form-control" name="name" id="name" style="width:200px;display:inline;margin-left:30px" required="">
+              <option value="" selected disabled hidden>
+          Assign to
+              <option value="Iburahim">Mohamed Iburahimsha S</option>
+              <option value="Sudeep">Sudeep S</option>
+              <option value="Neeraj">Neeraj V</option>
+          </select>
+          <button type="submit" style="margin-left:30px;height:35px;display:inline" class="btn btn-success"  value="Add">Add</button>
+        </div>
+<!--        <button type="submit" style="display:inline" class="btn btn-success float-right"  value="Add">Add</button>-->
+      </form>
+        <hr>
+    <br>
+    <font size="2">
+  <table class="table table-bordered data-table table-sm table-striped">
+    <thead >
+      <tr bgcolor="grey">
+        <th width="15px">S.No</th>
+        <th> Task </th>
+        <th width="200px"> Assigned </th>
+        <th style="text-align:center" width="50px">Status</th>
+        <th style="text-align:center" width="100px">Action</th>
+      </tr>
+    </thead>
+       {% set count = [1] %}
+        {% for task_data in tasks %}
+            <tr>
+                <td >{{ count }}</td>
+                <td >{{ task_data.task }}</td>
+                <td >{{ task_data.name }}</td>
+                {% if task_data.status == 'N' %}
+                     <td >
+                          <form style="text-align:center">
+<!--                              <input type="submit" style="height:35px" value="{{task_data.status}}" class="btn btn-secondary">-->
+                              <button style="background-color:grey;font-size:10px"><b>N</b></button>
+                          </form>
+                     </td>
+                {% elif task_data.status == 'P' %}
+                     <td >
+                          <form style="text-align:center">
+                              <button style="background-color:orange;font-size:10px"><b>P</b></button>
+<!--                              <input type="submit" style="height:35px" value="{{task_data.status}}" class="btn btn-warning">-->
+                          </form>
+                     </td>
+                 {% elif task_data.status == 'B' %}
+                     <td >
+                          <form style="text-align:center">
+                              <button style="background-color:red;font-size:10px"><b>B</b></button>
+<!--                              <input type="submit" style="height:35px" value="{{task_data.status}}" class="btn btn-warning">-->
+                          </form>
+                     </td>
+                {% else %}
+                     <td >
+                          <form style="text-align:center">
+                              <button style="background-color:green;font-size:10px"><b>C</b></button>
+<!--                              <input type="submit" style="height:35px;" value="{{task_data.status}}" class="btn btn-success">-->
+                          </form>
+                     </td>
+                {% endif %}
+                <td >
+                    <form style="text-align:center" >
+                        <a href="edit_task/{{ task_data.id }}" style="color: inherit;"><i class='fas fa-user-edit' style='font-size:18px'></i></a>
+                        <a href="delete_task/{{ task_data.id }}" style="color: inherit;padding-left:20px"><i class='fas fa-trash-alt' style='font-size:18px'></i></a>
+                    </form>
+                </td>
+            </tr>
+          {% if count.append(count.pop() + 1) %}{% endif %} {# increment count by 1 #}
+        {% endfor %}
+  </table></font>
+    <tbody>
+    
+    </tbody>
+  </table>
+</div>
+{% endblock %}
