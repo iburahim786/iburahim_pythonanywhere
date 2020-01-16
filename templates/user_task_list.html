@@ -37,100 +37,100 @@
 <!--        <button type="submit" style="display:inline" class="btn btn-success float-right"  value="Add">Add</button>-->
       </form>
         <hr>
-     <ul class="list-group">
-       {% for user_data in users %}
-          <br>
-           {% set tlist = {'tsk': 0 } %}
-           {% if user_data.name != 'Admin' %}
-           {% for row in total_tasks  %}
-                 {% if user_data.username == row.name %}
-                        {% if tlist.update({'tsk': row.x}) %}
-                        {% endif %}
-                 {% endif %}
-           {% endfor %}
-           <button style="font-weight: bold;" class="collapsible">{{user_data.name}} &#8192;&#8192;[ {{ tlist.tsk }} ]</button>
-               <div class="content">
-                   <br>
-                   <font size="2">
-                    <table class="table table-bordered data-table table-sm table-striped">
-                    <thead >
-                      <tr bgcolor="grey">
-                        <th width="75px">Task ID</th>
-                        <th> Task </th>
-                        <th width="200px"> Assigned </th>
-                        <th style="text-align:center" width="50px">Status</th>
-                        <th style="text-align:center" width="100px">Action</th>
-                      </tr>
-                    </thead>
-                       {% set count = [1000] %}
-                        {% for task_data in tasks %}
-                            {% if user_data.username == task_data.name %}
-                            <tr>
-                                <td ><a href="#" title="{{task_data.comments}}">{{ count }}</a></td>
-                                <td >{{ task_data.task }}
-                                    <img  title="{{task_data.comments}}"
-                                          style="margin-left:10px;" src="https://img.icons8.com/metro/18/000000/info.png">
-                                    </td>
-                                <td >{{ task_data.name }}</td>
-                                {% if task_data.status == 'N' %}
-                                     <td >
-                                          <form style="text-align:center">
-                <!--                              <input type="submit" style="height:35px" value="{{task_data.status}}" class="btn btn-secondary">-->
-                                              <button style="background-color:grey;font-size:10px"><b>N</b></button>
-                                          </form>
-                                     </td>
-                                {% elif task_data.status == 'P' %}
-                                     <td >
-                                          <form style="text-align:center">
-                                              <button style="background-color:orange;font-size:10px"><b>P</b></button>
-                <!--                              <input type="submit" style="height:35px" value="{{task_data.status}}" class="btn btn-warning">-->
-                                          </form>
-                                     </td>
-                                 {% elif task_data.status == 'B' %}
-                                     <td >
-                                          <form style="text-align:center">
-                                              <button style="background-color:red;font-size:10px"><b>B</b></button>
-                <!--                              <input type="submit" style="height:35px" value="{{task_data.status}}" class="btn btn-warning">-->
-                                          </form>
-                                     </td>
-                                {% else %}
-                                     <td >
-                                          <form style="text-align:center">
-                                              <button style="background-color:green;font-size:10px"><b>C</b></button>
-                <!--                              <input type="submit" style="height:35px;" value="{{task_data.status}}" class="btn btn-success">-->
-                                          </form>
-                                     </td>
-                                {% endif %}
-                                <td >
-                                    <form style="text-align:center" >
-                                        <a href="edit_task/{{ task_data.id }}" style="color: inherit;"><i class='fas fa-user-edit' style='font-size:18px'></i></a>
-                                        <a href="delete_task/{{ task_data.id }}" style="color: inherit;padding-left:20px"><i class='fas fa-trash-alt' style='font-size:18px'></i></a>
-                                    </form>
-                                </td>
-                            </tr>
-                            {% endif %}
-                          {% if count.append(count.pop() + 1) %}{% endif %} {# increment count by 1 #}
-                        {% endfor %}
-                  </table></font>
-                </div>
-           {% endif %}
-       {% endfor %}
-     </ul>
-</div>
-<script>
-var coll = document.getElementsByClassName("collapsible");
-var i;
+<!--     <ul class="list-group">-->
+<!--       {% for user_data in users %}-->
+<!--          <br>-->
+<!--           {% set tlist = {'tsk': 0 } %}-->
+<!--           {% if user_data.name != 'Admin' %}-->
+<!--           {% for row in total_tasks  %}-->
+<!--                 {% if user_data.username == row.name %}-->
+<!--                        {% if tlist.update({'tsk': row.x}) %}-->
+<!--                        {% endif %}-->
+<!--                 {% endif %}-->
+<!--           {% endfor %}-->
+<!--           <button style="font-weight: bold;" class="collapsible">{{user_data.name}} &#8192;&#8192;[ {{ tlist.tsk }} ]</button>-->
+<!--               <div class="content">-->
+<!--                   <br>-->
+<!--                   <font size="2">-->
+<!--                    <table class="table table-bordered data-table table-sm table-striped">-->
+<!--                    <thead >-->
+<!--                      <tr bgcolor="grey">-->
+<!--                        <th width="75px">Task ID</th>-->
+<!--                        <th> Task </th>-->
+<!--                        <th width="200px"> Assigned </th>-->
+<!--                        <th style="text-align:center" width="50px">Status</th>-->
+<!--                        <th style="text-align:center" width="100px">Action</th>-->
+<!--                      </tr>-->
+<!--                    </thead>-->
+<!--                       {% set count = [1000] %}-->
+<!--                        {% for task_data in tasks %}-->
+<!--                            {% if user_data.username == task_data.name %}-->
+<!--                            <tr>-->
+<!--                                <td ><a href="#" title="{{task_data.comments}}">{{ count }}</a></td>-->
+<!--                                <td >{{ task_data.task }}-->
+<!--                                    <img  title="{{task_data.comments}}"-->
+<!--                                          style="margin-left:10px;" src="https://img.icons8.com/metro/18/000000/info.png">-->
+<!--                                    </td>-->
+<!--                                <td >{{ task_data.name }}</td>-->
+<!--                                {% if task_data.status == 'N' %}-->
+<!--                                     <td >-->
+<!--                                          <form style="text-align:center">-->
+<!--                &lt;!&ndash;                              <input type="submit" style="height:35px" value="{{task_data.status}}" class="btn btn-secondary">&ndash;&gt;-->
+<!--                                              <button style="background-color:grey;font-size:10px"><b>N</b></button>-->
+<!--                                          </form>-->
+<!--                                     </td>-->
+<!--                                {% elif task_data.status == 'P' %}-->
+<!--                                     <td >-->
+<!--                                          <form style="text-align:center">-->
+<!--                                              <button style="background-color:orange;font-size:10px"><b>P</b></button>-->
+<!--                &lt;!&ndash;                              <input type="submit" style="height:35px" value="{{task_data.status}}" class="btn btn-warning">&ndash;&gt;-->
+<!--                                          </form>-->
+<!--                                     </td>-->
+<!--                                 {% elif task_data.status == 'B' %}-->
+<!--                                     <td >-->
+<!--                                          <form style="text-align:center">-->
+<!--                                              <button style="background-color:red;font-size:10px"><b>B</b></button>-->
+<!--                &lt;!&ndash;                              <input type="submit" style="height:35px" value="{{task_data.status}}" class="btn btn-warning">&ndash;&gt;-->
+<!--                                          </form>-->
+<!--                                     </td>-->
+<!--                                {% else %}-->
+<!--                                     <td >-->
+<!--                                          <form style="text-align:center">-->
+<!--                                              <button style="background-color:green;font-size:10px"><b>C</b></button>-->
+<!--                &lt;!&ndash;                              <input type="submit" style="height:35px;" value="{{task_data.status}}" class="btn btn-success">&ndash;&gt;-->
+<!--                                          </form>-->
+<!--                                     </td>-->
+<!--                                {% endif %}-->
+<!--                                <td >-->
+<!--                                    <form style="text-align:center" >-->
+<!--                                        <a href="edit_task/{{ task_data.id }}" style="color: inherit;"><i class='fas fa-user-edit' style='font-size:18px'></i></a>-->
+<!--                                        <a href="delete_task/{{ task_data.id }}" style="color: inherit;padding-left:20px"><i class='fas fa-trash-alt' style='font-size:18px'></i></a>-->
+<!--                                    </form>-->
+<!--                                </td>-->
+<!--                            </tr>-->
+<!--                            {% endif %}-->
+<!--                          {% if count.append(count.pop() + 1) %}{% endif %} {# increment count by 1 #}-->
+<!--                        {% endfor %}-->
+<!--                  </table></font>-->
+<!--                </div>-->
+<!--           {% endif %}-->
+<!--       {% endfor %}-->
+<!--     </ul>-->
+<!--</div>-->
+<!--<script>-->
+<!--var coll = document.getElementsByClassName("collapsible");-->
+<!--var i;-->
 
-for (i = 0; i < coll.length; i++) {
-  coll[i].addEventListener("click", function() {
-    this.classList.toggle("active");
-    var content = this.nextElementSibling;
-    if (content.style.maxHeight){
-      content.style.maxHeight = null;
-    } else {
-      content.style.maxHeight = content.scrollHeight + "px";
-    }
-  });
-}
-</script>
+<!--for (i = 0; i < coll.length; i++) {-->
+<!--  coll[i].addEventListener("click", function() {-->
+<!--    this.classList.toggle("active");-->
+<!--    var content = this.nextElementSibling;-->
+<!--    if (content.style.maxHeight){-->
+<!--      content.style.maxHeight = null;-->
+<!--    } else {-->
+<!--      content.style.maxHeight = content.scrollHeight + "px";-->
+<!--    }-->
+<!--  });-->
+<!--}-->
+<!--</script>-->
 {% endblock %}
