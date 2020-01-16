@@ -640,8 +640,6 @@ def delete_task(task_id):
 
 @app.route('/add_user_task', methods=['GET', 'POST'])
 def add_user_task():
-    # connection = engine.connect()
-    # results = connection.execute("SELECT name, COUNT( name ) x FROM Tasks GROUP BY name HAVING x >0")
     cur = mysql.connection.cursor()
     results1 = cur.execute("SELECT name, COUNT( name ) x FROM Tasks GROUP BY name HAVING x >0")
     results = cur.fetchall()
