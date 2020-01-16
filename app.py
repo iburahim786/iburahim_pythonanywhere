@@ -640,9 +640,9 @@ def delete_task(task_id):
 
 @app.route('/add_user_task', methods=['GET', 'POST'])
 def add_user_task():
-    cur = mysql.connection.cursor()
-    results1 = cur.execute("SELECT name, COUNT( name ) x FROM Tasks GROUP BY name HAVING x >0")
-    results = cur.fetchall()
+    # cur = mysql.connection.cursor()
+    # results1 = cur.execute("SELECT name, COUNT( name ) x FROM Tasks GROUP BY name HAVING x >0")
+    # results = cur.fetchall() total_tasks=results
     if request.method == 'POST':
         task = request.form['task']
         name = request.form['name']
@@ -657,7 +657,7 @@ def add_user_task():
     else:
         all_tasks = Tasks.query.all()
         all_users = Users.query.all()
-        return render_template('user_task_list.html', tasks=all_tasks, users=all_users, total_tasks=results)
+        return render_template('user_task_list.html', tasks=all_tasks, users=all_users)
 
 
 if __name__ == '__main__':
