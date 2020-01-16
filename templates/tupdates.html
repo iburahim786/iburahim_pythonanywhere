@@ -2,12 +2,21 @@
 
 {% block body %}
    <br>
-   <h2>Team Members Updates</h2>
+   <h3>Team Members Updates</h3>
    <hr>
-   <br>
    <ul class="list-group">
        {% for tupdate in tupdates %}
-       <li class="list-group-item"><a href="tupdate/{{tupdate.id}}">{{tupdate.name}}</a></li>
+          <br>
+           <button style="font-weight: bold;" class="collapsible">{{tupdate.name}}</button>
+               <div class="content">
+                   <small>Created by {{ tupdate.author }} on {{ tupdate.date_posted}} &#8192;&#8192;&#8192;&#8192;&#8192;&#8192;&#8192;
+                        Last Modified: {{ tupdate.date_updated}}</small>
+                        <hr>
+                   <div>
+                        {{ tupdate.body | safe}}
+                   </div>
+                </div>
+<!--       <li class="list-group-item"><a href="tupdate/{{tupdate.id}}">{{tupdate.name}}</a></li>-->
 <!--            <li class="list-group-item">-->
 <!--                <a data-toggle="collapse" data-target="#{{tupdate.id}}"><h4>{{tupdate.name}}</h4>-->
 <!--                </a>-->
@@ -19,6 +28,22 @@
 <!--            </li>-->
        {% endfor%}
     </ul>
+<script>
+var coll = document.getElementsByClassName("collapsible");
+var i;
+
+for (i = 0; i < coll.length; i++) {
+  coll[i].addEventListener("click", function() {
+    this.classList.toggle("active");
+    var content = this.nextElementSibling;
+    if (content.style.maxHeight){
+      content.style.maxHeight = null;
+    } else {
+      content.style.maxHeight = content.scrollHeight + "px";
+    }
+  });
+}
+</script>
 <!--      <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"></script>-->
 <!--      <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.3/umd/popper.min.js"></script>-->
 <!--      <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.1/js/bootstrap.min.js"></script>-->

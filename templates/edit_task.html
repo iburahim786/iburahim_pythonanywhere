@@ -9,7 +9,7 @@
         </div>
         <div class="form-group">
 <!--          <label></label>-->
-          <select class="form-control" name="status" id="status" style="width: 150px;">
+          <select class="form-control" name="status" id="status" style="width: 150px;display:inline;" required="">
               {% if tasks.status == 'N' %}
                     <option value="N" selected>New</option>
                     <option value="P">In Progress</option>
@@ -18,14 +18,46 @@
                     <option value="N">New</option>
                     <option value="P" selected>In Progress</option>
                     <option value="C">Completed</option>
+              {% elif tasks.status == 'B' %}
+                    <option value="N">New</option>
+                    <option value="P">In Progress</option>
+                    <option value="C">Completed</option>
+                    <option value="B" selected>Blocked</option>
               {% else %}
                     <option value="N">New</option>
                     <option value="P" >In Progress</option>
                     <option value="C" selected>Completed</option>
               {% endif %}
           </select>
+          <select class="form-control" name="name" id="name" style="width:200px;display:inline;margin-left:30px" required="">
+              {% if tasks.name == 'Iburahim' %}
+                    <option value="Iburahim" selected>Mohamed Iburahimsha S</option>
+                    <option value="Sudeep">Sudeep S</option>
+                    <option value="Neeraj">Neeraj V</option>
+              {% elif tasks.status == 'Sudeep' %}
+                    <option value="Iburahim">Mohamed Iburahimsha S</option>
+                    <option value="Sudeep" selected>Sudeep S</option>
+                    <option value="Neeraj">Neeraj V</option>
+              {% elif tasks.status == 'Neeraj' %}
+                    <option value="Iburahim">Mohamed Iburahimsha S</option>
+                    <option value="Sudeep">Sudeep S</option>
+                    <option value="Neeraj" selected>Neeraj V</option>
+              {% else %}
+                    <option value="" selected disabled hidden>
+                    Assign to
+                    <option value="Iburahim">Mohamed Iburahimsha S</option>
+                    <option value="Sudeep">Sudeep S</option>
+                    <option value="Neeraj">Neeraj V</option>
+              {% endif %}
+          </select>
         </div>
+          <div class="form-group">
+          <label>Comments:</label>
+          <textarea name="comments" id="comments" class="form-control">{{tasks.comments}}
+              </textarea>
+          </div>
         <button type="submit" class="btn btn-success save-btn" value="Save">Save</button>
+        <a href="/add_task" class="btn btn-primary" style="margin-left:20px">Cancel </a>
       </form>
   <br/>
     </div>

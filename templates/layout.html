@@ -4,18 +4,33 @@
     <meta charset="UTF-8">
     <title>My Flask App</title>
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css">
-<!--    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">-->
-<!--    <link rel="stylesheet" href="{{ url_for('static', filename='css/form.css') }}">-->
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.7.0/css/all.css" integrity="sha384-lZN37f5QGtY3VHgisS14W3ExzMWZxybE1SJSEsQp9S+oqd12jhcu+A56Ebc1zFSJ" crossorigin="anonymous">
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <!--    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">-->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/coll.css') }}">
+    <link rel="shortcut icon" type="image/x-icon" href="static/images/favicon.ico" />
 </head>
 <body>
    {% include 'includes/_navbar.html' %}
    <div class="container">
        {% include 'includes/_messages.html' %}
        {% block body %}{% endblock %}
+       <br>
+       <div style="width: 100%;bottom: 5%;position: obsolete;">
+           <hr>
+       </div>
+<!--       background-color: #F8F8F8;-->
+       <footer>
+				<p style="width: 100%;bottom: 0;position: obsolete;background-color: #F8F8F8;text-align: center;">
+                    &copy; 2019 - Demo Website. All rights reserved.</p>
+       </footer>
    </div>
-   <script>src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js"</script>
+<!--   <script src="{{url_for('static', filename='js/coll.js')}}"></script>-->
+<!--   <script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>-->
+   <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js"></script>
    <script src="//cdn.ckeditor.com/4.6.2/standard/ckeditor.js"></script>
    <script type="text/javascript">CKEDITOR.replace('editor')</script>
    <script src='https://kit.fontawesome.com/a076d05399.js'></script>
+   <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
 </body>
 </html>
