@@ -1,7 +1,6 @@
 {% extends 'layout.html' %}
 {% block body %}
 <div class="container">
-  <br>
   <h2>ToDO Task List</h2>
     <hr>
       <form action="/add_task" method="post" >
@@ -21,13 +20,14 @@
           <select class="form-control" name="name" id="name" style="width:200px;display:inline;margin-left:30px" required="">
               <option value="" selected disabled hidden>
           Assign to
-              <option value="Iburahim">Mohamed Iburahimsha S</option>
-              <option value="Sudeep">Sudeep S</option>
-              <option value="Neeraj">Neeraj V</option>
+                  {% for user_data in users %}
+                  {% if user_data.name != 'Admin' %}
+                        <option value="{{user_data.username}}">{{user_data.name}}</option>
+                  {% endif %}
+                  {% endfor %}
           </select>
           <button type="submit" style="margin-left:30px;height:35px;display:inline" class="btn btn-success"  value="Add">Add</button>
         </div>
-<!--        <button type="submit" style="display:inline" class="btn btn-success float-right"  value="Add">Add</button>-->
       </form>
         <hr>
     <br>
@@ -39,7 +39,9 @@
         <th> Task </th>
         <th width="200px"> Assigned </th>
         <th style="text-align:center" width="50px">Status</th>
+        {% if session.logged_in %}
         <th style="text-align:center" width="100px">Action</th>
+         {% endif %}
       </tr>
     </thead>
        {% set count = [1] %}
@@ -51,7 +53,6 @@
                 {% if task_data.status == 'N' %}
                      <td >
                           <form style="text-align:center">
-<!--                              <input type="submit" style="height:35px" value="{{task_data.status}}" class="btn btn-secondary">-->
                               <button style="background-color:grey;font-size:10px"><b>N</b></button>
                           </form>
                      </td>
@@ -59,30 +60,29 @@
                      <td >
                           <form style="text-align:center">
                               <button style="background-color:orange;font-size:10px"><b>P</b></button>
-<!--                              <input type="submit" style="height:35px" value="{{task_data.status}}" class="btn btn-warning">-->
                           </form>
                      </td>
                  {% elif task_data.status == 'B' %}
                      <td >
                           <form style="text-align:center">
                               <button style="background-color:red;font-size:10px"><b>B</b></button>
-<!--                              <input type="submit" style="height:35px" value="{{task_data.status}}" class="btn btn-warning">-->
                           </form>
                      </td>
                 {% else %}
                      <td >
                           <form style="text-align:center">
                               <button style="background-color:green;font-size:10px"><b>C</b></button>
-<!--                              <input type="submit" style="height:35px;" value="{{task_data.status}}" class="btn btn-success">-->
                           </form>
                      </td>
                 {% endif %}
+                {% if session.logged_in %}
                 <td >
                     <form style="text-align:center" >
                         <a href="edit_task/{{ task_data.id }}" style="color: inherit;"><i class='fas fa-user-edit' style='font-size:18px'></i></a>
                         <a href="delete_task/{{ task_data.id }}" style="color: inherit;padding-left:20px"><i class='fas fa-trash-alt' style='font-size:18px'></i></a>
                     </form>
                 </td>
+                {% endif %}
             </tr>
           {% if count.append(count.pop() + 1) %}{% endif %} {# increment count by 1 #}
         {% endfor %}
@@ -90,6 +90,5 @@
     <tbody>
     
     </tbody>
-  </table>
 </div>
 {% endblock %}

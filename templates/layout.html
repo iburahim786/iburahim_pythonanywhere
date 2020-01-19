@@ -6,31 +6,119 @@
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css">
     <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.7.0/css/all.css" integrity="sha384-lZN37f5QGtY3VHgisS14W3ExzMWZxybE1SJSEsQp9S+oqd12jhcu+A56Ebc1zFSJ" crossorigin="anonymous">
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
-    <!--    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">-->
     <link rel="stylesheet" href="{{ url_for('static', filename='css/coll.css') }}">
     <link rel="shortcut icon" type="image/x-icon" href="static/images/favicon.ico" />
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/dashboard.css') }}">
+    <link href="https://getbootstrap.com/docs/4.4/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
+    <script src="//netdna.bootstrapcdn.com/bootstrap/3.2.0/js/bootstrap.min.js"></script>
+    <script src="//code.jquery.com/jquery-1.11.1.min.js"></script>
+
+
 </head>
 <body>
    {% include 'includes/_navbar.html' %}
-   <div class="container">
-       {% include 'includes/_messages.html' %}
+  <div class="container-fluid">
+  <div class="row">
+    <nav class="col-md-2 d-none d-md-block bg-light sidebar">
+      <div class="sidebar-sticky">
+        <ul class="nav flex-column">
+          <li class="nav-item">
+            <a class="nav-link" href="/">
+              <span data-feather="home"></span>
+              Home <span class="sr-only">(current)</span>
+            </a>
+          </li>
+          {% if session.logged_in %}
+          <li class="nav-item">
+            <a class="nav-link" href="/dashboard">
+              <span data-feather="server"></span>
+              Dashboard
+            </a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="/add_user_task">
+              <span data-feather="briefcase"></span>
+              User tasks
+            </a>
+          </li>
+          {% endif %}
+          <li class="nav-item">
+            <a class="nav-link" href="/tupdates">
+              <span data-feather="user-plus"></span>
+              Team updates
+            </a>
+          </li>
+           {% if 'admin' == session.username %}
+          <li class="nav-item">
+            <a class="nav-link" href="/user_details">
+              <span data-feather="users"></span>
+              Registered users
+            </a>
+          </li>
+          {% endif %}
+          <li class="nav-item">
+            <a class="nav-link" href="/url_links">
+              <span data-feather="bookmark"></span>
+              Bookmarks
+            </a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="/add_task">
+              <span data-feather="list"></span>
+              ToDos summary
+            </a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="/articles">
+              <span data-feather="book-open"></span>
+              Articles
+            </a>
+          </li>
+        </ul>
+
+        <h6 class="sidebar-heading d-flex justify-content-between align-items-center px-3 mt-4 mb-1 text-muted">
+          <span>See also</span>
+          <a class="d-flex align-items-center text-muted" href="#" aria-label="Add a new report">
+            <span data-feather="plus-circle"></span>
+          </a>
+        </h6>
+        <ul class="nav flex-column mb-2">
+          <li class="nav-item">
+            <a class="nav-link" href="/about">
+              <span data-feather="info"></span>
+              About
+            </a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="/contactus">
+              <span data-feather="send"></span>
+              Contact us
+            </a>
+          </li>
+        </ul>
+      </div>
+    </nav>
+         <main role="main" class="col-md-9 ml-sm-auto col-lg-10 px-4">
+             {% include 'includes/_messages.html' %}
        {% block body %}{% endblock %}
        <br>
-       <div style="width: 100%;bottom: 5%;position: obsolete;">
-           <hr>
-       </div>
-<!--       background-color: #F8F8F8;-->
        <footer>
-				<p style="width: 100%;bottom: 0;position: obsolete;background-color: #F8F8F8;text-align: center;">
+                <hr style="margin-top: 300px;">
+				<p style="width: 100%;background-color: #F8F8F8;text-align: center;">
                     &copy; 2019 - Demo Website. All rights reserved.</p>
        </footer>
-   </div>
-<!--   <script src="{{url_for('static', filename='js/coll.js')}}"></script>-->
-<!--   <script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>-->
+          </main>
    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js"></script>
    <script src="//cdn.ckeditor.com/4.6.2/standard/ckeditor.js"></script>
    <script type="text/javascript">CKEDITOR.replace('editor')</script>
    <script src='https://kit.fontawesome.com/a076d05399.js'></script>
    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+   <script src="https://cdnjs.cloudflare.com/ajax/libs/feather-icons/4.9.0/feather.min.js"></script>
+   <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.7.3/Chart.min.js"></script>
+   <script src="https://getbootstrap.com/docs/4.4/examples/dashboard/dashboard.js"></script>
+         </main>
+  </div>
+             </div>
+
 </body>
 </html>
