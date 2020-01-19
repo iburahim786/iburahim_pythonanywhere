@@ -1,7 +1,6 @@
 {% extends 'layout.html' %}
 {% block body %}
 <div class="container">
-  <br>
   <h2>Task List</h2>
     <hr>
       <form action="/add_user_task" method="post" >
@@ -29,12 +28,9 @@
                         <option value="{{user_data.username}}">{{user_data.name}}</option>
                   {% endif %}
               {% endfor %}
-<!--              <option value="Sudeep">Sudeep S</option>-->
-<!--              <option value="Neeraj">Neeraj V</option>-->
           </select>
           <button type="submit" style="margin-left:30px;height:35px;display:inline" class="btn btn-success"  value="Add">Add</button>
         </div>
-<!--        <button type="submit" style="display:inline" class="btn btn-success float-right"  value="Add">Add</button>-->
       </form>
         <hr>
      <ul class="list-group">

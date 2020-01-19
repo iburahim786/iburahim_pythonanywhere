@@ -196,10 +196,35 @@ def register():
             db.session.add(user)
             # Commit DB
             db.session.commit()
-            flash('You are now registered and can log in', 'success')
+            flash('You are now registered and can log in..', 'success')
             return redirect('/')
     else:
         return render_template('register.html')
+
+
+# Register
+@app.route('/signup', methods=['GET', 'POST'])
+def signup():
+    if request.method == 'POST':
+        name = request.form['name']
+        username = request.form['username']
+        email = request.form['email']
+        password = sha256_crypt.encrypt(str(request.form['password']))
+        # Execute
+        account = Users.query.filter_by(username=username).first()
+        # If account exists show error and validation checks
+        if account:
+            error = 'Account already exists!'
+            return render_template('signup.html', error=error)
+        else:
+            user = Users(name=name, email=email, username=username, password=password)
+            db.session.add(user)
+            # Commit DB
+            db.session.commit()
+            flash('You are now registered and can log in..', 'success')
+            return redirect('/')
+    else:
+        return render_template('signup.html')
 
 
 # User Login
@@ -223,8 +248,8 @@ def login():
                 session['logged_in'] = True
                 session['username'] = username
                 session['name'] = name
-                flash("You are now logged in", 'success')
-                return redirect(url_for('dashboard'))
+                flash("You are now logged in..", 'success')
+                return redirect(url_for('home'))
             else:
                 error = 'Incorrect username/password!'
                 return render_template('login.html', error=error)
@@ -235,6 +260,39 @@ def login():
     return render_template('login.html')
 
 
+# User Login
+@app.route('/signin', methods=['GET', 'POST'])
+def signin():
+    if request.method == 'POST':
+        # GET Form Fields
+        username = request.form['username']
+        password_candidate = request.form['password']
+
+        # Get user by username
+        result = Users.query.filter_by(username=username).first()
+
+        if result is not None:
+            password = result.password
+            name = result.name
+
+            # Compare passwords
+            if sha256_crypt.verify(password_candidate, password):
+                # PASSED
+                session['logged_in'] = True
+                session['username'] = username
+                session['name'] = name
+                flash("You are now logged in..", 'success')
+                return redirect(url_for('home'))
+            else:
+                error = 'Incorrect username/password!'
+                return render_template('signin.html', error=error)
+        else:
+            error = 'Username not found'
+            return render_template('signin.html', error=error)
+
+    return render_template('signin.html')
+
+
 # role based control
 def is_logged_in(f):
     @wraps(f)
@@ -242,7 +300,7 @@ def is_logged_in(f):
         if 'logged_in' in session:
             return f(*args, **kwargs)
         else:
-            flash('Unauthorized, Please login', 'danger')
+            flash('Unauthorized, Please login!', 'danger')
             return redirect(url_for('login'))
 
     return wrap
@@ -254,7 +312,7 @@ def is_logged_in_admin_user(f):
         if 'admin' == session['username']:
             return f(*args, **kwargs)
         else:
-            flash('Unauthorized, Please login with admin user', 'danger')
+            flash('Unauthorized, Please login with admin user!', 'danger')
             app.logger.info(f.__name__)
             return redirect(url_for('user_details'))
     return wrap
@@ -303,7 +361,7 @@ def dashboard():
 def logout():
     session.clear()
     flash('You are now logged out', 'success')
-    return redirect(url_for('login'))
+    return redirect(url_for('home'))
 
 
 # Articles Form Class
@@ -326,7 +384,7 @@ def add_article():
         # Commit DB
         db.session.commit()
 
-        flash("Article Created", 'success')
+        flash("Article created", 'success')
         return redirect(url_for('dashboard'))
     return render_template('add_article.html', form=form)
 
@@ -346,7 +404,7 @@ def edit_article(page, id):
         article_edit.body = request.form['body']
         # Commit DB
         db.session.commit()
-        flash("Article Updated", 'success')
+        flash("Article updated", 'success')
         if page == 'dashboard':
             return redirect(url_for('dashboard'))
         else:
@@ -363,7 +421,7 @@ def delete_article(id):
     db.session.delete(article_delete)
     # Commit DB
     db.session.commit()
-    flash("Article Deleted", 'success')
+    flash("Article deleted!", 'success')
     return redirect(url_for('dashboard'))
 
 
@@ -385,7 +443,7 @@ def add_update():
         db.session.add(update)
         # Commit DB
         db.session.commit()
-        flash("User updates created/added", 'success')
+        flash("User updates created/added! ", 'success')
         return redirect(url_for('dashboard'))
 
     return render_template('add_update.html', form=form)
@@ -406,7 +464,7 @@ def edit_update(id):
         t_update_edit.body = request.form['body']
         # Commit DB
         db.session.commit()
-        flash("Updated successfully", 'success')
+        flash("Updated successfully!", 'success')
         return redirect(url_for('dashboard'))
 
     return render_template('edit_update.html', form=form)
@@ -420,7 +478,7 @@ def delete_update(id):
     db.session.delete(update_delete)
     # Commit DB
     db.session.commit()
-    flash("Updates Deleted", 'success')
+    flash("Updates deleted!", 'success')
     return redirect(url_for('dashboard'))
 
 
@@ -479,7 +537,7 @@ def send_mail():
     # and message to send - here it is sent as one string.
     s.sendmail(me, you, message.as_string())
     s.quit()
-    flash("Message sent Successfully", 'success')
+    flash("Message sent successfully!", 'success')
     return redirect(url_for('dashboard'))
 
 
@@ -524,7 +582,7 @@ def delete_user(id):
     db.session.delete(user_delete)
     # Commit DB
     db.session.commit()
-    flash("User Deleted Successfully!", 'success')
+    flash("User deleted successfully!", 'success')
     return redirect(url_for('user_details'))
 
 
@@ -558,7 +616,7 @@ def add_url():
         db.session.add(urls)
         # Commit DB
         db.session.commit()
-        flash("URL added", 'success')
+        flash("Url added!", 'success')
         return redirect(url_for('url_links'))
     return render_template('add_url.html', form=form)
 
@@ -578,12 +636,12 @@ def edit_url(id):
         url_edit.url = request.form['url']
         # Commit DB
         db.session.commit()
-        flash("Updated successfully", 'success')
+        flash("Updated successfully!", 'success')
         return redirect(url_for('url_links'))
     return render_template('edit_url.html', form=form)
 
 
-@app.route('/delete_url/<string:id>', methods=['POST'])
+@app.route('/delete_url/<string:id>', methods=['GET', 'POST'])
 @is_logged_in
 @is_logged_in_admin_url
 def delete_url(id):
@@ -591,7 +649,7 @@ def delete_url(id):
     db.session.delete(url_delete)
     # Commit DB
     db.session.commit()
-    flash("URL Deleted Successfully!", 'success')
+    flash("Url deleted successfully!", 'success')
     return redirect(url_for('url_links'))
 
 
@@ -606,14 +664,16 @@ def add_task():
         db.session.add(tasks)
         # Commit DB
         db.session.commit()
-        flash("Task added", 'success')
+        flash("User task added!", 'success')
         return redirect('/add_task')
     else:
         all_tasks = Tasks.query.all()
-        return render_template('dynamic_table.html', tasks=all_tasks)
+        all_users = Users.query.all()
+        return render_template('dynamic_table.html', tasks=all_tasks, users=all_users)
 
 
 @app.route('/edit_task/<string:task_id>', methods=['GET', 'POST'])
+@is_logged_in
 def edit_task(task_id):
     task_edit = Tasks.query.get_or_404(task_id)
     if request.method == 'POST':
@@ -622,23 +682,25 @@ def edit_task(task_id):
         task_edit.status = request.form['status']
         task_edit.comments = request.form['comments']
         db.session.commit()
-        flash("Task Edited", 'success')
+        flash("User task edited!", 'success')
         return redirect('/add_user_task')
     else:
         return render_template('edit_task.html', tasks=task_edit)
 
 
 @app.route('/delete_task/<string:task_id>', methods=['GET', 'POST'])
+@is_logged_in
 def delete_task(task_id):
     task_delete = Tasks.query.get_or_404(task_id)
     db.session.delete(task_delete)
     # Commit DB
     db.session.commit()
-    flash("Task Deleted Successfully!", 'success')
+    flash("Task deleted successfully!", 'success')
     return redirect('/add_user_task')
 
 
 @app.route('/add_user_task', methods=['GET', 'POST'])
+@is_logged_in
 def add_user_task():
     cur = mysql.connection.cursor()
     cur.execute("SELECT name, COUNT( name ) x FROM tasks GROUP BY name HAVING x >0")
@@ -652,7 +714,7 @@ def add_user_task():
         db.session.add(tasks)
         # Commit DB
         db.session.commit()
-        flash("User task added", 'success')
+        flash("User task added!", 'success')
         return redirect('/add_user_task')
     else:
         all_tasks = Tasks.query.all()

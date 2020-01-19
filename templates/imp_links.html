@@ -1,7 +1,6 @@
 {% extends 'layout.html' %}
 
 {% block body %}
-    <br>
     <div>
         <h3 style="display:inline">URL List </h3>
         <a style="display:inline" class="btn btn-success float-right" href="/add_url"> + Add URLs</a>
@@ -12,18 +11,17 @@
         <tr style="height:20px;" >
             <th>S.No</th>
             <th style="width:80%">URL Name</th>
-            <th style="width:100%;text-align:middle">Actions</th>
+            <th style="text-align:center;width:80%">Action</th>
         </tr>
         {% set count = [1] %}
         {% for url_data in urls %}
             <tr style="text-align:left">
                 <td>{{ count }}</td>
-                <td><a href="{{ url_data.url }}">{{ url_data.url_name }}</a></td>
+                <td><a  style="color: inherit;" href="{{ url_data.url }}">{{ url_data.url_name }}</a></td>
                 <td>
-                    <form action="{{ url_for('delete_url', id=url_data.id)}}" method="post">
-                        <a href="edit_url/{{ url_data.id }}" class="btn btn-primary pull-right">Edit</a>
-                        <input type="hidden" name="method" value="DELETE">
-                        <input type="submit" style="margin:1px;height:35px" value="Delete" class="btn btn-danger">
+                    <form style="text-align:center">
+                        <a href="edit_url/{{ url_data.id }}" style="color: inherit;"><i class='fas fa-user-edit' style='font-size:18px'></i></a>
+                        <a href="delete_url/{{ url_data.id }}" style="color: inherit;padding-left:40px"><i class='fas fa-trash-alt' style='font-size:18px'></i></a>
                     </form>
                 </td>
             </tr>
