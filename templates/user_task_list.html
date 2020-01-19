@@ -1,7 +1,7 @@
 {% extends 'layout.html' %}
 {% block body %}
 <div class="container">
-  <h2>Task List</h2>
+  <h2>Task list</h2>
     <hr>
       <form action="/add_user_task" method="post" >
         <div class="form-group">
@@ -24,7 +24,7 @@
               <option value="" selected disabled hidden>
           Assign to
               {% for user_data in users %}
-                  {% if user_data.name != 'Admin' %}
+                  {% if user_data.username != 'admin' %}
                         <option value="{{user_data.username}}">{{user_data.name}}</option>
                   {% endif %}
               {% endfor %}
@@ -53,7 +53,7 @@
                       <tr bgcolor="grey">
                         <th width="75px">Task ID</th>
                         <th> Task </th>
-                        <th width="200px"> Assigned </th>
+                        <th width="200px"> Assigned to</th>
                         <th style="text-align:center" width="50px">Status</th>
                         <th style="text-align:center" width="100px">Action</th>
                       </tr>
@@ -62,7 +62,7 @@
                         {% for task_data in tasks %}
                             {% if user_data.username == task_data.name %}
                             <tr>
-                                <td ><a href="#" title="{{task_data.comments}}">{{ count }}</a></td>
+                                <td ><a  style="color: inherit;" href="#" title="{{task_data.comments}}">{{ count }}</a></td>
                                 <td >{{ task_data.task }}
                                     <img  title="{{task_data.comments}}"
                                           style="margin-left:10px;" src="https://img.icons8.com/metro/18/000000/info.png">
