@@ -108,9 +108,13 @@
                     &copy; 2019 - Demo Website. All rights reserved.</p>
        </footer>
           </main>
+
    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js"></script>
-   <script src="//cdn.ckeditor.com/4.6.2/standard/ckeditor.js"></script>
-   <script type="text/javascript">CKEDITOR.replace('editor')</script>
+   <script src="//cdn.ckeditor.com/4.13.1/standard/ckeditor.js"></script>
+<!--   <script type="text/javascript" src="/static/ckeditor/ckeditor.js"></script>-->
+   <script type="text/javascript">
+           CKEDITOR.replace('editor',{height: 300,filebrowserUploadUrl: "/upload"});
+   </script>
    <script src='https://kit.fontawesome.com/a076d05399.js'></script>
    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
    <script src="https://cdnjs.cloudflare.com/ajax/libs/feather-icons/4.9.0/feather.min.js"></script>

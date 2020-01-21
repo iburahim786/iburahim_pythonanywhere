@@ -1,15 +1,16 @@
-from flask import Flask, render_template, flash, url_for, session, logging, request, redirect
-from flask_mysqldb import MySQL
-from flask_sqlalchemy import SQLAlchemy
-from wtforms import Form, StringField, TextAreaField, PasswordField, validators
-from wtforms.fields.html5 import EmailField
-from passlib.hash import sha256_crypt
-from functools import wraps
-import smtplib
+from datetime import timedelta, datetime
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
-from datetime import timedelta, datetime
-from sqlalchemy import create_engine, text
+from flask import Flask, render_template, flash, session, redirect, send_from_directory
+from flask_ckeditor import *
+from flask_mysqldb import MySQL
+from flask_sqlalchemy import SQLAlchemy
+from passlib.hash import sha256_crypt
+from wtforms import Form, StringField, TextAreaField, PasswordField, validators
+from wtforms.fields.html5 import EmailField
+import os
+import smtplib
+import uuid
 
 app = Flask(__name__)
 # app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///posts.db'
@@ -18,6 +19,7 @@ app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 db = SQLAlchemy(app)
 
 app.secret_key = 'novell@123'
+basedir = os.path.abspath(os.path.dirname(__file__))
 
 #engine = create_engine('mysql://root:novell@123@localhost/mysqlalchemy')
 
@@ -29,6 +31,35 @@ app.config['MYSQL_CURSORCLASS'] = 'DictCursor'
 
 # init MYSQL
 mysql = MySQL(app)
+
+
+##################### FILE UPLOAD SCRIPT ######################################
+ckeditor = CKEditor(app)
+
+app.config['CKEDITOR_SERVE_LOCAL'] = False
+app.config['CKEDITOR_HEIGHT'] = 400
+app.config['CKEDITOR_FILE_UPLOADER'] = 'upload'
+app.config['UPLOADED_PATH'] = os.path.join(basedir, 'upload')
+
+
+@app.route('/files/<filename>')
+def uploaded_files(filename):
+    path = app.config['UPLOADED_PATH']
+    return send_from_directory(path, filename)
+
+
+@app.route('/upload', methods=['POST'])
+def upload():
+    f = request.files.get('upload')
+    extension = f.filename.split('.')[1].lower()
+    if extension not in ['jpg', 'gif', 'png', 'jpeg']:
+        return upload_fail(message='Image only!')
+    unique_filename = str(uuid.uuid4())
+    f.filename = "flaskapp"+unique_filename[0:8] + '.' + extension
+    f.save(os.path.join(app.config['UPLOADED_PATH'], f.filename))
+    url = url_for('uploaded_files', filename=f.filename)
+    return upload_success(url=url)
+##################################################################################
 
 
 class BlogPost(db.Model):
