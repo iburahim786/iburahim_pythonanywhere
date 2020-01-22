@@ -24,7 +24,7 @@
               <option value="" selected disabled hidden>
           Assign to
               {% for user_data in users %}
-                  {% if user_data.name != 'administrator' %}
+                  {% if 'admin' not in user_data.name.lower() %}
                         <option value="{{user_data.username}}">{{user_data.name}}</option>
                   {% endif %}
               {% endfor %}
@@ -37,7 +37,7 @@
        {% for user_data in users %}
           <br>
            {% set tlist = {'tsk': 0 } %}
-           {% if user_data.name != 'Admin' %}
+           {% if 'admin' not in user_data.name.lower() %}
            {% for row in total_tasks  %}
                  {% if user_data.username == row.name %}
                         {% if tlist.update({'tsk': row.x}) %}
