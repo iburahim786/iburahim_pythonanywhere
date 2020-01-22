@@ -633,7 +633,7 @@ def url_links():
 # URL Form Class
 class URLUpdateForm(Form):
     url_name = StringField('URL Name', [validators.length(min=1, max=200)])
-    url = StringField('URL', [validators.length(min=5)])
+    url = StringField('URL', [validators.length(min=15)])
 
 
 @app.route('/add_url', methods=['GET', 'POST'])
