@@ -1,7 +1,7 @@
 {% extends 'layout.html' %}
 {% block body %}
 <div class="container">
-  <h1>Editing Task</h1>
+  <h1>Editing Task1</h1>
       <form action="/edit_task/{{tasks.id}}" method="post" >
         <div class="form-group">
           <label>Task:</label>
@@ -14,10 +14,12 @@
                     <option value="N" selected>New</option>
                     <option value="P">In Progress</option>
                     <option value="C">Completed</option>
+                    <option value="B">Blocked</option>
               {% elif tasks.status == 'P' %}
                     <option value="N">New</option>
                     <option value="P" selected>In Progress</option>
                     <option value="C">Completed</option>
+                    <option value="B">Blocked</option>
               {% elif tasks.status == 'B' %}
                     <option value="N">New</option>
                     <option value="P">In Progress</option>
@@ -27,28 +29,17 @@
                     <option value="N">New</option>
                     <option value="P" >In Progress</option>
                     <option value="C" selected>Completed</option>
+                    <option value="B">Blocked</option>
               {% endif %}
           </select>
           <select class="form-control" name="name" id="name" style="width:200px;display:inline;margin-left:30px" required="">
-              {% if tasks.name == 'Iburahim' %}
-                    <option value="Iburahim" selected>Mohamed Iburahimsha S</option>
-                    <option value="Sudeep">Sudeep S</option>
-                    <option value="Neeraj">Neeraj V</option>
-              {% elif tasks.status == 'Sudeep' %}
-                    <option value="Iburahim">Mohamed Iburahimsha S</option>
-                    <option value="Sudeep" selected>Sudeep S</option>
-                    <option value="Neeraj">Neeraj V</option>
-              {% elif tasks.status == 'Neeraj' %}
-                    <option value="Iburahim">Mohamed Iburahimsha S</option>
-                    <option value="Sudeep">Sudeep S</option>
-                    <option value="Neeraj" selected>Neeraj V</option>
-              {% else %}
-                    <option value="" selected disabled hidden>
-                    Assign to
-                    <option value="Iburahim">Mohamed Iburahimsha S</option>
-                    <option value="Sudeep">Sudeep S</option>
-                    <option value="Neeraj">Neeraj V</option>
-              {% endif %}
+                  {% for user_data in users %}
+                         {% if tasks.name.lower() == user_data.username.lower() %}
+                                 <option value='{{user_data.username}}' selected>{{ user_data.name }}</option>
+                         {% elif 'admin' not in user_data.name.lower() %}
+                                 <option value='{{user_data.username}}'>{{ user_data.name }}</option>
+                         {% endif %}
+                  {% endfor %}
           </select>
         </div>
           <div class="form-group">
@@ -57,8 +48,28 @@
               </textarea>
           </div>
         <button type="submit" class="btn btn-success save-btn" value="Save">Save</button>
-        <a href="/add_task" class="btn btn-primary" style="margin-left:20px">Cancel </a>
+        <a href="/add_user_task" class="btn btn-primary" style="margin-left:20px">Cancel </a>
       </form>
   <br/>
     </div>
 {% endblock %}
+
+<!--              {% if tasks.name == 'Iburahim' %}-->
+<!--                    <option value="Iburahim" selected>Mohamed Iburahimsha S</option>-->
+<!--                    <option value="Sudeep">Sudeep S</option>-->
+<!--                    <option value="Neeraj">Neeraj V</option>-->
+<!--              {% elif tasks.status == 'Sudeep' %}-->
+<!--                    <option value="Iburahim">Mohamed Iburahimsha S</option>-->
+<!--                    <option value="Sudeep" selected>Sudeep S</option>-->
+<!--                    <option value="Neeraj">Neeraj V</option>-->
+<!--              {% elif tasks.status == 'Neeraj' %}-->
+<!--                    <option value="Iburahim">Mohamed Iburahimsha S</option>-->
+<!--                    <option value="Sudeep">Sudeep S</option>-->
+<!--                    <option value="Neeraj" selected>Neeraj V</option>-->
+<!--              {% else %}-->
+<!--                    <option value="" selected disabled hidden>-->
+<!--                    Assign to-->
+<!--                    <option value="Iburahim">Mohamed Iburahimsha S</option>-->
+<!--                    <option value="Sudeep">Sudeep S</option>-->
+<!--                    <option value="Neeraj">Neeraj V</option>-->
+<!--              {% endif %}-->
