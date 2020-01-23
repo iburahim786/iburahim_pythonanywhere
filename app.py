@@ -707,6 +707,7 @@ def add_task():
 @is_logged_in
 def edit_task(task_id):
     task_edit = Tasks.query.get_or_404(task_id)
+    all_users = Users.query.all()
     if request.method == 'POST':
         task_edit.task = request.form['task']
         task_edit.name = request.form['name']
@@ -716,7 +717,7 @@ def edit_task(task_id):
         flash("User task edited!", 'success')
         return redirect('/add_user_task')
     else:
-        return render_template('edit_task.html', tasks=task_edit)
+        return render_template('edit_task.html', tasks=task_edit, users=all_users)
 
 
 @app.route('/delete_task/<string:task_id>', methods=['GET', 'POST'])
