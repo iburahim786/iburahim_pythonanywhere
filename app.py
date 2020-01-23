@@ -575,7 +575,7 @@ def send_mail():
 @app.before_request
 def make_session_permanent():
     session.permanent = True
-    app.permanent_session_lifetime = timedelta(minutes=5)
+    app.permanent_session_lifetime = timedelta(minutes=15)
 
 
 @app.errorhandler(404)
@@ -633,7 +633,7 @@ def url_links():
 # URL Form Class
 class URLUpdateForm(Form):
     url_name = StringField('URL Name', [validators.length(min=1, max=200)])
-    url = StringField('URL', [validators.length(min=15)])
+    url = StringField('URL', [validators.length(min=5)])
 
 
 @app.route('/add_url', methods=['GET', 'POST'])
