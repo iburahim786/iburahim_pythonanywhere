@@ -12,6 +12,9 @@
          <div class="form-group">
              {{ render_field(form.body, class_="form-control", id="editor") }}
          </div>
-         <p><input type="submit" class="btn btn-primary" value="submit"></p>
+         <p>
+             <input type="submit" class="btn btn-primary" value="Save">
+             <a class="btn btn-info" style="color: inherit;margin-left:30px;" href="{{ url_for('articles') }}">Back</a>
+         </p>
      </form>
 {% endblock %}

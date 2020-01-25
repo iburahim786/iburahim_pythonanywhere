@@ -439,7 +439,7 @@ def edit_article(page, id):
         if page == 'dashboard':
             return redirect(url_for('dashboard'))
         else:
-            return redirect(url_for('articles'))
+            return redirect('/edit_article/'+page+'/'+id)
 
     return render_template('edit_article.html', form=form)
 
