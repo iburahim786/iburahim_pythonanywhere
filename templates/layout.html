@@ -48,7 +48,7 @@
               Team updates
             </a>
           </li>
-           {% if 'admin' == session.username %}
+           {% if 'admin' == session.username|lower %}
           <li class="nav-item">
             <a class="nav-link" href="/user_details">
               <span data-feather="users"></span>
