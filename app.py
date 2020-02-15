@@ -722,7 +722,7 @@ def send_article():
     # part2 = MIMEText(html, 'html')
     # pdfkit.from_file(basedir+'/upload/' + title + '.html', basedir+'/upload/' + title + '.pdf', configuration=config)
     app.logger.info(basedir + '/upload/' + title + '.pdf')
-    pdfkit.from_file(basedir + '/upload/' + title + '.html', basedir + '/upload/' + title + '.pdf')
+    #pdfkit.from_file(basedir + '/upload/' + title + '.html', basedir + '/upload/' + title + '.pdf')
     # pdf = pdfkit.from_file('article.html', False)
     filename = basedir+'/upload/' + title + '.pdf'
     with open(filename, 'rb') as f:
