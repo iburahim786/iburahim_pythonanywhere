@@ -719,8 +719,9 @@ def send_article():
     # Record the MIME types of both parts - text/plain and text/html.
     # part1 = MIMEText(text, 'plain')
     # config = pdfkit.configuration(wkhtmltopdf="C:\\Program Files\\wkhtmltopdf\\bin\\wkhtmltopdf.exe")
-    part2 = MIMEText(html, 'html')
+    # part2 = MIMEText(html, 'html')
     # pdfkit.from_file(basedir+'/upload/' + title + '.html', basedir+'/upload/' + title + '.pdf', configuration=config)
+    app.logger.info(basedir + '/upload/' + title + '.pdf')
     pdfkit.from_file(basedir + '/upload/' + title + '.html', basedir + '/upload/' + title + '.pdf')
     # pdf = pdfkit.from_file('article.html', False)
     filename = basedir+'/upload/' + title + '.pdf'
@@ -768,8 +769,8 @@ def send_article():
         from_email='flaskapp@nam-qa-mf.com',
         to_emails=session['email'],
         subject='Article from flaskapp - ' + title + '.pdf',
-        html_content=mail_body)
-    message.attachment = attachment
+        html_content='<strong>Hello Message from sendgrid</strong>')
+    # message.attachment = attachment // mail_body
     try:
         sg = sendgrid.SendGridAPIClient(os.environ.get('SENDGRID_API_KEY'))
         response = sg.send(message)
