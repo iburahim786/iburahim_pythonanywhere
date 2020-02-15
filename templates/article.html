@@ -1,8 +1,21 @@
 {% extends 'layout.html' %}
 
 {% block body %}
-    <h2>{{ article.title }}</h2>
-    <small>Written by {{ article.author }} on {{ article.date_posted}}</small>
+    <div>
+        <h2 style="display:inline" >{{ article.title }}</h2>
+<!--        <small  >Written by {{ article.author }} on {{ article.date_posted}}</small>-->
+<!--    <form class="form-inline"  action="/send_article" method="post">-->
+<!--        <input style="display:inline" class="btn btn-success float-right" onclick="alert('Please wait, System preparing your article in PDF format !')" type="submit" value="Send to Mail" >-->
+        {% if session.logged_in %}
+        <a style="display:inline;color: inherit;" class="btn float-right" href="{{ url_for('send_article') }}" type="submit">
+            <span  onclick="alert('Please wait, Application preparing your article in PDF format !')" >
+            <i title="send to mail in PDF" class='far fa-envelope' style='font-size:35px'></i>
+            <i class='far fa-file-pdf' style='font-size:15px;color:red'></i>
+            </span>
+        </a>
+        {% endif %}
+    </div>
+     <small>Written by {{ article.author }} on {{ article.date_posted}}</small>
     <hr>
     <div>
          {{ article.body | safe}}

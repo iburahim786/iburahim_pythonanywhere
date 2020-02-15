@@ -1,3 +1,6 @@
+wkhtmltopdf
+pdfkit
+django-sendgrid-webhook
 asgiref==3.2.3
 blinker==1.4
 Click==7.0

@@ -1,3 +1,4 @@
+import base64
 from datetime import timedelta, datetime
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
@@ -9,8 +10,17 @@ from passlib.hash import sha256_crypt
 from wtforms import Form, StringField, TextAreaField, PasswordField, validators
 from wtforms.fields.html5 import EmailField
 import os
+import re
 import smtplib
 import uuid
+import pdfkit
+import email
+import email.mime.application
+# import sendgrid
+# from sendgrid import SendGridAPIClient
+# from sendgrid.helpers.mail import Mail
+import sendgrid
+from sendgrid.helpers.mail import Mail, Attachment, FileContent, FileName, FileType, Disposition, ContentId
 
 app = Flask(__name__)
 # app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///posts.db'
@@ -21,7 +31,7 @@ db = SQLAlchemy(app)
 app.secret_key = 'novell@123'
 basedir = os.path.abspath(os.path.dirname(__file__))
 
-#engine = create_engine('mysql://root:novell@123@localhost/mysqlalchemy')
+# engine = create_engine('mysql://root:novell@123@localhost/mysqlalchemy')
 
 app.config['MYSQL_HOST'] = 'localhost'
 app.config['MYSQL_USER'] = 'root'
@@ -31,7 +41,6 @@ app.config['MYSQL_CURSORCLASS'] = 'DictCursor'
 
 # init MYSQL
 mysql = MySQL(app)
-
 
 ##################### FILE UPLOAD SCRIPT ######################################
 ckeditor = CKEditor(app)
@@ -55,10 +64,12 @@ def upload():
     if extension not in ['jpg', 'gif', 'png', 'jpeg']:
         return upload_fail(message='Image only!')
     unique_filename = str(uuid.uuid4())
-    f.filename = "flaskapp"+unique_filename[0:8] + '.' + extension
+    f.filename = "flaskapp" + unique_filename[0:8] + '.' + extension
     f.save(os.path.join(app.config['UPLOADED_PATH'], f.filename))
     url = url_for('uploaded_files', filename=f.filename)
     return upload_success(url=url)
+
+
 ##################################################################################
 
 
@@ -272,13 +283,14 @@ def login():
         if result is not None:
             password = result.password
             name = result.name
-
+            email = result.email
             # Compare passwords
             if sha256_crypt.verify(password_candidate, password):
                 # PASSED
                 session['logged_in'] = True
                 session['username'] = username
                 session['name'] = name
+                session['email'] = email
                 flash("You are now logged in..", 'success')
                 return redirect(url_for('home'))
             else:
@@ -305,13 +317,14 @@ def signin():
         if result is not None:
             password = result.password
             name = result.name
-
+            email = result.email
             # Compare passwords
             if sha256_crypt.verify(password_candidate, password):
                 # PASSED
                 session['logged_in'] = True
                 session['username'] = username
                 session['name'] = name
+                session['email'] = email
                 flash("You are now logged in..", 'success')
                 return redirect(url_for('home'))
             else:
@@ -346,6 +359,7 @@ def is_logged_in_admin_user(f):
             flash('Unauthorized, Please login with admin user!', 'danger')
             app.logger.info(f.__name__)
             return redirect(url_for('user_details'))
+
     return wrap
 
 
@@ -358,6 +372,7 @@ def is_logged_in_admin_url(f):
             flash('Unauthorized, Please login with admin user', 'danger')
             app.logger.info(f.__name__)
             return redirect(url_for('url_links'))
+
     return wrap
 
 
@@ -439,7 +454,7 @@ def edit_article(page, id):
         if page == 'dashboard':
             return redirect(url_for('dashboard'))
         else:
-            return redirect('/edit_article/'+page+'/'+id)
+            return redirect('/edit_article/' + page + '/' + id)
 
     return render_template('edit_article.html', form=form)
 
@@ -570,6 +585,201 @@ def send_mail():
     s.quit()
     flash("Message sent successfully!", 'success')
     return redirect(url_for('dashboard'))
+
+
+# @app.route('/send_article', methods=['GET', 'POST'])
+# @is_logged_in
+# def send_article():
+#     me = "nam-qa-update@microfocus.com"
+#     you = "mohamediburahimsha.s@microfocus.com"
+#     #
+#     d = Articles.query.get_or_404(1)
+#     app.logger.info(d)
+#     message = MIMEMultipart('alternative')
+#     message['Subject'] = "Weekly Staff Updates"
+#     message['From'] = me
+#     message['To'] = you
+#     html = """\
+#     <!DOCTYPE html>
+#     <html lang="en">
+#     <head>
+#         <meta charset="UTF-8">
+#         <title>Articles</title>
+#     </head>
+#     <body>
+#           <h1></h1>"""
+#     # for d in article_data:
+#     title = d.title
+#     author = d.author
+#     date = d.date_posted.strftime("%m/%d/%Y %H:%M:%S")
+#     body = d.body
+#     body = re.sub(r'(<img alt="" src=")', r'\1http://localhost:5000', body)
+#     body = re.sub(r'(<p)', r'\1 style="font-size: 15px;"', body)
+#     # app.logger.info(body)
+#     html = html + "<h2>"
+#     html = html + title + "</h2> <small>Written by " + author + " on " + date + "</small>"
+#     html = html + "<hr>"
+#     html = html + "<div>"
+#     html = html + body + "</div>"
+#     html = html + "<hr>"
+#     html = html + """</body>
+#     </html>
+#     """
+#     html_file = open("upload/" + title + ".html", "w")
+#     html_file.write(html)
+#     html_file.close()
+#     # Record the MIME types of both parts - text/plain and text/html.
+#     # part1 = MIMEText(text, 'plain')
+#     config = pdfkit.configuration(wkhtmltopdf="C:\\Program Files\\wkhtmltopdf\\bin\\wkhtmltopdf.exe")
+#     part2 = MIMEText(html, 'html')
+#     pdfkit.from_file('upload/' + title + '.html', 'upload/' + title + '.pdf', configuration=config)
+#     # pdf = pdfkit.from_file('article.html', False)
+#     filename = 'upload/' + title + '.pdf'
+#     fo = open(filename, 'rb')
+#     attach = email.mime.application.MIMEApplication(fo.read(), _subtype="pdf")
+#     fo.close()
+#     attach.add_header('Content-Disposition', 'attachment', filename=filename)
+#
+#     app.logger.info(html)
+#
+#     mail_body = """\
+#     <!DOCTYPE html>
+#     <html lang="en">
+#     <head>
+#         <meta charset="UTF-8">
+#         <title>Articles</title>
+#     </head>
+#     <body>
+#           <h3>Hello Reader</h3>
+#           <p style="font-size: 15px;"> Thanks for downloading this article, your article has been attached in the mail</p>
+#           <p style="font-size: 15px;"> Please share your valuable feedback to us ! </p>
+#           <p style="font-size: 15px;"> Happy Learning! </p>
+#           <p style="font-size: 15px;"> Thanks | Flask app Developers</p>
+#           """
+#     part_subject = MIMEText(mail_body, 'html')
+#     # Attach parts into message container.
+#     # According to RFC 2046, the last part of a multipart message, in this case
+#     # the HTML message, is best and preferred.
+#     # msg.attach(part1)
+#     message.attach(attach)
+#     message.attach(part_subject)
+#
+#     # Send the message via local SMTP server.
+#     s = smtplib.SMTP('smtp.microfocus.com:25')
+#     # sendmail function takes 3 arguments: sender's address, recipient's address
+#     # and message to send - here it is sent as one string.
+#     s.sendmail(me, you, message.as_string())
+#     s.quit()
+#     flash("Message sent successfully!", 'success')
+#     return redirect(url_for('articles'))
+
+
+@app.route('/send_article', methods=['GET', 'POST'])
+@is_logged_in
+def send_article():
+    # me = "nam-qa-update@microfocus.com"
+    # you = "mohamediburahimsha.s@microfocus.com"
+    # #
+    d = Articles.query.get_or_404(1)
+    app.logger.info(d)
+    # message = MIMEMultipart('alternative')
+    # message['Subject'] = "Weekly Staff Updates"
+    # message['From'] = me
+    # message['To'] = you
+    html = """\
+    <!DOCTYPE html>
+    <html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <title>Articles</title>
+    </head>
+    <body>
+          <h1></h1>"""
+    # for d in article_data:
+    title = d.title
+    author = d.author
+    date = d.date_posted.strftime("%m/%d/%Y %H:%M:%S")
+    body = d.body
+    # body = re.sub(r'(<img alt="" src=")', r'\1http://localhost:5000', body)
+    body = re.sub(r'(<img alt="" src=")', r'\1http://nam-users.southeastasia.cloudapp.azure.com', body)
+    body = re.sub(r'(<p)', r'\1 style="font-size: 15px;"', body)
+    # app.logger.info(body)
+    html = html + "<h2>"
+    html = html + title + "</h2> <small>Written by " + author + " on " + date + "</small>"
+    html = html + "<hr>"
+    html = html + "<div>"
+    html = html + body + "</div>"
+    html = html + "<hr>"
+    html = html + """</body>
+    </html>
+    """
+    html_file = open("upload/" + title + ".html", "w")
+    html_file.write(html)
+    html_file.close()
+    # Record the MIME types of both parts - text/plain and text/html.
+    # part1 = MIMEText(text, 'plain')
+    # config = pdfkit.configuration(wkhtmltopdf="C:\\Program Files\\wkhtmltopdf\\bin\\wkhtmltopdf.exe")
+    part2 = MIMEText(html, 'html')
+    # pdfkit.from_file('upload/' + title + '.html', 'upload/' + title + '.pdf', configuration=config)
+    pdfkit.from_file('upload/' + title + '.html', 'upload/' + title + '.pdf')
+    # pdf = pdfkit.from_file('article.html', False)
+    filename = 'upload/' + title + '.pdf'
+    with open(filename, 'rb') as f:
+        data = f.read()
+        f.close()
+    encoded = base64.b64encode(data).decode()
+    attachment = Attachment()
+    attachment.file_content = FileContent(encoded)
+    attachment.file_type = FileType('application/pdf')
+    attachment.file_name = FileName('upload/' + title + '.pdf')
+    attachment.disposition = Disposition('attachment')
+    attachment.content_id = ContentId('Example Content ID')
+    # message.attachment = attachment
+    app.logger.info(html)
+    mail_body = """\
+    <!DOCTYPE html>
+    <html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <title>Articles</title>
+    </head>
+    <body>
+          <h3>Hello """ + session['name'] + """,</h3>
+          <p style="font-size: 15px;"> Thanks for downloading this article, your article has been attached in the mail</p>
+          <p style="font-size: 15px;"> Please share your valuable feedback to us ! </p>
+          <p style="font-size: 15px;"> Happy Learning! </p>
+          <p style="font-size: 15px;"> Thanks | Flask app Developers</p>
+          """
+    # part_subject = MIMEText(mail_body, 'html')//
+    # Attach parts into message container.
+    # According to RFC 2046, the last part of a multipart message, in this case
+    # the HTML message, is best and preferred.
+    # msg.attach(part1)
+    # message.attach(attach)//
+    # message.attach(part_subject)//
+
+    # Send the message via local SMTP server.
+    # s = smtplib.SMTP('smtp.microfocus.com:25')//
+    # sendmail function takes 3 arguments: sender's address, recipient's address
+    # and message to send - here it is sent as one string.
+    # s.sendmail(me, you, message.as_string())//
+    # s.quit()//
+    message = Mail(
+        from_email='flaskapp@microfocus.com',
+        to_emails=session['email'],
+        subject='Article from flaskapp - ' + title + '.pdf',
+        html_content=mail_body)
+    message.attachment = attachment
+    try:
+        sg = sendgrid.SendGridAPIClient(os.environ.get('SENDGRID_API_KEY'))
+        response = sg.send(message)
+        print(response.status_code)
+        print(response.body)
+        print(response.headers)
+    except Exception as e:
+        print(str(e))
+    flash("Message sent successfully!", 'success')
+    return redirect(url_for('articles'))
 
 
 @app.before_request
