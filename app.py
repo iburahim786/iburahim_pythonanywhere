@@ -721,22 +721,22 @@ def send_article():
     # config = pdfkit.configuration(wkhtmltopdf="C:\\Program Files\\wkhtmltopdf\\bin\\wkhtmltopdf.exe")
     # part2 = MIMEText(html, 'html')
     # pdfkit.from_file(basedir+'/upload/' + title + '.html', basedir+'/upload/' + title + '.pdf', configuration=config)
-    app.logger.info(basedir + '/upload/' + title + '.pdf')
+    # app.logger.info(basedir + '/upload/' + title + '.pdf')
     #pdfkit.from_file(basedir + '/upload/' + title + '.html', basedir + '/upload/' + title + '.pdf')
     # pdf = pdfkit.from_file('article.html', False)
-    filename = basedir+'/upload/' + title + '.pdf'
-    with open(filename, 'rb') as f:
-        data = f.read()
-        f.close()
-    encoded = base64.b64encode(data).decode()
-    attachment = Attachment()
-    attachment.file_content = FileContent(encoded)
-    attachment.file_type = FileType('application/pdf')
-    attachment.file_name = FileName(title + '.pdf')
-    attachment.disposition = Disposition('attachment')
-    attachment.content_id = ContentId('Example Content ID')
-    # message.attachment = attachment
-    app.logger.info(html)
+    #filename = basedir+'/upload/' + title + '.pdf'
+    #with open(filename, 'rb') as f:
+     #   data = f.read()
+     #   f.close()
+    #encoded = base64.b64encode(data).decode()
+    # attachment = Attachment()
+    # attachment.file_content = FileContent(encoded)
+    # attachment.file_type = FileType('application/pdf')
+    # attachment.file_name = FileName(title + '.pdf')
+    # attachment.disposition = Disposition('attachment')
+    # attachment.content_id = ContentId('Example Content ID')
+    # # message.attachment = attachment
+    # app.logger.info(html)
     mail_body = """\
     <!DOCTYPE html>
     <html lang="en">
@@ -769,7 +769,7 @@ def send_article():
         from_email='flaskapp@nam-qa-mf.com',
         to_emails=session['email'],
         subject='Article from flaskapp - ' + title + '.pdf',
-        html_content='<strong>Hello Message from sendgrid</strong>')
+        html_content=mail_body)
     # message.attachment = attachment // mail_body
     try:
         sg = sendgrid.SendGridAPIClient(os.environ.get('SENDGRID_API_KEY'))
