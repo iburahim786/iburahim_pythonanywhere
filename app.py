@@ -700,8 +700,8 @@ def send_article():
     author = d.author
     date = d.date_posted.strftime("%m/%d/%Y %H:%M:%S")
     body = d.body
-    # body = re.sub(r'(<img alt="" src=")', r'\1http://localhost:5000', body)
-    body = re.sub(r'(<img alt="" src=")', r'\1http://nam-users.southeastasia.cloudapp.azure.com', body)
+    body = re.sub(r'(<img alt="" src=")', r'\1http://localhost:5000', body)
+
     body = re.sub(r'(<p)', r'\1 style="font-size: 15px;"', body)
     # app.logger.info(body)
     html = html + "<h2>"
@@ -718,10 +718,9 @@ def send_article():
     html_file.close()
     # Record the MIME types of both parts - text/plain and text/html.
     # part1 = MIMEText(text, 'plain')
-    # config = pdfkit.configuration(wkhtmltopdf="C:\\Program Files\\wkhtmltopdf\\bin\\wkhtmltopdf.exe")
+    config = pdfkit.configuration(wkhtmltopdf="C:\\Program Files\\wkhtmltopdf\\bin\\wkhtmltopdf.exe")
     part2 = MIMEText(html, 'html')
-    # pdfkit.from_file('upload/' + title + '.html', 'upload/' + title + '.pdf', configuration=config)
-    pdfkit.from_file('upload/' + title + '.html', 'upload/' + title + '.pdf')
+    pdfkit.from_file('upload/' + title + '.html', 'upload/' + title + '.pdf', configuration=config)
     # pdf = pdfkit.from_file('article.html', False)
     filename = 'upload/' + title + '.pdf'
     with open(filename, 'rb') as f:
@@ -765,7 +764,7 @@ def send_article():
     # s.sendmail(me, you, message.as_string())//
     # s.quit()//
     message = Mail(
-        from_email='flaskapp@microfocus.com',
+        from_email='flaskapp@nam-qa-mf.com',
         to_emails=session['email'],
         subject='Article from flaskapp - ' + title + '.pdf',
         html_content=mail_body)
