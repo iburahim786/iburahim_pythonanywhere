@@ -700,8 +700,8 @@ def send_article():
     author = d.author
     date = d.date_posted.strftime("%m/%d/%Y %H:%M:%S")
     body = d.body
-    body = re.sub(r'(<img alt="" src=")', r'\1http://localhost:5000', body)
-
+    # body = re.sub(r'(<img alt="" src=")', r'\1http://localhost:5000', body)
+    body = re.sub(r'(<img alt="" src=")', r'\1http://nam-users.southeastasia.cloudapp.azure.com', body)
     body = re.sub(r'(<p)', r'\1 style="font-size: 15px;"', body)
     # app.logger.info(body)
     html = html + "<h2>"
@@ -713,16 +713,17 @@ def send_article():
     html = html + """</body>
     </html>
     """
-    html_file = open("upload/" + title + ".html", "w")
+    html_file = open(basedir+"/upload/" + title + ".html", "w")
     html_file.write(html)
     html_file.close()
     # Record the MIME types of both parts - text/plain and text/html.
     # part1 = MIMEText(text, 'plain')
-    config = pdfkit.configuration(wkhtmltopdf="C:\\Program Files\\wkhtmltopdf\\bin\\wkhtmltopdf.exe")
+    # config = pdfkit.configuration(wkhtmltopdf="C:\\Program Files\\wkhtmltopdf\\bin\\wkhtmltopdf.exe")
     part2 = MIMEText(html, 'html')
-    pdfkit.from_file('upload/' + title + '.html', 'upload/' + title + '.pdf', configuration=config)
+    # pdfkit.from_file(basedir+'/upload/' + title + '.html', basedir+'/upload/' + title + '.pdf', configuration=config)
+    pdfkit.from_file(basedir + '/upload/' + title + '.html', basedir + '/upload/' + title + '.pdf')
     # pdf = pdfkit.from_file('article.html', False)
-    filename = 'upload/' + title + '.pdf'
+    filename = basedir+'/upload/' + title + '.pdf'
     with open(filename, 'rb') as f:
         data = f.read()
         f.close()
@@ -730,7 +731,7 @@ def send_article():
     attachment = Attachment()
     attachment.file_content = FileContent(encoded)
     attachment.file_type = FileType('application/pdf')
-    attachment.file_name = FileName('upload/' + title + '.pdf')
+    attachment.file_name = FileName(title + '.pdf')
     attachment.disposition = Disposition('attachment')
     attachment.content_id = ContentId('Example Content ID')
     # message.attachment = attachment
