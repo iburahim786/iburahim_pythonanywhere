@@ -798,13 +798,17 @@ def send_article_new():
     receiver_email = session['email']
     password = os.environ.get('SENDGRID_API_KEY')
 
+    d = Articles.query.get_or_404(1)
+    title = d.title
+    author = d.author
+    date = d.date_posted.strftime("%m/%d/%Y %H:%M:%S")
+    body = d.body
+    app.logger.info(d)
+
     message = MIMEMultipart("alternative")
-    message["Subject"] = "multipart test"
+    message["Subject"] = title
     message["From"] = sender_email
     message["To"] = receiver_email
-
-    d = Articles.query.get_or_404(1)
-    app.logger.info(d)
     html = """\
        <!DOCTYPE html>
        <html lang="en">
@@ -815,10 +819,10 @@ def send_article_new():
        <body>
              <h1></h1>"""
     # for d in article_data:
-    title = d.title
-    author = d.author
-    date = d.date_posted.strftime("%m/%d/%Y %H:%M:%S")
-    body = d.body
+    # title = d.title
+    # author = d.author
+    # date = d.date_posted.strftime("%m/%d/%Y %H:%M:%S")
+    # body = d.body
     # body = re.sub(r'(<img alt="" src=")', r'\1http://localhost:5000', body)
     body = re.sub(r'(<img alt="" src=")', r'\1http://nam-users.southeastasia.cloudapp.azure.com', body)
     body = re.sub(r'(<p)', r'\1 style="font-size: 15px;"', body)
