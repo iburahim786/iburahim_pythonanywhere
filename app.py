@@ -796,7 +796,7 @@ def send_article_new():
     username = 'apikey'
     sender_email = "flask-app-noreply@nam-qa-mf.com"
     receiver_email = session['email']
-    password = "SG.3DkzgXuvSx6E9c3BuXfbyQ.Qfcnp0wFnxJCLOLfig6fk3LpfxbZTDQP-B0fZuF5D9k"
+    password = os.environ.get('SENDGRID_API_KEY')
 
     message = MIMEMultipart("alternative")
     message["Subject"] = "multipart test"
