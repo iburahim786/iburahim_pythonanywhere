@@ -7,7 +7,7 @@ from flask_ckeditor import *
 from flask_mysqldb import MySQL
 from flask_sqlalchemy import SQLAlchemy
 from passlib.hash import sha256_crypt
-from sendgrid import To
+from sendgrid import To, Bcc, Cc
 from wtforms import Form, StringField, TextAreaField, PasswordField, validators
 from wtforms.fields.html5 import EmailField
 import os
