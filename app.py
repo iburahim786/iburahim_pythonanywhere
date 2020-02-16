@@ -7,7 +7,7 @@ from flask_ckeditor import *
 from flask_mysqldb import MySQL
 from flask_sqlalchemy import SQLAlchemy
 from passlib.hash import sha256_crypt
-from sendgrid import Personalization, Email, Content
+from sendgrid import Personalization
 from wtforms import Form, StringField, TextAreaField, PasswordField, validators
 from wtforms.fields.html5 import EmailField
 import os
@@ -719,23 +719,23 @@ def send_article():
     html_file.close()
     # Record the MIME types of both parts - text/plain and text/html.
     # part1 = MIMEText(text, 'plain')
-    # config = pdfkit.configuration(wkhtmltopdf="C:\\Program Files\\wkhtmltopdf\\bin\\wkhtmltopdf.exe")
-    # part2 = MIMEText(html, 'html')
-    # pdfkit.from_file(basedir+'/upload/' + title + '.html', basedir+'/upload/' + title + '.pdf', configuration=config)
+    config = pdfkit.configuration(wkhtmltopdf="C:\\Program Files\\wkhtmltopdf\\bin\\wkhtmltopdf.exe")
+    part2 = MIMEText(html, 'html')
+    pdfkit.from_file(basedir+'/upload/' + title + '.html', basedir+'/upload/' + title + '.pdf', configuration=config)
     app.logger.info(basedir + '/upload/' + title + '.pdf')
-    #pdfkit.from_file(basedir + '/upload/' + title + '.html', basedir + '/upload/' + title + '.pdf')
+    # pdfkit.from_file(basedir + '/upload/' + title + '.html', basedir + '/upload/' + title + '.pdf')
     # pdf = pdfkit.from_file('article.html', False)
-    #filename = basedir+'/upload/' + title + '.pdf'
-    #with open(filename, 'rb') as f:
-     #   data = f.read()
-     #   f.close()
-    # encoded = base64.b64encode(data).decode()
-    # attachment = Attachment()
-    # attachment.file_content = FileContent(encoded)
-    # attachment.file_type = FileType('application/pdf')
-    # attachment.file_name = FileName(title + '.pdf')
-    # attachment.disposition = Disposition('attachment')
-    # attachment.content_id = ContentId('Example Content ID')
+    filename = basedir+'/upload/' + title + '.pdf'
+    with open(filename, 'rb') as f:
+       data = f.read()
+       f.close()
+    encoded = base64.b64encode(data).decode()
+    attachment = Attachment()
+    attachment.file_content = FileContent(encoded)
+    attachment.file_type = FileType('application/pdf')
+    attachment.file_name = FileName(title + '.pdf')
+    attachment.disposition = Disposition('attachment')
+    attachment.content_id = ContentId('Example Content ID')
     # message.attachment = attachment
     app.logger.info(html)
     mail_body = """\
@@ -766,19 +766,12 @@ def send_article():
     # and message to send - here it is sent as one string.
     # s.sendmail(me, you, message.as_string())//
     # s.quit()//
-    from_email = Email('flaskapp@nam-qa-mf.com')
-    to_emails = Email(session['email'])
-    cc_emails = Email('iburahim3003@gmail.com')
-    subject = 'Article from flaskapp - ' + title + '.pdf'
-    email_message = '<strong>Hello Message from sendgrid</strong>'
-    p = Personalization()
-    p.add_to(to_emails)
-    p.add_cc(cc_emails)
-    html_content = Content("text/html", email_message)
-
-    message = Mail(from_email, to_emails, subject, html_content)
-    # message.attachment = attachment // mail_body
-    mail.add_personalization(p)
+    message = Mail(
+        from_email='flaskapp@nam-qa-mf.com',
+        to_emails=session['email'],
+        subject='Article from flaskapp - ' + title + '.pdf',
+        html_content=mail_body)
+    message.attachment = attachment
     try:
         sg = sendgrid.SendGridAPIClient(os.environ.get('SENDGRID_API_KEY'))
         response = sg.send(message)
