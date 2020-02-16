@@ -818,11 +818,6 @@ def send_article_new(id):
        </head>
        <body>
              <h1></h1>"""
-    # for d in article_data:
-    # title = d.title
-    # author = d.author
-    # date = d.date_posted.strftime("%m/%d/%Y %H:%M:%S")
-    # body = d.body
     # body = re.sub(r'(<img alt="" src=")', r'\1http://localhost:5000', body)
     body = re.sub(r'(<img alt="" src=")', r'\1http://nam-users.southeastasia.cloudapp.azure.com', body)
     body = re.sub(r'(<p)', r'\1 style="font-size: 15px;"', body)
@@ -836,26 +831,44 @@ def send_article_new(id):
     html = html + """</body>
        </html>
        """
-    # html_file = open(basedir + "/upload/" + title + ".html", "w")
-    # html_file.write(html)
-    # html_file.close()
-    # part1 = MIMEText(text, "plain")
-    part2 = MIMEText(html, "html")
+    mail_body = """\
+    <!DOCTYPE html>
+    <html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <title>Articles</title>
+    </head>
+    <body>
+          <h3>Hello """ + session['name'] + """,</h3>
+          <p style="font-size: 15px;"> Thanks for downloading this article, your article has been attached in the mail</p>
+          <p style="font-size: 15px;"> Please share your valuable feedback to us ! </p>
+          <p style="font-size: 15px;"> Happy Learning! </p>
+          <p style="font-size: 15px;"> Thanks | Flask app Developers</p>
+          """
+
+    html_file = open(basedir + "/upload/" + title + ".html", "w")
+    html_file.write(html)
+    html_file.close()
+    part1 = MIMEText(mail_body, "html")
+    # part2 = MIMEText(html, "html")
 
     # Add HTML/plain-text parts to MIMEMultipart message
     # The email client will try to render the last part first
-    # message.attach(part1)
-    message.attach(part2)
+    message.attach(part1)
+    # message.attach(part2)
 
-    # filename = "Kubernetes Introduction.pdf"
-    # attachment = open(filename, "rb")
-    #
-    # part = MIMEBase('application', 'octet-stream')
-    # part.set_payload(attachment.read())
-    # encoders.encode_base64(part)
-    # part.add_header('Content-Disposition', "attachment; filename= %s" % filename)
-    #
-    # message.attach(part)
+    config = pdfkit.configuration(wkhtmltopdf="/usr/local/bin/wkhtmltopdf")
+    pdfkit.from_file(basedir+'/upload/' + title + '.html', basedir+'/upload/' + title + '.pdf', configuration=config)
+
+    filename = basedir+'/upload/' + title + '.pdf'
+    attachment = open(filename, "rb")
+
+    part = MIMEBase('application', 'octet-stream')
+    part.set_payload(attachment.read())
+    encoders.encode_base64(part)
+    part.add_header('Content-Disposition', "attachment; filename= %s" % filename)
+
+    message.attach(part)
 
     # Create secure connection with server and send email
     context = ssl.create_default_context()
