@@ -714,7 +714,7 @@ def send_article():
     html = html + """</body>
     </html>
     """
-    html_file = open(basedir+"/upload/" + title + ".html", "w")
+    html_file = open(basedir + "/upload/" + title + ".html", "w")
     html_file.write(html)
     html_file.close()
     # Record the MIME types of both parts - text/plain and text/html.
@@ -772,8 +772,9 @@ def send_article():
         from_email='flaskapp@nam-qa-mf.com',
         to_emails=To(session['email']),
         subject='Article from flaskapp - ' + title + '.pdf',
-        html_content=mail_body)
+        html_content='<strong>and easy to do anywhere, even with Python</strong>')
     # message.attachment = attachment
+    # message.add_content('text/html', mail_body)
     try:
         sg = sendgrid.SendGridAPIClient(os.environ.get('SENDGRID_API_KEY'))
         response = sg.send(message)
