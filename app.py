@@ -720,11 +720,11 @@ def send_article():
     # Record the MIME types of both parts - text/plain and text/html.
     # part1 = MIMEText(text, 'plain')
     # config = pdfkit.configuration(wkhtmltopdf="C:\\Program Files\\wkhtmltopdf\\bin\\wkhtmltopdf.exe")
-    config = pdfkit.configuration(wkhtmltopdf="/usr/local/bin/wkhtmltopdf")
+    # config = pdfkit.configuration(wkhtmltopdf="/usr/local/bin/wkhtmltopdf")
     part2 = MIMEText(html, 'html')
-    pdfkit.from_file(basedir+'/upload/' + title + '.html', basedir+'/upload/' + title + '.pdf', configuration=config)
+    # pdfkit.from_file(basedir+'/upload/' + title + '.html', basedir+'/upload/' + title + '.pdf', configuration=config)
     app.logger.info(basedir + '/upload/' + title + '.pdf')
-    # pdfkit.from_file(basedir + '/upload/' + title + '.html', basedir + '/upload/' + title + '.pdf')
+    pdfkit.from_file(basedir + '/upload/' + title + '.html', basedir + '/upload/' + title + '.pdf')
     # pdf = pdfkit.from_file('article.html', False)
     filename = basedir+'/upload/' + title + '.pdf'
     with open(filename, 'rb') as f:
