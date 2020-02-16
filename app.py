@@ -854,8 +854,8 @@ def send_article_new():
     # message.attach(part)
 
     # Create secure connection with server and send email
-    context = ssl.create_default_context()
-    with smtplib.SMTP_SSL("smtp.sendgrid.net", 465, context=context) as server:
+    # context = ssl.create_default_context() context=context
+    with smtplib.SMTP_SSL("smtp.sendgrid.net", 465) as server:
         server.login(username, password)
         server.sendmail(
             sender_email, receiver_email, message.as_string()
