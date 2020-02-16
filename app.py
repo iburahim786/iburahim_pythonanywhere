@@ -714,7 +714,7 @@ def send_article():
     html = html + """</body>
     </html>
     """
-    html_file = open(basedir+"/upload/" + title + ".html", "w")
+    html_file = open(basedir + "/upload/" + title + ".html", "w")
     html_file.write(html)
     html_file.close()
     # Record the MIME types of both parts - text/plain and text/html.
@@ -724,12 +724,13 @@ def send_article():
     part2 = MIMEText(html, 'html')
     # pdfkit.from_file(basedir+'/upload/' + title + '.html', basedir+'/upload/' + title + '.pdf', configuration=config)
     app.logger.info(basedir + '/upload/' + title + '.pdf')
-    pdfkit.from_file(basedir + '/upload/' + title + '.html', basedir + '/upload/' + title + '.pdf')
+    pdfkit.from_file('/home/iburahim/FlaskSideBarApp/upload/' + title + '.html',
+                     '/home/iburahim/FlaskSideBarApp/upload/' + title + '.pdf')
     # pdf = pdfkit.from_file('article.html', False)
-    filename = basedir+'/upload/' + title + '.pdf'
+    filename = '/home/iburahim/FlaskSideBarApp/upload/' + title + '.pdf'
     with open(filename, 'rb') as f:
-       data = f.read()
-       f.close()
+        data = f.read()
+        f.close()
     encoded = base64.b64encode(data).decode()
     attachment = Attachment()
     attachment.file_content = FileContent(encoded)
