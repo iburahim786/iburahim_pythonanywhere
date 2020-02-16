@@ -857,7 +857,9 @@ def send_article_new(id):
     # The email client will try to render the last part first
     message.attach(part1)
     # message.attach(part2)
-    HTML(basedir+'/upload/' + title + '.html').write_pdf(basedir+'/upload/' + title + '.pdf')
+    # HTML(basedir+'/upload/' + title + '.html').write_pdf(basedir+'/upload/' + title + '.pdf')
+    pdf = HTML(basedir+'/upload/' + title + '.html').write_pdf()
+    open(basedir + "/upload/" + title + ".pdf", 'wb').write(pdf)
     # config = pdfkit.configuration(wkhtmltopdf='/usr/local/bin/wkhtmltopdf')
     # pdfkit.from_file(basedir+'/upload/' + title + '.html', basedir+'/upload/' + title + '.pdf', configuration=config)
 
