@@ -25,6 +25,7 @@ import email.mime.application
 # from sendgrid.helpers.mail import Mail
 import sendgrid
 from sendgrid.helpers.mail import Mail, Attachment, FileContent, FileName, FileType, Disposition, ContentId
+from weasyprint import HTML
 
 app = Flask(__name__)
 # app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///posts.db'
@@ -856,9 +857,9 @@ def send_article_new(id):
     # The email client will try to render the last part first
     message.attach(part1)
     # message.attach(part2)
-
-    config = pdfkit.configuration(wkhtmltopdf="/usr/local/bin/wkhtmltopdf")
-    pdfkit.from_file(basedir+'/upload/' + title + '.html', basedir+'/upload/' + title + '.pdf', configuration=config)
+    HTML(basedir+'/upload/' + title + '.html').write_pdf(basedir+'/upload/' + title + '.pdf')
+    # config = pdfkit.configuration(wkhtmltopdf='/usr/local/bin/wkhtmltopdf')
+    # pdfkit.from_file(basedir+'/upload/' + title + '.html', basedir+'/upload/' + title + '.pdf', configuration=config)
 
     filename = basedir+'/upload/' + title + '.pdf'
     attachment = open(filename, "rb")
