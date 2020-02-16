@@ -790,15 +790,15 @@ def send_article():
     return redirect(url_for('articles'))
 
 
-@app.route('/send_article_new', methods=['GET', 'POST'])
+@app.route('/send_article_new/<string:id>', methods=['GET', 'POST'])
 @is_logged_in
-def send_article_new():
+def send_article_new(id):
     username = 'apikey'
     sender_email = "flask-app-noreply@nam-qa-mf.com"
     receiver_email = session['email']
     password = os.environ.get('SENDGRID_API_KEY')
 
-    d = Articles.query.get_or_404(1)
+    d = Articles.query.get_or_404(id)
     title = d.title
     author = d.author
     date = d.date_posted.strftime("%m/%d/%Y %H:%M:%S")
