@@ -7,6 +7,7 @@ from flask_ckeditor import *
 from flask_mysqldb import MySQL
 from flask_sqlalchemy import SQLAlchemy
 from passlib.hash import sha256_crypt
+from sendgrid import To
 from wtforms import Form, StringField, TextAreaField, PasswordField, validators
 from wtforms.fields.html5 import EmailField
 import os
@@ -769,7 +770,7 @@ def send_article():
     # s.quit()//
     message = Mail(
         from_email='flaskapp@nam-qa-mf.com',
-        to_emails=session['email'],
+        to_emails=To(session['email']),
         subject='Article from flaskapp - ' + title + '.pdf',
         html_content=html)
     # message.attachment = attachment
