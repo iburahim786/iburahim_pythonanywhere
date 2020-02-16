@@ -772,7 +772,7 @@ def send_article():
         from_email='flaskapp@nam-qa-mf.com',
         to_emails=To(session['email']),
         subject='Article from flaskapp - ' + title + '.pdf',
-        html_content=html)
+        html_content=mail_body)
     # message.attachment = attachment
     try:
         sg = sendgrid.SendGridAPIClient(os.environ.get('SENDGRID_API_KEY'))
