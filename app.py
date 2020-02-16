@@ -25,7 +25,7 @@ import email.mime.application
 # from sendgrid.helpers.mail import Mail
 import sendgrid
 from sendgrid.helpers.mail import Mail, Attachment, FileContent, FileName, FileType, Disposition, ContentId
-from weasyprint import HTML
+# from weasyprint import HTML
 
 app = Flask(__name__)
 # app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///posts.db'
@@ -592,6 +592,85 @@ def send_mail():
     return redirect(url_for('dashboard'))
 
 
+@app.route('/send_mail_dashboard', methods=['POST'])
+@is_logged_in
+def send_mail_dashboard():
+    username = 'apikey'
+    sender_email = "flask-app-noreply@nam-qa-mf.com"
+    receiver_email = session['email']
+    password = os.environ.get('SENDGRID_API_KEY')
+    #
+    team_updates = None
+    user01 = None
+    if session['username'] == 'admin':
+        team_updates = BlogPost.query.all()
+    else:
+        user01 = BlogPost.query.filter_by(author=session['username']).first()
+    app.logger.info(team_updates)
+    app.logger.info(user01)
+    message = MIMEMultipart("alternative")
+    message["Subject"] = "Weekly Team Updates"
+    message["From"] = sender_email
+    message["To"] = receiver_email
+    html = """\
+    <!DOCTYPE html>
+    <html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <title>Updates Mail</title>
+    </head>
+    <body>
+          <h1>Weekly Team Updates</h1>
+          <hr>"""
+    if session['username'] == 'admin':
+        if team_updates is not None:
+            for d in team_updates:
+                name = d.name
+                body = d.body
+                html = html + "<h2>"
+                html = html + name + "</h2>"
+                html = html + "<div>"
+                html = html + body + "</div>"
+                html = html + "<hr>"
+        else:
+            flash("Sorry ! No updates available for the user!", 'danger')
+            return redirect(url_for('dashboard'))
+    else:
+        if user01 is not None:
+            name = user01.name
+            body = user01.body
+            html = html + "<h2>"
+            html = html + name + "</h2>"
+            html = html + "<div>"
+            html = html + body + "</div>"
+            html = html + "<hr>"
+        else:
+            flash("Sorry ! No updates available for the user!", 'danger')
+            return redirect(url_for('dashboard'))
+
+    html = html + """</body>
+    </html>
+    """
+    # Record the MIME types of both parts - text/plain and text/html.
+    # part1 = MIMEText(text, 'plain')
+    part2 = MIMEText(html, 'html')
+
+    # Attach parts into message container.
+    # According to RFC 2046, the last part of a multipart message, in this case
+    # the HTML message, is best and preferred.
+    # msg.attach(part1)
+    message.attach(part2)
+
+    context = ssl.create_default_context()
+    with smtplib.SMTP_SSL("smtp.sendgrid.net", 465, context=context) as server:
+        server.login(username, password)
+        server.sendmail(
+            sender_email, receiver_email, message.as_string()
+        )
+    flash("Mail sent successfully!", 'success')
+    return redirect(url_for('dashboard'))
+
+
 # @app.route('/send_article', methods=['GET', 'POST'])
 # @is_logged_in
 # def send_article():
@@ -847,9 +926,9 @@ def send_article_new(id):
           <p style="font-size: 15px;"> Thanks | Flask app Developers</p>
           """
 
-    html_file = open(basedir + "/upload/" + title + ".html", "w")
-    html_file.write(html)
-    html_file.close()
+    # html_file = open(basedir + "/upload/" + title + ".html", "w")
+    # html_file.write(html)
+    # html_file.close()
     # part1 = MIMEText(mail_body, "html")
     part2 = MIMEText(html, "html")
 
