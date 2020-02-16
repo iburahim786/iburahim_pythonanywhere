@@ -1,7 +1,9 @@
 import base64
+from email import encoders
 from datetime import timedelta, datetime
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
+from email.mime.base import MIMEBase
 from flask import Flask, render_template, flash, session, redirect, send_from_directory
 from flask_ckeditor import *
 from flask_mysqldb import MySQL
@@ -13,6 +15,7 @@ from wtforms.fields.html5 import EmailField
 import os
 import re
 import smtplib
+import ssl
 import uuid
 import pdfkit
 import email
@@ -784,6 +787,80 @@ def send_article():
     except Exception as e:
         print(str(e))
     flash("Message sent successfully!", 'success')
+    return redirect(url_for('articles'))
+
+
+@app.route('/send_article_new', methods=['GET', 'POST'])
+@is_logged_in
+def send_article_new():
+    username = 'apikey'
+    sender_email = "flask-app-noreply@nam-qa-mf.com"
+    receiver_email = session['email']
+    password = "SG.3DkzgXuvSx6E9c3BuXfbyQ.Qfcnp0wFnxJCLOLfig6fk3LpfxbZTDQP-B0fZuF5D9k"
+
+    message = MIMEMultipart("alternative")
+    message["Subject"] = "multipart test"
+    message["From"] = sender_email
+    message["To"] = receiver_email
+
+    d = Articles.query.get_or_404(1)
+    app.logger.info(d)
+    html = """\
+       <!DOCTYPE html>
+       <html lang="en">
+       <head>
+           <meta charset="UTF-8">
+           <title>Articles</title>
+       </head>
+       <body>
+             <h1></h1>"""
+    # for d in article_data:
+    title = d.title
+    author = d.author
+    date = d.date_posted.strftime("%m/%d/%Y %H:%M:%S")
+    body = d.body
+    # body = re.sub(r'(<img alt="" src=")', r'\1http://localhost:5000', body)
+    body = re.sub(r'(<img alt="" src=")', r'\1http://nam-users.southeastasia.cloudapp.azure.com', body)
+    body = re.sub(r'(<p)', r'\1 style="font-size: 15px;"', body)
+
+    html = html + "<h2>"
+    html = html + title + "</h2> <small>Written by " + author + " on " + date + "</small>"
+    html = html + "<hr>"
+    html = html + "<div>"
+    html = html + body + "</div>"
+    html = html + "<hr>"
+    html = html + """</body>
+       </html>
+       """
+    # html_file = open(basedir + "/upload/" + title + ".html", "w")
+    # html_file.write(html)
+    # html_file.close()
+    # part1 = MIMEText(text, "plain")
+    part2 = MIMEText(html, "html")
+
+    # Add HTML/plain-text parts to MIMEMultipart message
+    # The email client will try to render the last part first
+    # message.attach(part1)
+    message.attach(part2)
+
+    # filename = "Kubernetes Introduction.pdf"
+    # attachment = open(filename, "rb")
+    #
+    # part = MIMEBase('application', 'octet-stream')
+    # part.set_payload(attachment.read())
+    # encoders.encode_base64(part)
+    # part.add_header('Content-Disposition', "attachment; filename= %s" % filename)
+    #
+    # message.attach(part)
+
+    # Create secure connection with server and send email
+    context = ssl.create_default_context()
+    with smtplib.SMTP_SSL("smtp.sendgrid.net", 465, context=context) as server:
+        server.login(username, password)
+        server.sendmail(
+            sender_email, receiver_email, message.as_string()
+        )
+    flash("Mail sent successfully!", 'success')
     return redirect(url_for('articles'))
 
 
