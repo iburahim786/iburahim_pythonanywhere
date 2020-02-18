@@ -49,6 +49,7 @@ app.config['MYSQL_CURSORCLASS'] = 'DictCursor'
 # init MYSQL
 mysql = MySQL(app)
 
+
 ##################### FILE UPLOAD SCRIPT ######################################
 ckeditor = CKEditor(app)
 
@@ -56,7 +57,7 @@ app.config['CKEDITOR_SERVE_LOCAL'] = False
 app.config['CKEDITOR_HEIGHT'] = 400
 app.config['CKEDITOR_FILE_UPLOADER'] = 'upload'
 app.config['UPLOADED_PATH'] = os.path.join(basedir, 'upload')
-app.config['SG_APIKEY'] = os.environ['SENDGRID_API_KEY']
+global_app_key = os.environ['SENDGRID_API_KEY']
 
 
 @app.route('/files/<filename>')
@@ -297,7 +298,7 @@ def preset():
 
             username = 'apikey'
             sender_email = "flask-app-noreply@nam-qa-mf.com"
-            password = app.config['SG_APIKEY']
+            password = global_app_key
             receiver_email = account_email.email
 
             message = MIMEMultipart("alternative")
@@ -683,7 +684,7 @@ def send_mail_dashboard():
     sender_email = "flask-app-noreply@nam-qa-mf.com"
     receiver_email = session['email']
     # password = os.environ.get('SENDGRID_API_KEY')
-    password = app.config['SG_APIKEY']
+    password = global_app_key
     #
     team_updates = None
     user01 = None
@@ -962,7 +963,7 @@ def send_article_new(id):
     sender_email = "flask-app-noreply@nam-qa-mf.com"
     receiver_email = session['email']
     # password = os.environ.get('SENDGRID_API_KEY')
-    password = app.config['SG_APIKEY']
+    password = global_app_key
 
     d = Articles.query.get_or_404(id)
     title = d.title
