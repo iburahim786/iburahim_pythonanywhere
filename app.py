@@ -311,7 +311,8 @@ def preset():
                 f.close()
 
             data = re.sub(r'(Hello )', r'\1'+account_email.name, data)
-            data = re.sub(r'(href=")', r'\1http://localhost:5000/pwdreset/'+account_email.hashCode, data)
+            # data = re.sub(r'(href=")', r'\1http://localhost:5000/pwdreset/'+account_email.hashCode, data)
+            data = re.sub(r'(href=")', r'\1http://nam-users.southeastasia.cloudapp.azure.com/pwdreset/' + account_email.hashCode, data)
             app.logger.info(data)
             # my_str_as_bytes = str.encode(data)
             # body = "Hello,\nWe've received a request to reset your password. If you want to reset your password, " \
