@@ -17,6 +17,7 @@ import re
 import smtplib
 import ssl
 import uuid
+import random
 import pdfkit
 import email
 import email.mime.application
@@ -25,6 +26,7 @@ import email.mime.application
 # from sendgrid.helpers.mail import Mail
 import sendgrid
 from sendgrid.helpers.mail import Mail, Attachment, FileContent, FileName, FileType, Disposition, ContentId
+
 # from weasyprint import HTML
 
 app = Flask(__name__)
@@ -109,6 +111,7 @@ class Users(db.Model):
     username = db.Column(db.String(100), nullable=False)
     password = db.Column(db.String(100), nullable=False)
     register_date = db.Column(db.DateTime, nullable=False, default=datetime.now)
+    hashCode = db.Column(db.String(200))
 
     def __repr__(self):
         return 'Users ' + str(self.id)
@@ -272,6 +275,86 @@ def signup():
             return redirect('/')
     else:
         return render_template('signup.html')
+
+
+@app.route('/preset', methods=['GET', 'POST'])
+def preset():
+    if request.method == 'POST':
+        email = request.form['email']
+        # password = sha256_crypt.encrypt(str(request.form['password']))
+        # Execute
+        account_email = Users.query.filter_by(email=email).first()
+        # If account exists show error and validation checks
+        if account_email:
+            def get_random_string(length=24,
+                                  allowed_chars='abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789'):
+                return ''.join(random.choice(allowed_chars) for i in range(length))
+
+            hashCode = get_random_string()
+            account_email.hashCode = hashCode
+            db.session.commit()
+
+            username = 'apikey'
+            sender_email = "flask-app-noreply@nam-qa-mf.com"
+            password = password = os.environ.get('SENDGRID_API_KEY')
+            receiver_email = account_email.email
+
+            message = MIMEMultipart("alternative")
+            message["Subject"] = 'Password reset mail'
+            message["From"] = sender_email
+            message["To"] = account_email.email
+            filename = basedir + '/templates/pwdresetemail.html'
+            with open(filename, 'rb') as f:
+                data = f.read().decode('utf-8')
+                f.close()
+
+            data = re.sub(r'(Hello )', r'\1'+account_email.name, data)
+            data = re.sub(r'(href=")', r'\1http://localhost:5000/pwdreset/'+account_email.hashCode, data)
+            app.logger.info(data)
+            # my_str_as_bytes = str.encode(data)
+            # body = "Hello,\nWe've received a request to reset your password. If you want to reset your password, " \
+            #        "click the link below and enter your " \
+            #        "new password\n http://localhost:5000/pwdreset/" + account_email.hashCode
+
+            part1 = MIMEText(data, 'html')
+            message.attach(part1)
+            context = ssl.create_default_context()
+            with smtplib.SMTP_SSL("smtp.sendgrid.net", 465, context=context) as server:
+                server.login(username, password)
+                server.sendmail(
+                    sender_email, receiver_email, message.as_string()
+                )
+            flash("Your new password reset link has been sent to your primary email address", 'success')
+            return redirect(url_for('home'))
+        else:
+            error = 'No account exists in our database, Please do register!'
+            return render_template('signup.html', error=error)
+
+    else:
+        return render_template('preset.html')
+
+
+@app.route("/pwdreset/<string:hashCode>", methods=["GET", "POST"])
+def hashcode(hashCode):
+    check = Users.query.filter_by(hashCode=hashCode).first()
+    if check:
+        if request.method == 'POST':
+            newpwd = request.form['newpwd']
+            confpwd = request.form['confpwd']
+            if newpwd == confpwd:
+                check.password = sha256_crypt.encrypt(newpwd)
+                check.hashCode = None
+                db.session.commit()
+                flash('Your password has been reset successfully!')
+                return redirect(url_for('home'))
+            else:
+                flash('Password mismatched!')
+                return redirect(url_for('change_pwd'))
+        else:
+            return render_template('change_pwd.html', check=check)
+    else:
+        flash('Link expired or not exist!', 'danger')
+        return redirect(url_for('home'))
 
 
 # User Login
