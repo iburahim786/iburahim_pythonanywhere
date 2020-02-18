@@ -56,6 +56,7 @@ app.config['CKEDITOR_SERVE_LOCAL'] = False
 app.config['CKEDITOR_HEIGHT'] = 400
 app.config['CKEDITOR_FILE_UPLOADER'] = 'upload'
 app.config['UPLOADED_PATH'] = os.path.join(basedir, 'upload')
+app.config['SG_APIKEY'] = os.environ['SENDGRID_API_KEY']
 
 
 @app.route('/files/<filename>')
@@ -296,7 +297,7 @@ def preset():
 
             username = 'apikey'
             sender_email = "flask-app-noreply@nam-qa-mf.com"
-            password = password = os.environ.get('SENDGRID_API_KEY')
+            password = app.config['SG_APIKEY']
             receiver_email = account_email.email
 
             message = MIMEMultipart("alternative")
@@ -681,7 +682,8 @@ def send_mail_dashboard():
     username = 'apikey'
     sender_email = "flask-app-noreply@nam-qa-mf.com"
     receiver_email = session['email']
-    password = os.environ.get('SENDGRID_API_KEY')
+    # password = os.environ.get('SENDGRID_API_KEY')
+    password = app.config['SG_APIKEY']
     #
     team_updates = None
     user01 = None
@@ -959,7 +961,8 @@ def send_article_new(id):
     username = 'apikey'
     sender_email = "flask-app-noreply@nam-qa-mf.com"
     receiver_email = session['email']
-    password = os.environ.get('SENDGRID_API_KEY')
+    # password = os.environ.get('SENDGRID_API_KEY')
+    password = app.config['SG_APIKEY']
 
     d = Articles.query.get_or_404(id)
     title = d.title
