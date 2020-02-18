@@ -311,7 +311,7 @@ def preset():
                 f.close()
 
             data = re.sub(r'(Hello )', r'\1'+account_email.name, data)
-            data = re.sub(r'(href=")', r'\1http://nam-users.southeastasia.cloudapp.azure.com/pwdreset/'+account_email.hashCode, data)
+            data = re.sub(r'(href=")', r'\1http://localhost:5000/pwdreset/'+account_email.hashCode, data)
             app.logger.info(data)
             # my_str_as_bytes = str.encode(data)
             # body = "Hello,\nWe've received a request to reset your password. If you want to reset your password, " \
@@ -347,11 +347,11 @@ def hashcode(hashCode):
                 check.password = sha256_crypt.encrypt(newpwd)
                 check.hashCode = None
                 db.session.commit()
-                flash('Your password has been reset successfully!')
+                flash('Your password has been reset successfully!', 'success')
                 return redirect(url_for('home'))
             else:
-                flash('Password mismatched!')
-                return redirect(url_for('change_pwd'))
+                flash('Password mismatched!', 'danger')
+                return render_template('change_pwd.html', check=check)
         else:
             return render_template('change_pwd.html', check=check)
     else:
