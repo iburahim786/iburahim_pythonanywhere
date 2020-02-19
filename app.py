@@ -145,6 +145,11 @@ def home():
     return render_template('home.html')
 
 
+@app.route('/loading')
+def loading():
+    return render_template('loading.html')
+
+
 # About Page
 @app.route('/about')
 def about():
@@ -274,6 +279,7 @@ def signup():
             # Commit DB
             db.session.commit()
             flash('You are now registered and can log in..', 'success')
+
             return redirect('/')
     else:
         return render_template('signup.html')
