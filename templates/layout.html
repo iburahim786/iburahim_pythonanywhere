@@ -19,9 +19,9 @@
    {% include 'includes/_navbar.html' %}
   <div class="container-fluid">
   <div class="row">
-    <nav class="col-md-2 d-none d-md-block bg-light sidebar">
-      <div class="sidebar-sticky">
-        <ul class="nav flex-column">
+    <nav class="col-md-2 d-none d-md-block sidebar bg-light">
+      <div class="sidebar-sticky ">
+        <ul class="nav flex-column ">
           <li class="nav-item">
             <a class="nav-link" href="/">
               <span data-feather="home"></span>
@@ -36,21 +36,21 @@
             </a>
           </li>
           <li class="nav-item">
-            <a class="nav-link" href="/add_user_task">
+            <a class="nav-link " href="/add_user_task">
               <span data-feather="briefcase"></span>
               User tasks
             </a>
           </li>
           {% endif %}
           <li class="nav-item">
-            <a class="nav-link" href="/tupdates">
+            <a class="nav-link " href="/tupdates">
               <span data-feather="user-plus"></span>
               Team updates
             </a>
           </li>
            {% if 'admin' == session.username|lower %}
           <li class="nav-item">
-            <a class="nav-link" href="/user_details">
+            <a class="nav-link text-white" href="/user_details">
               <span data-feather="users"></span>
               Registered users
             </a>
@@ -69,7 +69,7 @@
             </a>
           </li>
           <li class="nav-item">
-            <a class="nav-link" href="/articles">
+            <a class="nav-link " href="/articles">
               <span data-feather="book-open"></span>
               Articles
             </a>
@@ -90,7 +90,7 @@
         </h6>
         <ul class="nav flex-column mb-2">
           <li class="nav-item">
-            <a class="nav-link" href="/about">
+            <a class="nav-link " href="/about">
               <span data-feather="info"></span>
               About
             </a>

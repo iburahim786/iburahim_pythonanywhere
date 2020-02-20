@@ -57,7 +57,7 @@ app.config['CKEDITOR_SERVE_LOCAL'] = False
 app.config['CKEDITOR_HEIGHT'] = 400
 app.config['CKEDITOR_FILE_UPLOADER'] = 'upload'
 app.config['UPLOADED_PATH'] = os.path.join(basedir, 'upload')
-global_app_key = os.environ['SENDGRID_API_KEY']
+global_app_key = os.environ.get('SENDGRID_API_KEY')
 
 
 @app.route('/files/<filename>')
