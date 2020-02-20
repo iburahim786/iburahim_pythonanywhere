@@ -13,64 +13,63 @@
     <script src="//netdna.bootstrapcdn.com/bootstrap/3.2.0/js/bootstrap.min.js"></script>
     <script src="//code.jquery.com/jquery-1.11.1.min.js"></script>
 
-
 </head>
 <body>
    {% include 'includes/_navbar.html' %}
   <div class="container-fluid">
   <div class="row">
-    <nav class="col-md-2 d-none d-md-block sidebar bg-light">
+    <nav class="col-md-2 d-none d-md-block sidebar bg-dark">
       <div class="sidebar-sticky ">
         <ul class="nav flex-column ">
           <li class="nav-item">
-            <a class="nav-link" href="/">
-              <span data-feather="home"></span>
+            <a class="nav-link text-white" href="/">
+              <span style="font-weight:78px;color:white" data-feather="home"></span>
               Home <span class="sr-only">(current)</span>
             </a>
           </li>
           {% if session.logged_in %}
           <li class="nav-item">
-            <a class="nav-link" href="/dashboard">
-              <span data-feather="server"></span>
+            <a class="nav-link text-white" href="/dashboard">
+              <span style="font-weight:78px;color:white" data-feather="server"></span>
               Dashboard
             </a>
           </li>
           <li class="nav-item">
-            <a class="nav-link " href="/add_user_task">
-              <span data-feather="briefcase"></span>
+            <a class="nav-link text-white" href="/add_user_task">
+              <span style="font-weight:78px;color:white" data-feather="briefcase"></span>
               User tasks
             </a>
           </li>
           {% endif %}
           <li class="nav-item">
-            <a class="nav-link " href="/tupdates">
-              <span data-feather="user-plus"></span>
+            <a class="nav-link text-white" href="/tupdates">
+              <span style="font-weight:78px;color:white" data-feather="user-plus"></span>
               Team updates
             </a>
           </li>
            {% if 'admin' == session.username|lower %}
           <li class="nav-item">
-            <a class="nav-link" href="/user_details">
-              <span data-feather="users"></span>
+            <a class="nav-link text-white" href="/user_details">
+              <span style="font-weight:78px;color:white" data-feather="users"></span>
               Registered users
             </a>
           </li>
           {% endif %}
           <li class="nav-item">
-            <a class="nav-link" href="/url_links">
-              <span data-feather="bookmark"></span>
+            <a class="nav-link text-white" href="/url_links">
+              <span style="font-weight:78px;color:white" data-feather="bookmark"></span>
               Bookmarks
             </a>
           </li>
           <li class="nav-item">
-            <a class="nav-link" href="/add_task">
-              <span data-feather="list"></span>
+            <a class="nav-link text-white" href="/add_task">
+              <span style="font-weight:78px;color:white" data-feather="list"></span>
               ToDos summary
             </a>
           </li>
           <li class="nav-item">
-            <a class="nav-link " href="/articles">
-              <span data-feather="book-open"></span>
+            <a class="nav-link text-white" href="/articles">
+              <span style="font-weight:78px;color:white" data-feather="book-open"></span>
               Articles
             </a>
           </li>
@@ -83,21 +82,21 @@
         </ul>
 
         <h6 class="sidebar-heading d-flex justify-content-between align-items-center px-3 mt-4 mb-1 text-muted">
-          <span>See also</span>
+          <span style="font-weight:bold">See also</span>
           <a class="d-flex align-items-center text-muted" href="#" aria-label="Add a new report">
-            <span data-feather="plus-circle"></span>
+<!--            <span data-feather="plus-circle"></span>-->
           </a>
         </h6>
         <ul class="nav flex-column mb-2">
           <li class="nav-item">
-            <a class="nav-link " href="/about">
-              <span data-feather="info"></span>
+            <a class="nav-link text-white" href="/about">
+              <span style="font-weight:78px;color:red" data-feather="info"></span>
               About
             </a>
           </li>
-          <li class="nav-item">
-            <a class="nav-link" href="/contactus">
-              <span data-feather="send"></span>
+          <li class="nav-item text-white">
+            <a class="nav-link text-white" href="/contactus">
+              <span style="font-weight:78px;color:red" data-feather="send"></span>
               Contact us
             </a>
           </li>

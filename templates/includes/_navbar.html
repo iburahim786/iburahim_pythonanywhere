@@ -5,10 +5,27 @@
     <div class="collapse navbar-collapse" id="navbarsExampleDefault">
     <ul class="navbar-nav mr-auto">
     </ul>
-    <ul class="nav navbar-nav navbar-right">
-          {% if session.logged_in %}
-                <li><a class="nav-link text-white" href="/">{{ session.username }}</a></li>
-                <li><a class="nav-link text-white" href="/logout">Logout</a></li>
+    <ul class="nav navbar-nav navbar-right focus" >
+<!--          {% if session.logged_in %}-->
+<!--                <li><a class="nav-link text-white" href="/">{{ session.username }}</a></li>-->
+<!--                <li><a class="nav-link text-white" href="/logout">Logout</a></li>-->
+<!--          {% else %}-->
+<!--            <li><a class="nav-link text-white" href="/signup">Sign up</a></li>-->
+<!--            <li><a class="nav-link text-white" href="/login">Sign in</a></li>-->
+<!--          {% endif %}-->
+        {% if session.logged_in %}
+<!--                <li><a class="nav-link text-white" href="/">{{ session.username }}</a></li>-->
+<!--                <li><a class="nav-link text-white" href="/logout">Logout</a></li>-->
+<!--                 <li class="nav-item dropdown">-->
+            <li class="nav-item dropdown" >
+                <a class="nav-link dropdown-toggle text-white" href="/" id="dropdown01"
+                   data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">{{ session.name }}</a>
+                    <div  class="dropdown-menu" aria-labelledby="dropdown01">
+                      <a style="font-weight: 500;" class="dropdown-item" href="/profile">Profile</a>
+                      <a style="font-weight: 500" class="dropdown-item" href="/old_pwd_change">Change password</a>
+                    </div>
+            </li>
+             <li><a class="nav-link text-white" href="/logout">| &nbsp;&nbsp; logout</a></li>
           {% else %}
             <li><a class="nav-link text-white" href="/signup">Sign up</a></li>
             <li><a class="nav-link text-white" href="/login">Sign in</a></li>
@@ -16,3 +33,9 @@
      </ul>
     </div>
 </nav>
+<style>
+    focus {
+    width: auto;
+    position: relative;
+}
+</style>

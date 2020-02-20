@@ -4,7 +4,9 @@
       <w>apikey</w>
       <w>confpwd</w>
       <w>newpwd</w>
+      <w>oldpwd</w>
       <w>pwdreset</w>
+      <w>rdate</w>
     </words>
   </dictionary>
 </component>

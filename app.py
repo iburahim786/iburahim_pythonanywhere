@@ -49,7 +49,6 @@ app.config['MYSQL_CURSORCLASS'] = 'DictCursor'
 # init MYSQL
 mysql = MySQL(app)
 
-
 ##################### FILE UPLOAD SCRIPT ######################################
 ckeditor = CKEditor(app)
 
@@ -140,7 +139,7 @@ class Tasks(db.Model):
 
 
 # Home Page
-@app.route('/')
+@app.route('/', methods=['POST', 'GET'])
 def home():
     return render_template('home.html')
 
@@ -316,9 +315,11 @@ def preset():
                 data = f.read().decode('utf-8')
                 f.close()
 
-            data = re.sub(r'(Hello )', r'\1'+account_email.name, data)
+            data = re.sub(r'(Hello )', r'\1' + account_email.name, data)
             # data = re.sub(r'(href=")', r'\1http://localhost:5000/pwdreset/'+account_email.hashCode, data)
-            data = re.sub(r'(href=")', r'\1http://nam-users.southeastasia.cloudapp.azure.com/pwdreset/' + account_email.hashCode, data)
+            data = re.sub(r'(href=")',
+                          r'\1http://nam-users.southeastasia.cloudapp.azure.com/pwdreset/' + account_email.hashCode,
+                          data)
             app.logger.info(data)
             # my_str_as_bytes = str.encode(data)
             # body = "Hello,\nWe've received a request to reset your password. If you want to reset your password, " \
@@ -381,6 +382,7 @@ def login():
             password = result.password
             name = result.name
             email = result.email
+            rdate = result.register_date
             # Compare passwords
             if sha256_crypt.verify(password_candidate, password):
                 # PASSED
@@ -388,6 +390,7 @@ def login():
                 session['username'] = username
                 session['name'] = name
                 session['email'] = email
+                session['rdate'] = rdate
                 flash("You are now logged in..", 'success')
                 return redirect(url_for('home'))
             else:
@@ -1237,6 +1240,49 @@ def add_user_task():
         all_tasks = Tasks.query.all()
         all_users = Users.query.all()
         return render_template('user_task_list.html', tasks=all_tasks, users=all_users, total_tasks=results)
+
+
+# Profile_Page
+@app.route('/profile', methods=['GET', 'POST'])
+@is_logged_in
+def profile():
+    check = Users.query.filter_by(username=session['username']).first()
+    if request.method == 'POST':
+        check.name = request.form['name']
+        check.username = request.form['username']
+        check.email = request.form['email']
+        db.session.commit()
+        session['name'] = check.name
+        session['username'] = check.username
+        flash("Profile Updated!", 'success')
+        check = Users.query.filter_by(username=session['username']).first()
+        return render_template('profile.html', check=check)
+    return render_template('profile.html', check=check)
+
+
+# Change_Password
+@app.route('/old_pwd_change', methods=['GET', 'POST'])
+@is_logged_in
+def old_pwd_change():
+    check = Users.query.filter_by(username=session['username']).first()
+    if request.method == 'POST':
+        oldpwd = request.form['oldpwd']
+        newpwd = request.form['newpwd']
+        confpwd = request.form['confpwd']
+        if sha256_crypt.verify(oldpwd, check.password):
+            if newpwd == confpwd:
+                check.password = sha256_crypt.encrypt(newpwd)
+                db.session.commit()
+                flash('Your password has been changed successfully!', 'success')
+                return redirect(url_for('old_pwd_change'))
+            else:
+                flash('Password mismatched!', 'danger')
+                return render_template('change_pwd1.html')
+        else:
+            flash('Incorrect old password !', 'danger')
+            return render_template('change_pwd1.html')
+    else:
+        return render_template('change_pwd1.html')
 
 
 if __name__ == '__main__':

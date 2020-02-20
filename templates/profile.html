@@ -1,0 +1,89 @@
+{% extends 'layout.html' %}
+
+{% block body %}
+    <div class="container-fluid">
+                  <div class="row">
+                    <div class="col-sm-8">
+       <div class="card bg-light" >
+        <article class="card-body mx-auto" style="max-width: 400px;">
+        <form action="/profile" method="post">
+        <h2 align="justify" class="text-black" ><u> Account Information</u></h2>
+        <br>
+             <div class="textbox-width">
+<!--        <p align="justify" class="lead text-black" style="font-weight: 500;">-->
+<!--            Name : {{ session.name }}</p>-->
+<!--        <p align="justify" class="lead text-black" style="font-weight: 500; "> Username : {{ session.username }}</p>-->
+<!--        <p align="justify" class="lead text-black" style="font-weight: 500; "> Email ID : {{ session.email }}</p>-->
+<!--        <p align="justify" class="lead text-black" style="font-weight: 500; "> Registered Date : {{ session.name }}</p>-->
+        <div class="form-group input-group" >
+		<div class="input-group-prepend">
+		    <span class="input-group-text"> <i class="fa fa-user"></i> </span>
+		 </div>
+        <input name="name" id="name" class="form-control" placeholder="Full name" type="text" value="{{ check.name }}">
+    </div> <!-- form-group// -->
+                   <div class="form-group input-group">
+		<div class="input-group-prepend">
+		    <span class="input-group-text"> <i class="fa fa-user"></i> </span>
+		 </div>
+        <input name="username" id="username" class="form-control" placeholder="Username" type="text" value="{{ check.username }}">
+    </div> <!-- form-group// -->
+        <div class="form-group input-group">
+    	<div class="input-group-prepend">
+		    <span class="input-group-text"> <i class="fa fa-envelope"></i> </span>
+		 </div>
+        <input name="email" id="email"  class="form-control" placeholder="Email address" type="email" value="{{ check.email }}">
+    </div> <!-- form-group// -->
+         <p align="justify" class="lead text-black" style="font-weight: 500; "> Registered Date : {{ check.rdate }}</p>
+        <div class="form-group" >
+        <button type="submit" class="btn btn-primary pmd-ripple-effect pmd-btn-raised"
+                name="update" value="Update Password">Modify</button>
+         <button type="submit" formaction="/" class="btn btn-outline-info pmd-ripple-effect"> Cancel</button>
+      </div> <!-- form-group// -->
+             </div>
+        </form>
+        </article>
+      </div>
+                    </div>
+                  <div class="col-sm-4">
+                      <img class="navbar-brand image--cover" width="250" style="border-radius: 30%;" src="/static/images/mflogo3.jpg">
+                    </div>
+                  </div>
+    </div>
+
+<style>
+.textbox-width{
+   width: 450px;
+}
+.divider-text {
+    position: relative;
+    text-align: center;
+    margin-top: 15px;
+    margin-bottom: 15px;
+}
+.divider-text span {
+    padding: 7px;
+    font-size: 12px;
+    position: relative;
+    z-index: 2;
+}
+.divider-text:after {
+    content: "";
+    position: absolute;
+    width: 100%;
+    border-bottom: 1px solid #ddd;
+    top: 55%;
+    left: 0;
+    z-index: 1;
+}
+
+.btn-facebook {
+    background-color: #405D9D;
+    color: #fff;
+}
+.btn-twitter {
+    background-color: #42AEEC;
+    color: #fff;
+}
+</style>
+
+{% endblock%}
