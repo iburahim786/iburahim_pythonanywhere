@@ -1,1 +1,1 @@
-export SENDGRID_API_KEY='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'
+export SENDGRID_API_KEY=''
