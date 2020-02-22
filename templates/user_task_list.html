@@ -35,7 +35,8 @@
         <hr>
      <ul class="list-group">
        {% for user_data in users %}
-          <br>
+<!--          <br>-->
+         	&nbsp;
            {% set tlist = {'tsk': 0 } %}
            {% if 'admin' not in user_data.name.lower() %}
            {% for row in total_tasks  %}
