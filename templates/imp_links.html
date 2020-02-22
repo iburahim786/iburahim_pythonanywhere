@@ -8,7 +8,7 @@
     <hr>
     <br>
     <table class="table table-striped" style="height:10px" >
-        <tr style="height:20px;" >
+        <tr style="background: linear-gradient(to right, #056FF6 0%, #000000 100%);color:white;" >
             <th>S.No</th>
             <th style="width:80%">URL Name</th>
             <th style="text-align:center;width:80%">Action</th>
@@ -21,7 +21,7 @@
                 <td>
                     <form style="text-align:center">
                         <a href="edit_url/{{ url_data.id }}" style="color: inherit;"><i class='fas fa-user-edit' style='font-size:18px'></i></a>
-                        <a href="delete_url/{{ url_data.id }}" style="color: inherit;padding-left:40px"><i class='fas fa-trash-alt' style='font-size:18px'></i></a>
+                        <a href="delete_url/{{ url_data.id }}" style="color: red;padding-left:40px"><i class='fas fa-trash-alt' style='font-size:18px'></i></a>
                     </form>
                 </td>
             </tr>
