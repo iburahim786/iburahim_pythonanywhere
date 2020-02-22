@@ -100,6 +100,8 @@ class Articles(db.Model):
     author = db.Column(db.String(20), nullable=False, default='N/A')
     body = db.Column(db.Text, nullable=False)
     date_posted = db.Column(db.DateTime, nullable=False, default=datetime.now)
+    date_updated = db.Column(db.DateTime,
+                             nullable=False, default=datetime.now, onupdate=datetime.now)
 
     def __repr__(self):
         return 'Articles ' + str(self.id)
@@ -166,6 +168,12 @@ def articles():
     else:
         msg = "No Articles Found"
         return render_template('articles.html', msg=msg)
+
+
+@app.route('/upload/<path:filename>', methods=['GET', 'POST'])
+def download(filename):
+    uploads = os.path.join(current_app.root_path, app.config['UPLOADED_PATH'])
+    return send_from_directory(directory=uploads, filename=filename, as_attachment=True)
 
 
 # Individual Article page
@@ -559,7 +567,7 @@ def edit_article(page, id):
     return render_template('edit_article.html', form=form)
 
 
-@app.route('/delete_article/<string:id>', methods=['POST'])
+@app.route('/delete_article/<string:id>', methods=['GET', 'POST'])
 @is_logged_in
 def delete_article(id):
     # Execute
@@ -616,7 +624,7 @@ def edit_update(id):
     return render_template('edit_update.html', form=form)
 
 
-@app.route('/delete_update/<string:id>', methods=['POST'])
+@app.route('/delete_update/<string:id>', methods=['GET', 'POST'])
 @is_logged_in
 def delete_update(id):
     # Execute
@@ -1092,7 +1100,7 @@ def user_details():
         return render_template('user_details.html', msg=msg)
 
 
-@app.route('/delete_user/<string:id>', methods=['POST'])
+@app.route('/delete_user/<string:id>', methods=['GET', 'POST'])
 @is_logged_in
 # @is_logged_in_admin_user
 def delete_user(id):

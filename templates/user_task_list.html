@@ -35,7 +35,7 @@
         <hr>
      <ul class="list-group">
        {% for user_data in users %}
-          <br>
+<!--          <br>-->
            {% set tlist = {'tsk': 0 } %}
            {% if 'admin' not in user_data.name.lower() %}
            {% for row in total_tasks  %}
@@ -44,7 +44,8 @@
                         {% endif %}
                  {% endif %}
            {% endfor %}
-           <button style="font-weight: bold;" class="collapsible">{{user_data.name}} &#8192;&#8192;[ {{ tlist.tsk }} ]</button>
+           <button style="font-weight:bold;background:linear-gradient(to right,#056FF6 0%,#000000 100%);color:white;"
+                   class="collapsible">{{user_data.name}} &#8192;&#8192;[ {{ tlist.tsk }} ]</button>
                <div class="content">
                    <br>
                    <font size="2">

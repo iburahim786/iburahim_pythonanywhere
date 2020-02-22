@@ -12,13 +12,13 @@
     </form>
     <hr>
     <table class="table table-striped">
-        <tr>
+        <tr style="background: linear-gradient(to right, #056FF6 0%, #000000 100%);color:white;">
             <th>S.No</th>
             <th>Name</th>
             <th>Username</th>
             <th>Created Date</th>
-            <th>Last Updated Date</th>
-            <th colspan="2" >Action</th>
+            <th>Last updated date</th>
+            <th style="text-align:center" width="100px">Action</th>
 <!--            <th></th>-->
         </tr>
         {% set count = [1] %}
@@ -29,13 +29,17 @@
                 <td>{{ tupdate.author }}</td>
                 <td>{{ tupdate.date_posted }}</td>
                 <td>{{ tupdate.date_updated }}</td>
-                <td><a href="edit_update/{{ tupdate.id }}" class="btn btn-info">Edit</a></td>
+<!--                <td><a href="edit_update/{{ tupdate.id }}" class="btn btn-info">Edit</a></td>-->
 <!--                <a href="#" class="btn btn-danger">Delete</a>-->
                 <td>
-                    <form action="{{ url_for('delete_update', id=tupdate.id)}}" method="post">
-                        <input type="hidden" name="method" value="DELETE">
-                        <input type="submit" value="Delete" class="btn btn-danger">
-                    </form>
+<!--                    <form action="{{ url_for('delete_update', id=tupdate.id)}}" method="post">-->
+<!--                        <input type="hidden" name="method" value="DELETE">-->
+<!--                        <input type="submit" value="Delete" class="btn btn-danger">-->
+<!--                    </form>-->
+                     <form style="text-align:center" >
+                         <a href="edit_update/{{ tupdate.id }}" style="color: inherit;"><i class='fas fa-user-edit' style='font-size:18px'></i></a>
+                         <a href="delete_update/{{ tupdate.id }}" style="color: red;padding-left:20px"><i class='fas fa-trash-alt' style='font-size:18px'></i></a>
+                     </form>
                 </td>
             </tr>
         {% if count.append(count.pop() + 1) %}{% endif %} {# increment count by 1 #}
@@ -50,12 +54,13 @@
     <a class="btn btn-success" href="/add_article"> + Add Article</a>
     <hr>
     <table class="table table-striped">
-        <tr>
+        <tr style="background: linear-gradient(to right, #056FF6 0%, #000000 100%);color:white;">
             <th>S.No</th>
             <th>Title</th>
             <th>Author</th>
-            <th>Date</th>
-            <th colspan="2" >Action</th>
+            <th>Created date</th>
+            <th>Last updated date</th>
+            <th style="text-align:center" width="100px" >Action</th>
 <!--            <th></th>-->
         </tr>
         {% set count = [1] %}
@@ -65,13 +70,18 @@
                 <td>{{ article.title }}</td>
                 <td>{{ article.author }}</td>
                 <td>{{ article.date_posted }}</td>
-                <td><a href="edit_article/dashboard/{{ article.id }}" class="btn btn-info">Edit</a></td>
+                <td>{{ article.date_updated }}</td>
+<!--                <td><a href="edit_article/dashboard/{{ article.id }}" class="btn btn-info">Edit</a></td>-->
 <!--                <a href="#" class="btn btn-danger">Delete</a>-->
                 <td>
-                    <form action="{{ url_for('delete_article', id=article.id)}}" method="post">
-                        <input type="hidden" name="method" value="DELETE">
-                        <input type="submit" value="Delete" class="btn btn-danger">
-                    </form>
+<!--                    <form action="{{ url_for('delete_article', id=article.id)}}" method="post">-->
+<!--                        <input type="hidden" name="method" value="DELETE">-->
+<!--                        <input type="submit" value="Delete" class="btn btn-danger">-->
+<!--                    </form>-->
+                     <form style="text-align:center" >
+                         <a href="edit_article/dashboard/{{ article.id }}" style="color: inherit;"><i class='fas fa-user-edit' style='font-size:18px'></i></a>
+                         <a href="delete_article/{{ article.id }}" style="color: red;padding-left:20px"><i class='fas fa-trash-alt' style='font-size:18px'></i></a>
+                     </form>
                 </td>
             </tr>
         {% if count.append(count.pop() + 1) %}{% endif %} {# increment count by 1 #}
