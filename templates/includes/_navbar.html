@@ -19,13 +19,14 @@
 <!--                 <li class="nav-item dropdown">-->
             <li class="nav-item dropdown" >
                 <a class="nav-link dropdown-toggle text-white" href="/" id="dropdown01"
-                   data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">{{ session.name }}</a>
+                   data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                    <i class='fas fa-user-alt' style='font-size:16px'></i>&nbsp;&nbsp;{{ session.name }}</a>
                     <div  class="dropdown-menu" aria-labelledby="dropdown01">
                       <a style="font-weight: 500;" class="dropdown-item" href="/profile">Profile</a>
                       <a style="font-weight: 500" class="dropdown-item" href="/old_pwd_change">Change password</a>
                     </div>
             </li>
-             <li><a class="nav-link text-white" href="/logout">| &nbsp;&nbsp; logout</a></li>
+        <li><a class="nav-link text-white" href="/logout">| &nbsp;&nbsp; logout&nbsp;&nbsp;<i class='fas fa-sign-out-alt' style='font-size:16px'></i></a></li>
           {% else %}
             <li><a class="nav-link text-white" href="/signup">Sign up</a></li>
             <li><a class="nav-link text-white" href="/login">Sign in</a></li>
