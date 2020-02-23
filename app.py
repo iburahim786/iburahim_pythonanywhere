@@ -5,7 +5,7 @@ from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
 from email.mime.base import MIMEBase
 
-# import weasyprint
+import weasyprint
 from flask import Flask, render_template, flash, session, redirect, send_from_directory
 from flask_ckeditor import *
 from flask_mysqldb import MySQL
@@ -995,9 +995,15 @@ def send_article():
     flash("Message sent successfully!", 'success')
     return redirect(url_for('articles'))
 
+
 def pdf_creation(title):
-    # config = pdfkit.configuration(wkhtmltopdf="C:\\Program Files\\wkhtmltopdf\\bin\\wkhtmltopdf.exe") //configuration=config
-    pdfkit.from_file(basedir + '/upload/html/' + title + '.html', basedir + '/upload/pdf/' + title + '.pdf')
+    pdf = weasyprint.HTML(basedir + '/upload/html/' + title + '.html').write_pdf()
+    open(basedir + "/upload/pdf/" + title + ".pdf", 'wb').write(pdf)
+
+# def pdf_creation(title):
+#     config = pdfkit.configuration(wkhtmltopdf="C:\\Program Files\\wkhtmltopdf\\bin\\wkhtmltopdf.exe")
+#     pdfkit.from_file(basedir + '/upload/html/' + title + '.html', basedir + '/upload/pdf/' + title + '.pdf',
+#                      configuration=config)
 
 
 
