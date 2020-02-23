@@ -996,9 +996,8 @@ def send_article():
     return redirect(url_for('articles'))
 
 def pdf_creation(title):
-    # config = pdfkit.configuration(wkhtmltopdf="C:\\Program Files\\wkhtmltopdf\\bin\\wkhtmltopdf.exe")
-    pdfkit.from_file(basedir + '/upload/html/' + title + '.html', basedir + '/upload/pdf/' + title + '.pdf',
-                     configuration=config)
+    # config = pdfkit.configuration(wkhtmltopdf="C:\\Program Files\\wkhtmltopdf\\bin\\wkhtmltopdf.exe") //configuration=config
+    pdfkit.from_file(basedir + '/upload/html/' + title + '.html', basedir + '/upload/pdf/' + title + '.pdf')
 
 
 
