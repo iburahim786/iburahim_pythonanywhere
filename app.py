@@ -4,6 +4,8 @@ from datetime import timedelta, datetime
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
 from email.mime.base import MIMEBase
+
+# import weasyprint
 from flask import Flask, render_template, flash, session, redirect, send_from_directory
 from flask_ckeditor import *
 from flask_mysqldb import MySQL
@@ -543,6 +545,7 @@ def add_article():
             # Commit DB
             db.session.commit()
             html_creation(article_validation.id)
+            pdf_creation(title)
             flash("Article created", 'success')
             return redirect(url_for('dashboard'))
     return render_template('add_article.html', form=form)
@@ -576,6 +579,7 @@ def edit_article(page, id):
         else:
             db.session.commit()
             html_creation(id)
+            pdf_creation(article_edit.title)
             flash("Article updated", 'success')
             if page == 'dashboard':
                 return redirect(url_for('dashboard'))
@@ -991,6 +995,12 @@ def send_article():
     flash("Message sent successfully!", 'success')
     return redirect(url_for('articles'))
 
+def pdf_creation(title):
+    # config = pdfkit.configuration(wkhtmltopdf="C:\\Program Files\\wkhtmltopdf\\bin\\wkhtmltopdf.exe")
+    pdfkit.from_file(basedir + '/upload/html/' + title + '.html', basedir + '/upload/pdf/' + title + '.pdf',
+                     configuration=config)
+
+
 
 def html_creation(art_id):
     d = Articles.query.get_or_404(art_id)
@@ -1008,8 +1018,8 @@ def html_creation(art_id):
            </head>
            <body>
                  <h1></h1>"""
-    # body = re.sub(r'(<img alt="" src=")', r'\1http://localhost:5000', body)
-    body = re.sub(r'(<img alt="" src=")', r'\1http://nam-users.southeastasia.cloudapp.azure.com', body)
+    body = re.sub(r'(<img alt="" src=")', r'\1http://localhost:5000', body)
+    # body = re.sub(r'(<img alt="" src=")', r'\1http://nam-users.southeastasia.cloudapp.azure.com', body)
     body = re.sub(r'(<p)', r'\1 style="font-size: 15px;"', body)
 
     html = html + "<h2>"
