@@ -547,7 +547,7 @@ def add_article():
             # Commit DB
             db.session.commit()
             html_creation(article_validation.id)
-            pdf_creation(title)
+            # pdf_creation(title)
             flash("Article created", 'success')
             return redirect(url_for('dashboard'))
     return render_template('add_article.html', form=form)
@@ -581,7 +581,7 @@ def edit_article(page, id):
         else:
             db.session.commit()
             html_creation(id)
-            pdf_creation(article_edit.title)
+            # pdf_creation(article_edit.title)
             flash("Article updated", 'success')
             if page == 'dashboard':
                 return redirect(url_for('dashboard'))
