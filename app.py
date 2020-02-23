@@ -531,15 +531,20 @@ def add_article():
     if request.method == 'POST' and form.validate():
         title = form.title.data
         body = form.body.data
-
-        # Execute
-        article_data = Articles(title=title, body=body, author=session['username'])
-        db.session.add(article_data)
-        # Commit DB
-        db.session.commit()
-
-        flash("Article created", 'success')
-        return redirect(url_for('dashboard'))
+        article_validation = Articles.query.filter_by(title=title).first()
+        # If account exists show error and validation checks
+        if article_validation:
+            error = 'Given title article already exists!'
+            return render_template('add_article.html', form=form, error=error)
+        else:
+            # Execute
+            article_data = Articles(title=title, body=body, author=session['username'])
+            db.session.add(article_data)
+            # Commit DB
+            db.session.commit()
+            html_creation(article_validation.id)
+            flash("Article created", 'success')
+            return redirect(url_for('dashboard'))
     return render_template('add_article.html', form=form)
 
 
@@ -557,12 +562,25 @@ def edit_article(page, id):
         article_edit.title = request.form['title']
         article_edit.body = request.form['body']
         # Commit DB
-        db.session.commit()
-        flash("Article updated", 'success')
-        if page == 'dashboard':
-            return redirect(url_for('dashboard'))
+        article_validation = Articles.query.filter_by(title=article_edit.title).first()
+        # If account exists show error and validation checks
+        # app.logger.info(type(article_validation.id))
+        # app.logger.info(type(id))
+        # if article_validation.id != id:
+        #     app.logger.info("True")
+        # else:
+        #     app.logger.info("False")
+        if article_validation and str(article_validation.id) != id:
+            error = 'Given title article already exists!'
+            return render_template('edit_article.html', form=form, error=error)
         else:
-            return redirect('/edit_article/' + page + '/' + id)
+            db.session.commit()
+            html_creation(id)
+            flash("Article updated", 'success')
+            if page == 'dashboard':
+                return redirect(url_for('dashboard'))
+            else:
+                return redirect('/edit_article/' + page + '/' + id)
 
     return render_template('edit_article.html', form=form)
 
@@ -972,6 +990,40 @@ def send_article():
         print(str(e))
     flash("Message sent successfully!", 'success')
     return redirect(url_for('articles'))
+
+
+def html_creation(art_id):
+    d = Articles.query.get_or_404(art_id)
+    title = d.title
+    author = d.author
+    date = d.date_posted.strftime("%m/%d/%Y %H:%M:%S")
+    body = d.body
+    app.logger.info(body)
+    html = """\
+           <!DOCTYPE html>
+           <html lang="en">
+           <head>
+               <meta charset="UTF-8">
+               <title>Articles</title>
+           </head>
+           <body>
+                 <h1></h1>"""
+    # body = re.sub(r'(<img alt="" src=")', r'\1http://localhost:5000', body)
+    #body = re.sub(r'(<img alt="" src=")', r'\1http://nam-users.southeastasia.cloudapp.azure.com', body)
+    body = re.sub(r'(<p)', r'\1 style="font-size: 15px;"', body)
+
+    html = html + "<h2>"
+    html = html + title + "</h2> <small>Written by " + author + " on " + date + "</small>"
+    html = html + "<hr>"
+    html = html + "<div>"
+    html = html + body + "</div>"
+    html = html + "<hr>"
+    html = html + """</body>
+           </html>
+           """
+    html_file = open(basedir + "/upload/html/" + title + ".html", "w")
+    html_file.write(html)
+    html_file.close()
 
 
 @app.route('/send_article_new/<string:id>', methods=['GET', 'POST'])
