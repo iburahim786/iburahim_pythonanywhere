@@ -58,6 +58,8 @@ app.config['CKEDITOR_SERVE_LOCAL'] = False
 app.config['CKEDITOR_HEIGHT'] = 400
 app.config['CKEDITOR_FILE_UPLOADER'] = 'upload'
 app.config['UPLOADED_PATH'] = os.path.join(basedir, 'upload')
+app.config['UPLOADED_PATH_HTML'] = os.path.join(basedir, 'upload/html')
+app.config['UPLOADED_PATH_PDF'] = os.path.join(basedir, 'upload/pdf')
 global_app_key = os.environ.get('SENDGRID_API_KEY')
 
 
@@ -172,9 +174,9 @@ def articles():
         return render_template('articles.html', msg=msg)
 
 
-@app.route('/upload/<path:filename>', methods=['GET', 'POST'])
-def download(filename):
-    uploads = os.path.join(current_app.root_path, app.config['UPLOADED_PATH'])
+@app.route('/download/<path:filename>', methods=['GET', 'POST'])
+def download_pdf(filename):
+    uploads = os.path.join(current_app.root_path, app.config['UPLOADED_PATH_PDF'])
     return send_from_directory(directory=uploads, filename=filename, as_attachment=True)
 
 
@@ -1023,8 +1025,8 @@ def html_creation(art_id):
            </head>
            <body>
                  <h1></h1>"""
-    body = re.sub(r'(<img alt="" src=")', r'\1http://localhost:5000', body)
-    # body = re.sub(r'(<img alt="" src=")', r'\1http://nam-users.southeastasia.cloudapp.azure.com', body)
+    # body = re.sub(r'(<img alt="" src=")', r'\1http://localhost:5000', body)
+    body = re.sub(r'(<img alt="" src=")', r'\1http://nam-users.southeastasia.cloudapp.azure.com', body)
     body = re.sub(r'(<p)', r'\1 style="font-size: 15px;"', body)
 
     html = html + "<h2>"
