@@ -1009,7 +1009,7 @@ def html_creation(art_id):
            <body>
                  <h1></h1>"""
     # body = re.sub(r'(<img alt="" src=")', r'\1http://localhost:5000', body)
-    #body = re.sub(r'(<img alt="" src=")', r'\1http://nam-users.southeastasia.cloudapp.azure.com', body)
+    body = re.sub(r'(<img alt="" src=")', r'\1http://nam-users.southeastasia.cloudapp.azure.com', body)
     body = re.sub(r'(<p)', r'\1 style="font-size: 15px;"', body)
 
     html = html + "<h2>"
