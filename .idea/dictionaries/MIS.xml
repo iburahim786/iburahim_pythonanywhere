@@ -3,6 +3,7 @@
     <words>
       <w>apikey</w>
       <w>confpwd</w>
+      <w>jinja</w>
       <w>newpwd</w>
       <w>oldpwd</w>
       <w>pwdreset</w>

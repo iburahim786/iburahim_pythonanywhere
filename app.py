@@ -6,11 +6,13 @@ from email.mime.text import MIMEText
 from email.mime.base import MIMEBase
 
 # import weasyprint
-from flask import Flask, render_template, flash, session, redirect, send_from_directory
+import jinja2
+from flask import Flask, render_template, flash, session, redirect, send_from_directory, make_response
 from flask_ckeditor import *
 from flask_mysqldb import MySQL
 from flask_sqlalchemy import SQLAlchemy
 from passlib.hash import sha256_crypt
+import pdfkit
 from sendgrid import To, Bcc, Cc
 from wtforms import Form, StringField, TextAreaField, PasswordField, validators
 from wtforms.fields.html5 import EmailField
@@ -50,6 +52,7 @@ app.config['CKEDITOR_SERVE_LOCAL'] = False
 app.config['CKEDITOR_HEIGHT'] = 400
 app.config['CKEDITOR_FILE_UPLOADER'] = 'upload'
 app.config['UPLOADED_PATH'] = os.path.join(basedir, 'upload')
+app.config['TEMPLATE_PATH_DEFAULT'] = os.path.join(basedir, 'templates')
 app.config['UPLOADED_PATH_HTML'] = os.path.join(basedir, 'upload/html')
 app.config['UPLOADED_PATH_PDF'] = os.path.join(basedir, 'upload/pdf')
 global_app_key = os.environ.get('SENDGRID_API_KEY')
@@ -166,14 +169,27 @@ def articles():
         return render_template('articles.html', msg=msg)
 
 
-@app.route('/download/<string:filename>', methods=['GET', 'POST'])
+@app.route('/download/<string:filename>')
 def download_pdf(filename):
-    os.system(
-        'wkhtmltopdf ' + basedir + '/upload/html/' + filename.replace(" ", "") + '.html ' +
-        basedir + '/upload/pdf/' + filename.replace(" ", "") + '.pdf')
-    uploads = app.config['UPLOADED_PATH_PDF']
-    app.logger.info(uploads)
-    return send_from_directory(directory=uploads, filename=filename.replace(" ", "") + '.pdf', as_attachment=True)
+    # rendered = render_template(basedir + '/upload/html/' + filename.replace(" ", "") + '.html ')
+    rendered = render_template('htmltopdf/'+filename.replace(" ", "") + '.html ')
+    pdf = pdfkit.from_string(rendered, False)
+
+    response = make_response(pdf)
+    response.headers['Content-Type'] = 'application/pdf'
+    response.headers['Content-Disposition'] = 'attachment; filename='+filename.replace(" ", "")+'.pdf'
+    return response
+
+
+
+# @app.route('/download/<string:filename>', methods=['GET', 'POST'])
+# def download_pdf(filename):
+#     os.system(
+#         'wkhtmltopdf ' + basedir + '/upload/html/' + filename.replace(" ", "") + '.html ' +
+#         basedir + '/upload/pdf/' + filename.replace(" ", "") + '.pdf')
+#     uploads = app.config['UPLOADED_PATH_PDF']
+#     app.logger.info(uploads)
+#     return send_from_directory(directory=uploads, filename=filename.replace(" ", "") + '.pdf', as_attachment=True)
 
 
 # @app.route('/download/<string:file>/<path:filename>', methods=['GET', 'POST'])
@@ -1042,7 +1058,7 @@ def html_creation(art_id):
            </html>
            """
 
-    html_file = open(basedir + "/upload/html/" + title.replace(" ", "") + ".html", "w")
+    html_file = open(basedir + "/templates/htmltopdf/" + title.replace(" ", "") + ".html", "w")
     html_file.write(html)
     html_file.close()
 
