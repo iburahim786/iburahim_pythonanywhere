@@ -5,7 +5,7 @@ from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
 from email.mime.base import MIMEBase
 
-import weasyprint
+# import weasyprint
 from flask import Flask, render_template, flash, session, redirect, send_from_directory
 from flask_ckeditor import *
 from flask_mysqldb import MySQL
@@ -20,16 +20,8 @@ import smtplib
 import ssl
 import uuid
 import random
-import pdfkit
-import email
-import email.mime.application
-# import sendgrid
-# from sendgrid import SendGridAPIClient
-# from sendgrid.helpers.mail import Mail
 import sendgrid
 from sendgrid.helpers.mail import Mail, Attachment, FileContent, FileName, FileType, Disposition, ContentId
-
-# from weasyprint import HTML
 
 app = Flask(__name__)
 # app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///posts.db'
@@ -174,11 +166,21 @@ def articles():
         return render_template('articles.html', msg=msg)
 
 
-@app.route('/download/<path:filename>', methods=['GET', 'POST'])
+@app.route('/download/<string:filename>', methods=['GET', 'POST'])
 def download_pdf(filename):
-    uploads = os.path.join(current_app.root_path, app.config['UPLOADED_PATH_PDF'])
-    return send_from_directory(directory=uploads, filename=filename, as_attachment=True)
+    os.system(
+        'wkhtmltopdf ' + basedir + '/upload/html/' + filename.replace(" ", "") + '.html ' +
+        basedir + '/upload/pdf/' + filename.replace(" ", "") + '.pdf')
+    uploads = app.config['UPLOADED_PATH_PDF']
+    app.logger.info(uploads)
+    return send_from_directory(directory=uploads, filename=filename.replace(" ", "") + '.pdf', as_attachment=True)
 
+
+# @app.route('/download/<string:file>/<path:filename>', methods=['GET', 'POST'])
+# def download_pdf(filename):
+#     os.system('wkhtmltopdf ' + basedir + '/upload/html/' + file+'.html '+ basedir + '/upload/pdf/' +filename)
+#     uploads = os.path.join(current_app.root_path, app.config['UPLOADED_PATH_PDF'])
+#     return send_from_directory(directory=uploads, filename=filename, title=title, as_attachment=True)
 
 # Individual Article page
 @app.route('/article/<string:id>/')
@@ -999,14 +1001,15 @@ def send_article():
 
 
 def pdf_creation(title):
-    pdf = weasyprint.HTML(basedir + '/upload/html/' + title + '.html').write_pdf()
-    open(basedir + "/upload/pdf/" + title + ".pdf", 'wb').write(pdf)
+    # pdf = weasyprint.HTML(basedir + '/upload/html/' + title + '.html').write_pdf()
+    # open(basedir + "/upload/pdf/" + title + ".pdf", 'wb').write(pdf)
+    os.system('wkhtmltopdf ' + basedir + '/upload/html/' + title + '.html ' + basedir + '/upload/pdf/' + title + '.pdf')
+
 
 # def pdf_creation(title):
 #     config = pdfkit.configuration(wkhtmltopdf="C:\\Program Files\\wkhtmltopdf\\bin\\wkhtmltopdf.exe")
 #     pdfkit.from_file(basedir + '/upload/html/' + title + '.html', basedir + '/upload/pdf/' + title + '.pdf',
 #                      configuration=config)
-
 
 
 def html_creation(art_id):
@@ -1038,7 +1041,8 @@ def html_creation(art_id):
     html = html + """</body>
            </html>
            """
-    html_file = open(basedir + "/upload/html/" + title + ".html", "w")
+
+    html_file = open(basedir + "/upload/html/" + title.replace(" ", "") + ".html", "w")
     html_file.write(html)
     html_file.close()
 
