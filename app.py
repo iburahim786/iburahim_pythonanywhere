@@ -171,32 +171,16 @@ def articles():
 
 @app.route('/download/<string:filename>')
 def download_pdf(filename):
-    # rendered = render_template(basedir + '/upload/html/' + filename.replace(" ", "") + '.html ')
     rendered = render_template('htmltopdf/'+filename.replace(" ", "") + '.html ')
-    pdf = pdfkit.from_string(rendered, False)
+    # config = pdfkit.configuration(wkhtmltopdf="C:\\Program Files\\wkhtmltopdf\\bin\\wkhtmltopdf.exe") //Windows
+    config = pdfkit.configuration(wkhtmltopdf=bytes('/usr/bin/wkhtmltopdf', 'utf-8')) #//Linux
+    pdf = pdfkit.from_string(rendered, False, configuration=config)
 
     response = make_response(pdf)
     response.headers['Content-Type'] = 'application/pdf'
     response.headers['Content-Disposition'] = 'attachment; filename='+filename.replace(" ", "")+'.pdf'
     return response
 
-
-
-# @app.route('/download/<string:filename>', methods=['GET', 'POST'])
-# def download_pdf(filename):
-#     os.system(
-#         'wkhtmltopdf ' + basedir + '/upload/html/' + filename.replace(" ", "") + '.html ' +
-#         basedir + '/upload/pdf/' + filename.replace(" ", "") + '.pdf')
-#     uploads = app.config['UPLOADED_PATH_PDF']
-#     app.logger.info(uploads)
-#     return send_from_directory(directory=uploads, filename=filename.replace(" ", "") + '.pdf', as_attachment=True)
-
-
-# @app.route('/download/<string:file>/<path:filename>', methods=['GET', 'POST'])
-# def download_pdf(filename):
-#     os.system('wkhtmltopdf ' + basedir + '/upload/html/' + file+'.html '+ basedir + '/upload/pdf/' +filename)
-#     uploads = os.path.join(current_app.root_path, app.config['UPLOADED_PATH_PDF'])
-#     return send_from_directory(directory=uploads, filename=filename, title=title, as_attachment=True)
 
 # Individual Article page
 @app.route('/article/<string:id>/')
