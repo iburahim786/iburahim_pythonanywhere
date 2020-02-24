@@ -171,7 +171,7 @@ def articles():
 
 @app.route('/download/<string:filename>')
 def download_pdf(filename):
-    rendered = render_template('htmltopdf/'+filename.replace(" ", "") + '.html ')
+    rendered = render_template('htmltopdf/'+filename.replace(" ", "") + '.html')
     # config = pdfkit.configuration(wkhtmltopdf="C:\\Program Files\\wkhtmltopdf\\bin\\wkhtmltopdf.exe") //Windows
     config = pdfkit.configuration(wkhtmltopdf=bytes('/usr/bin/wkhtmltopdf', 'utf-8')) #//Linux
     pdf = pdfkit.from_string(rendered, False, configuration=config)
