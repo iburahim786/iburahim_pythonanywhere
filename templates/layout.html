@@ -12,7 +12,6 @@
     <link href="https://getbootstrap.com/docs/4.4/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
     <script src="//netdna.bootstrapcdn.com/bootstrap/3.2.0/js/bootstrap.min.js"></script>
     <script src="//code.jquery.com/jquery-1.11.1.min.js"></script>
-
 </head>
 <body>
    {% include 'includes/_navbar.html' %}
@@ -21,6 +20,8 @@
     <nav class="col-md-2 d-none d-md-block sidebar bg-dark">
       <div class="sidebar-sticky ">
         <ul class="nav flex-column ">
+<!--        <div class="sidebar-sticky collapse navbar-collapse navbar-ex1-collapse">-->
+<!--            <ul class="nav navbar-nav side-nav">-->
           <li class="nav-item">
             <a class="nav-link text-white" href="/">
               <span style="font-weight:78px;color:white" data-feather="home"></span>
@@ -67,12 +68,39 @@
               ToDos summary
             </a>
           </li>
+          {% if 'admin' == session.username|lower %}
           <li class="nav-item">
             <a class="nav-link text-white" href="/articles">
-              <span style="font-weight:78px;color:white" data-feather="book-open"></span>
-              Articles
+              <span  style="font-weight:78px;color:white" data-feather="book-open"></span>
+              All Articles
             </a>
           </li>
+           {% endif %}
+          {% if config.GLOBAL_NO_ARTICLES > 0 %}
+          <li class="nav-item">
+          <a class="nav-link text-white" href="#" data-toggle="collapse" data-target="#submenu-1">
+               <span  style="color:white" data-feather="book-open"></span>
+              Articles
+              <i class="fa fa-fw fa-angle-down pull-right"></i></a>
+                <ul style="list-style-type:none;" id="submenu-1" class="collapse">
+                    {% for article in config.GLOBAL_ARTICLES %}
+                    <li class="nav-item"><a class="nav-link text-white" href="/articles/{{article.category}}">
+                        <span  style="color:white" data-feather="book-open"></span>
+                        {{article.category}}
+                       </a>
+                    </li>
+                    {% endfor%}
+                    </a>
+                </ul>
+            </li>
+            {% else %}
+              <li class="nav-item">
+                <a class="nav-link text-white" href="/articles">
+                  <span  style="font-weight:78px;color:white" data-feather="book-open"></span>
+                  Articles
+                </a>
+              </li>
+            {% endif %}
 <!--          <li class="nav-item">-->
 <!--            <a class="nav-link" href="/loading">-->
 <!--              <span data-feather="users"></span>-->
@@ -125,9 +153,27 @@
    <script src="https://cdnjs.cloudflare.com/ajax/libs/feather-icons/4.9.0/feather.min.js"></script>
    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.7.3/Chart.min.js"></script>
    <script src="https://getbootstrap.com/docs/4.4/examples/dashboard/dashboard.js"></script>
-         </main>
+<!--         </main>-->
   </div>
              </div>
+<script>
+$(function(){
+    $('[data-toggle="tooltip"]').tooltip();
+    $(".side-nav .collapse").on("hide.bs.collapse", function() {
+        $(this).prev().find(".fa").eq(1).removeClass("fa-angle-right").addClass("fa-angle-down");
+    });
+    $('.side-nav .collapse').on("show.bs.collapse", function() {
+        $(this).prev().find(".fa").eq(1).removeClass("fa-angle-down").addClass("fa-angle-right");
+    });
+})
+</script>
 
 </body>
+<style>
+ .sidebar-sticky ul a{
+  box-sizing: border-box;
+  border-bottom: 1px solid black;
+  border-top: 1px solid rgba(255,255,255,.1);
+}
+</style>
 </html>

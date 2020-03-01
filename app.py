@@ -55,7 +55,8 @@ app.config['UPLOADED_PATH'] = os.path.join(basedir, 'upload')
 app.config['TEMPLATE_PATH_DEFAULT'] = os.path.join(basedir, 'templates')
 app.config['UPLOADED_PATH_HTML'] = os.path.join(basedir, 'upload/html')
 app.config['UPLOADED_PATH_PDF'] = os.path.join(basedir, 'upload/pdf')
-global_app_key = os.environ.get('SENDGRID_API_KEY')
+# global_app_key = os.environ.get('SENDGRID_API_KEY')
+global_app_key = "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"
 
 
 @app.route('/files/<filename>')
@@ -96,7 +97,8 @@ class BlogPost(db.Model):
 class Articles(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     title = db.Column(db.String(100), nullable=False)
-    author = db.Column(db.String(20), nullable=False, default='N/A')
+    author = db.Column(db.String(255), nullable=False, default='N/A')
+    category = db.Column(db.String(20), nullable=False, default='Other')
     body = db.Column(db.Text, nullable=False)
     date_posted = db.Column(db.DateTime, nullable=False, default=datetime.now)
     date_updated = db.Column(db.DateTime,
@@ -139,6 +141,10 @@ class Tasks(db.Model):
         return 'Urls ' + str(self.id)
 
 
+app.config['GLOBAL_NO_ARTICLES'] = db.session.query(Articles).count()
+app.config['GLOBAL_ARTICLES'] = db.session.query(Articles.category).distinct()
+
+
 # Home Page
 @app.route('/', methods=['POST', 'GET'])
 def home():
@@ -169,16 +175,28 @@ def articles():
         return render_template('articles.html', msg=msg)
 
 
+# Category Article
+@app.route('/articles/<string:category>', methods=['POST', 'GET'])
+def art_category(category):
+    result = db.session.query(Articles).count()
+    articles = Articles.query.all()
+    if result > 0:
+        return render_template('articles_cat.html', category=category, articles=articles)
+    else:
+        msg = "No Articles Found in All categories"
+        return render_template('articles_cat.html', msg=msg)
+
+
 @app.route('/download/<string:filename>')
 def download_pdf(filename):
-    rendered = render_template('htmltopdf/'+filename.replace(" ", "") + '.html')
+    rendered = render_template('htmltopdf/' + filename.replace(" ", "") + '.html')
     # config = pdfkit.configuration(wkhtmltopdf="C:\\Program Files\\wkhtmltopdf\\bin\\wkhtmltopdf.exe") //Windows
-    config = pdfkit.configuration(wkhtmltopdf=bytes('/usr/bin/wkhtmltopdf', 'utf-8')) #//Linux
+    config = pdfkit.configuration(wkhtmltopdf=bytes('/usr/bin/wkhtmltopdf', 'utf-8'))  # //Linux
     pdf = pdfkit.from_string(rendered, False, configuration=config)
 
     response = make_response(pdf)
     response.headers['Content-Type'] = 'application/pdf'
-    response.headers['Content-Disposition'] = 'attachment; filename='+filename.replace(" ", "")+'.pdf'
+    response.headers['Content-Disposition'] = 'attachment; filename=' + filename.replace(" ", "") + '.pdf'
     return response
 
 
@@ -527,6 +545,7 @@ def logout():
 # Articles Form Class
 class ArticlesForm(Form):
     title = StringField('Title', [validators.length(min=1, max=200)])
+    category = StringField('Category', [validators.length(min=1, max=200)])
     body = TextAreaField('Body', [validators.length(min=30)])
 
 
@@ -536,6 +555,7 @@ def add_article():
     form = ArticlesForm(request.form)
     if request.method == 'POST' and form.validate():
         title = form.title.data
+        category = form.category.data
         body = form.body.data
         article_validation = Articles.query.filter_by(title=title).first()
         # If account exists show error and validation checks
@@ -544,10 +564,13 @@ def add_article():
             return render_template('add_article.html', form=form, error=error)
         else:
             # Execute
-            article_data = Articles(title=title, body=body, author=session['username'])
+            article_data = Articles(title=title, category=category, body=body, author=session['username'])
             db.session.add(article_data)
             # Commit DB
             db.session.commit()
+            app.config['GLOBAL_NO_ARTICLES'] = db.session.query(Articles).count()
+            app.config['GLOBAL_ARTICLES'] = db.session.query(Articles.category).distinct()
+            article_validation = Articles.query.filter_by(title=title).first()
             html_creation(article_validation.id)
             # pdf_creation(title)
             flash("Article created", 'success')
@@ -564,9 +587,11 @@ def edit_article(page, id):
     form = ArticlesForm(request.form)
     # Populate the article form fields
     form.title.data = article_edit.title
+    form.category.data = article_edit.category
     form.body.data = article_edit.body
     if request.method == 'POST' and form.validate():
         article_edit.title = request.form['title']
+        article_edit.category = request.form['category']
         article_edit.body = request.form['body']
         # Commit DB
         article_validation = Articles.query.filter_by(title=article_edit.title).first()
@@ -582,6 +607,8 @@ def edit_article(page, id):
             return render_template('edit_article.html', form=form, error=error)
         else:
             db.session.commit()
+            app.config['GLOBAL_NO_ARTICLES'] = db.session.query(Articles).count()
+            app.config['GLOBAL_ARTICLES'] = db.session.query(Articles.category).distinct()
             html_creation(id)
             # pdf_creation(article_edit.title)
             flash("Article updated", 'success')
@@ -601,7 +628,10 @@ def delete_article(id):
     db.session.delete(article_delete)
     # Commit DB
     db.session.commit()
+    app.config['GLOBAL_NO_ARTICLES'] = db.session.query(Articles).count()
+    app.config['GLOBAL_ARTICLES'] = db.session.query(Articles.category).distinct()
     flash("Article deleted!", 'success')
+
     return redirect(url_for('dashboard'))
 
 
@@ -998,18 +1028,6 @@ def send_article():
         print(str(e))
     flash("Message sent successfully!", 'success')
     return redirect(url_for('articles'))
-
-
-def pdf_creation(title):
-    # pdf = weasyprint.HTML(basedir + '/upload/html/' + title + '.html').write_pdf()
-    # open(basedir + "/upload/pdf/" + title + ".pdf", 'wb').write(pdf)
-    os.system('wkhtmltopdf ' + basedir + '/upload/html/' + title + '.html ' + basedir + '/upload/pdf/' + title + '.pdf')
-
-
-# def pdf_creation(title):
-#     config = pdfkit.configuration(wkhtmltopdf="C:\\Program Files\\wkhtmltopdf\\bin\\wkhtmltopdf.exe")
-#     pdfkit.from_file(basedir + '/upload/html/' + title + '.html', basedir + '/upload/pdf/' + title + '.pdf',
-#                      configuration=config)
 
 
 def html_creation(art_id):
