@@ -55,8 +55,7 @@ app.config['UPLOADED_PATH'] = os.path.join(basedir, 'upload')
 app.config['TEMPLATE_PATH_DEFAULT'] = os.path.join(basedir, 'templates')
 app.config['UPLOADED_PATH_HTML'] = os.path.join(basedir, 'upload/html')
 app.config['UPLOADED_PATH_PDF'] = os.path.join(basedir, 'upload/pdf')
-# global_app_key = os.environ.get('SENDGRID_API_KEY')
-global_app_key = "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"
+global_app_key = os.environ.get('SENDGRID_API_KEY')
 
 
 @app.route('/files/<filename>')
