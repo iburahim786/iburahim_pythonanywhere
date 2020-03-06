@@ -144,6 +144,42 @@ app.config['GLOBAL_NO_ARTICLES'] = db.session.query(Articles).count()
 app.config['GLOBAL_ARTICLES'] = db.session.query(Articles.category).distinct()
 
 
+# role based control
+def is_logged_in(f):
+    @wraps(f)
+    def wrap(*args, **kwargs):
+        if 'logged_in' in session:
+            return f(*args, **kwargs)
+        else:
+            flash('Unauthorized, Please login!', 'danger')
+            return redirect(url_for('login'))
+    return wrap
+
+
+def is_logged_in_admin_user(f):
+    @wraps(f)
+    def wrap(*args, **kwargs):
+        if 'admin' == session['username']:
+            return f(*args, **kwargs)
+        else:
+            flash('Unauthorized, Please login with admin user!', 'danger')
+            app.logger.info(f.__name__)
+            return redirect(url_for('user_details'))
+    return wrap
+
+
+def is_logged_in_admin_url(f):
+    @wraps(f)
+    def wrap(*args, **kwargs):
+        if 'admin' == session['username']:
+            return f(*args, **kwargs)
+        else:
+            flash('Unauthorized, Please login with admin user', 'danger')
+            app.logger.info(f.__name__)
+            return redirect(url_for('url_links'))
+    return wrap
+
+
 # Home Page
 @app.route('/', methods=['POST', 'GET'])
 def home():
@@ -209,6 +245,7 @@ def article(id):
 
 # Team Updates page
 @app.route('/tupdates')
+@is_logged_in
 def tupdates():
     # Get articles
     result = db.session.query(BlogPost).count()
@@ -469,45 +506,6 @@ def signin():
             return render_template('signin.html', error=error)
 
     return render_template('signin.html')
-
-
-# role based control
-def is_logged_in(f):
-    @wraps(f)
-    def wrap(*args, **kwargs):
-        if 'logged_in' in session:
-            return f(*args, **kwargs)
-        else:
-            flash('Unauthorized, Please login!', 'danger')
-            return redirect(url_for('login'))
-
-    return wrap
-
-
-def is_logged_in_admin_user(f):
-    @wraps(f)
-    def wrap(*args, **kwargs):
-        if 'admin' == session['username']:
-            return f(*args, **kwargs)
-        else:
-            flash('Unauthorized, Please login with admin user!', 'danger')
-            app.logger.info(f.__name__)
-            return redirect(url_for('user_details'))
-
-    return wrap
-
-
-def is_logged_in_admin_url(f):
-    @wraps(f)
-    def wrap(*args, **kwargs):
-        if 'admin' == session['username']:
-            return f(*args, **kwargs)
-        else:
-            flash('Unauthorized, Please login with admin user', 'danger')
-            app.logger.info(f.__name__)
-            return redirect(url_for('url_links'))
-
-    return wrap
 
 
 # Dashboard page
