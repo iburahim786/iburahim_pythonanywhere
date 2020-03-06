@@ -212,7 +212,10 @@ def article(id):
 def tupdates():
     # Get articles
     result = db.session.query(BlogPost).count()
-    tupdates = BlogPost.query.all()
+    if session['username'].lower() == 'admin':
+        tupdates = BlogPost.query.all()
+    else:
+        tupdates = BlogPost.query.filter_by(author=session['username']).all()
     if result > 0:
         return render_template('tupdates.html', tupdates=tupdates)
     else:
@@ -513,11 +516,17 @@ def is_logged_in_admin_url(f):
 def dashboard():
     # Get articles
     result = db.session.query(Articles).count()
-    articles = Articles.query.all()
+    if session['username'].lower() == 'admin':
+        articles = Articles.query.all()
+    else:
+        articles = Articles.query.filter_by(author=session['username']).all()
 
     # Get Updates
     result1 = db.session.query(BlogPost).count()
-    tupdates = BlogPost.query.all()
+    if session['username'].lower() == 'admin':
+        tupdates = BlogPost.query.all()
+    else:
+        tupdates = BlogPost.query.filter_by(author=session['username']).all()
 
     if result > 0 and result1 > 0:
         return render_template('dashboard.html', tupdates=tupdates, articles=articles)
