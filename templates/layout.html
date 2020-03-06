@@ -42,12 +42,14 @@
             </a>
           </li>
           {% endif %}
+           {% if session.logged_in %}
           <li class="nav-item">
             <a class="nav-link text-white" href="/tupdates">
               <span style="font-weight:78px;color:white" data-feather="user-plus"></span>
               Team updates
             </a>
           </li>
+          {% endif %}
            {% if 'admin' == session.username|lower %}
           <li class="nav-item">
             <a class="nav-link text-white" href="/user_details">
