@@ -45,8 +45,13 @@
            {% if session.logged_in %}
           <li class="nav-item">
             <a class="nav-link text-white" href="/tupdates">
-              <span style="font-weight:78px;color:white" data-feather="user-plus"></span>
-              Team updates
+              {% if session.username | lower == 'admin' %}
+                  <span style="font-weight:78px;color:white" data-feather="user-plus"></span>
+                    Team updates
+              {% else %}
+                  <span style="font-weight:78px;color:white" data-feather="user"></span>
+                     My updates
+              {% endif%}
             </a>
           </li>
           {% endif %}

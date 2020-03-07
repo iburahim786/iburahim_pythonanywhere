@@ -14,7 +14,7 @@ from flask_sqlalchemy import SQLAlchemy
 from passlib.hash import sha256_crypt
 import pdfkit
 from sendgrid import To, Bcc, Cc
-from wtforms import Form, StringField, TextAreaField, PasswordField, validators
+from wtforms import Form, StringField, TextAreaField, PasswordField, validators, SubmitField
 from wtforms.fields.html5 import EmailField
 import os
 import re
@@ -137,7 +137,18 @@ class Tasks(db.Model):
     comments = db.Column(db.Text)
 
     def __repr__(self):
-        return 'Urls ' + str(self.id)
+        return 'Tasks ' + str(self.id)
+
+
+class Comments(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    user = db.Column(db.String(100), nullable=False)
+    comment = db.Column(db.String(200), nullable=False)
+    timestamp = db.Column(db.DateTime, nullable=False, default=datetime.now)
+    article_id = db.Column(db.Integer, db.ForeignKey('articles.id'), nullable=False)
+
+    def __repr__(self):
+        return 'Comments ' + str(self.id)
 
 
 app.config['GLOBAL_NO_ARTICLES'] = db.session.query(Articles).count()
@@ -153,6 +164,7 @@ def is_logged_in(f):
         else:
             flash('Unauthorized, Please login!', 'danger')
             return redirect(url_for('login'))
+
     return wrap
 
 
@@ -165,6 +177,7 @@ def is_logged_in_admin_user(f):
             flash('Unauthorized, Please login with admin user!', 'danger')
             app.logger.info(f.__name__)
             return redirect(url_for('user_details'))
+
     return wrap
 
 
@@ -177,6 +190,7 @@ def is_logged_in_admin_url(f):
             flash('Unauthorized, Please login with admin user', 'danger')
             app.logger.info(f.__name__)
             return redirect(url_for('url_links'))
+
     return wrap
 
 
@@ -240,7 +254,9 @@ def download_pdf(filename):
 def article(id):
     # Get article
     article = Articles.query.get(id)
-    return render_template('article.html', article=article)
+    comments = Comments.query.filter_by(article_id=id)
+    comment_count = Comments.query.filter_by(article_id=id).count()
+    return render_template('article.html', article=article, comments=comments, comment_count=comment_count)
 
 
 # Team Updates page
@@ -248,11 +264,13 @@ def article(id):
 @is_logged_in
 def tupdates():
     # Get articles
-    result = db.session.query(BlogPost).count()
+    # result = db.session.query(BlogPost).filter_by(author=session['username']).count()
     if session['username'].lower() == 'admin':
         tupdates = BlogPost.query.all()
+        result = db.session.query(BlogPost).count()
     else:
         tupdates = BlogPost.query.filter_by(author=session['username']).all()
+        result = db.session.query(BlogPost).filter_by(author=session['username']).count()
     if result > 0:
         return render_template('tupdates.html', tupdates=tupdates)
     else:
@@ -513,18 +531,22 @@ def signin():
 @is_logged_in
 def dashboard():
     # Get articles
-    result = db.session.query(Articles).count()
+    # result = db.session.query(Articles).filter_by(author=session['username']).count()
     if session['username'].lower() == 'admin':
         articles = Articles.query.all()
+        result = db.session.query(Articles).count()
     else:
         articles = Articles.query.filter_by(author=session['username']).all()
+        result = db.session.query(Articles).filter_by(author=session['username']).count()
 
     # Get Updates
-    result1 = db.session.query(BlogPost).count()
+    # result1 = db.session.query(BlogPost).count()
     if session['username'].lower() == 'admin':
         tupdates = BlogPost.query.all()
+        result1 = db.session.query(BlogPost).count()
     else:
         tupdates = BlogPost.query.filter_by(author=session['username']).all()
+        result1 = db.session.query(BlogPost).filter_by(author=session['username']).count()
 
     if result > 0 and result1 > 0:
         return render_template('dashboard.html', tupdates=tupdates, articles=articles)
@@ -590,7 +612,11 @@ def edit_article(page, id):
     # Get article by id
     article_edit = Articles.query.get_or_404(id)
     # Get form
-    form = ArticlesForm(request.form)
+    if article_edit.author == session['username']:
+        form = ArticlesForm(request.form)
+    else:
+        flash("Sorry, Author/Admin only has the rights to edit the articles. Please contact Author/Admin!", 'danger')
+        return render_template('home.html')
     # Populate the article form fields
     form.title.data = article_edit.title
     form.category.data = article_edit.category
@@ -1388,6 +1414,40 @@ def old_pwd_change():
             return render_template('change_pwd1.html')
     else:
         return render_template('change_pwd1.html')
+
+
+#
+# class AddCommentForm(Form):
+#     comment = StringField("Comment", [validators.DataRequired()])
+#     submit = SubmitField("Post")
+
+
+@app.route("/article/<int:article_id>/comment", methods=["GET", "POST"])
+@is_logged_in
+def comment_post(article_id):
+    # cmt_article = Articles.query.get_or_404(article_id)
+    # form = AddCommentForm()
+    if request.method == 'POST':  # this only gets executed when the form is submitted and not when the page loads
+        comment = request.form['comment']
+        article_comment = Comments(comment=comment, article_id=article_id, user=session['username'])
+        db.session.add(article_comment)
+        db.session.commit()
+        flash("Your comment has been added to the post", "success")
+        return redirect('/article/' + str(article_id))
+        # return render_template("article", article_id=article_id)
+    # return render_template("article.html", article_id=article_id)
+
+
+@app.route('/delete_comment/<string:article_id>/<string:comment_id>', methods=['GET', 'POST'])
+@is_logged_in
+def delete_comment(comment_id, article_id):
+    # Execute
+    comment_delete = Comments.query.get_or_404(comment_id)
+    db.session.delete(comment_delete)
+    # Commit DB
+    db.session.commit()
+    flash("Comment deleted!", 'success')
+    return redirect('/article/' + str(article_id))
 
 
 if __name__ == '__main__':

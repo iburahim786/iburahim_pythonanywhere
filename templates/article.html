@@ -6,6 +6,7 @@
 <!--        <small  >Written by {{ article.author }} on {{ article.date_posted}}</small>-->
 <!--    <form class="form-inline"  action="/send_article" method="post">-->
 <!--        <input style="display:inline" class="btn btn-success float-right" onclick="alert('Please wait, System preparing your article in PDF format !')" type="submit" value="Send to Mail" >-->
+
         {% if session.logged_in %}
         <a style="display:inline;color: inherit;" class="btn float-right" href="/send_article_new/{{article.id}}" type="submit">
             <span  onclick="alert('Please wait, Application preparing your article in HTML format !')" >
@@ -19,6 +20,14 @@
             <i title="download as PDF" class='far fa-file-pdf' style='font-size:35px;color:red'></i>
             </span>
         </a>
+        {% if article.author == session.username %}
+         <a style="display:inline;color: inherit;" class="btn float-right" href="{{ url_for('edit_article', page='articles', id=article.id) }}" type="submit">
+            <span >
+<!--            <i title="send this article to mail" class='far fa-envelope' style='font-size:35px'></i>-->
+            <i title="Edit" class='fas fa-user-edit' style='font-size:33px;'></i>
+            </span>
+        </a>
+        {% endif %}
         {% endif %}
     </div>
      <small>Written by {{ article.author }} on {{ article.date_posted}}</small>
@@ -28,8 +37,125 @@
     </div>
     <hr>
     <p> <a class="btn btn-sm btn-info" style="color: inherit;" href="{{ url_for('articles') }}">Back</a>
-        {% if session.logged_in %}
+        {% if (session.logged_in and article.author == session.username )  %}
         <a  class="btn btn-warning btn-sm" style="color: inherit;margin-left:20px;" href="{{ url_for('edit_article', page='articles', id=article.id) }}">Edit</a>
         {% endif %}
     </p>
+    <br>
+    <br>
+    <br>
+    <h2 style="display:inline" >Leave a Comment</h2>
+    <hr>
+     <form action="{{url_for('comment_post', article_id=article.id)}}" method="post" >
+         <div class="form-group">
+          <label>Comments:</label>
+          <textarea name="comment" id="comment" class="form-control"></textarea>
+         </div>
+        <button type="submit" class="btn btn-success save-btn" value="Save">Submit</button>
+     </form>
+    <br>
+    <br>
+    <br>
+    {% if comment_count > 0 %}
+        {% for art_comment in comments %}
+          <div class="row">
+            <div class="col-sm-1">
+            <div class="thumbnail">
+            <img class="img-responsive user-photo" src="https://cdn1.vectorstock.com/i/thumbs/82/55/anonymous-user-circle-icon-vector-18958255.jpg">
+            </div><!-- /thumbnail -->
+            </div><!-- /col-sm-1 -->
+
+            <div class="col-sm-5">
+            <div class="panel panel-primary">
+            <div class="panel-heading">
+            <strong>{{ art_comment.user }}</strong>  &#8192;&#8192;
+                <span style="text-color:white;">{{art_comment.timestamp}}</span>
+                {% if (art_comment.user == session.username or session.username == 'admin') %}
+                <a href="/delete_comment/{{ article.id }}/{{art_comment.id}}" style="color: inherit;float: right;"><i class='fas fa-trash-alt' style='font-size:18px'></i></a>
+                {% endif %}
+            </div>
+            <div class="panel-body">
+            {{ art_comment.comment}}
+            </div><!-- /panel-body -->
+            </div><!-- /panel panel-default -->
+            </div><!-- /col-sm-5 -->
+          </div>
+            <br>
+        {% endfor%}
+    {% else %}
+            <div>
+                <i title="Edit" class='fas fa-user-edit' style='font-size:33px;text-align:center'></i>
+                <p style="text-align:center;">No Comments, Be the First to Comment.</p>
+            </div>
+    {% endif %}
+<style>
+.img-responsive,.thumbnail>img,.thumbnail a>img,.carousel-inner>.item>img,.carousel-inner>.item>a>img{
+    display:block;
+    width:110% \9;
+    max-width:130%;
+    height:auto
+}
+.panel{
+    margin-bottom:20px;
+    background-color:#fff;
+    border:1px solid transparent;
+    border-radius:4px;
+    -webkit-box-shadow:0 1px 1px rgba(0,0,0,.05);
+    box-shadow:0 1px 1px rgba(0,0,0,.05)
+}
+.panel-heading{
+    padding:10px 15px;
+    border-bottom:1px solid transparent;
+    border-top-left-radius:3px;
+    border-top-right-radius:3px
+}
+.panel-default{
+    border-color:#ddd
+}
+.panel-primary{
+    border-color:#428bca
+}
+.panel-default>.panel-heading{
+    color:#333;
+    background-color:#f5f5f5;
+    border-color:#ddd
+}
+.panel-primary>.panel-heading{
+    color:#fff;
+    background-color:#428bca;
+    border-color:#428bca
+}
+.panel-body{
+    padding:15px
+}
+.thumbnail {
+    padding:0px;
+}
+.panel {
+    position:relative;
+}
+
+.panel>.panel-heading:after,.panel>.panel-heading:before{
+    position:absolute;
+    top:11px;left:-16px;
+    right:100%;
+    width:0;
+    height:0;
+    display:block;
+    content:" ";
+    border-color:transparent;
+    border-style:solid solid outset;
+    pointer-events:none;
+}
+.panel>.panel-heading:after{
+    border-width:7px;
+    border-right-color:#428bca;
+    margin-top:1px;
+    margin-left:2px;
+}
+.panel>.panel-heading:before{
+    border-right-color:#ddd;
+    border-width:8px;
+}
+</style>
 {% endblock%}

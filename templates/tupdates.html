@@ -1,7 +1,11 @@
 {% extends 'layout.html' %}
 
 {% block body %}
-   <h3>Team Members Updates</h3>
+   {% if session.username | lower == 'admin' %}
+       <h3>Team Members Updates</h3>
+   {% else %}
+       <h3>My Updates</h3>
+   {% endif%}
    <hr>
    <ul class="list-group">
        {% for tupdate in tupdates %}
