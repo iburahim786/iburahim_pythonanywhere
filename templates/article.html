@@ -83,10 +83,16 @@
             <br>
         {% endfor%}
     {% else %}
-            <div>
-                <i title="Edit" class='fas fa-user-edit' style='font-size:33px;text-align:center'></i>
-                <p style="text-align:center;">No Comments, Be the First to Comment.</p>
-            </div>
+            <div style="margin-left:25%" class="col-sm-6 col-sm-offset-3">
+                <div class="panel panel-success">
+                <div class="panel-heading-success">
+                  <a style="color: inherit;margin-left:50%"><i class='far fa-comment' style='font-size:28px'></i></a>
+                </div>
+                <div class="panel-body">
+                    <p style="text-align:center;font-weight: bold;text-color:">Be the First to Comment.</p>
+                </div><!-- /panel-body -->
+                </div><!-- /panel panel-default -->
+            </div><!-- /col-sm-5 -->
     {% endif %}
 <style>
 .img-responsive,.thumbnail>img,.thumbnail a>img,.carousel-inner>.item>img,.carousel-inner>.item>a>img{
@@ -109,11 +115,22 @@
     border-top-left-radius:3px;
     border-top-right-radius:3px
 }
+
+.panel-heading-success{
+    padding:10px 15px;
+    border-bottom:1px solid transparent;
+    border-top-left-radius:3px;
+    border-top-right-radius:3px
+}
 .panel-default{
     border-color:#ddd
 }
 .panel-primary{
     border-color:#428bca
+}
+
+.panel-success{
+     border-color:#d6e9c6
 }
 .panel-default>.panel-heading{
     color:#333;
@@ -124,6 +141,12 @@
     color:#fff;
     background-color:#428bca;
     border-color:#428bca
+}
+
+.panel-success>.panel-heading-success{
+    color:#3c763d;
+    background-color:#dff0d8;
+    border-color:#d6e9c6
 }
 .panel-body{
     padding:15px
