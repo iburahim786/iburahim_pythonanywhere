@@ -20,7 +20,7 @@
             <i title="download as PDF" class='far fa-file-pdf' style='font-size:35px;color:red'></i>
             </span>
         </a>
-        {% if article.author == session.username %}
+        {% if (article.author == session.username or session.username | lower == 'admin') %}
          <a style="display:inline;color: inherit;" class="btn float-right" href="{{ url_for('edit_article', page='articles', id=article.id) }}" type="submit">
             <span >
 <!--            <i title="send this article to mail" class='far fa-envelope' style='font-size:35px'></i>-->
@@ -70,7 +70,7 @@
             <div class="panel-heading">
             <strong>{{ art_comment.user }}</strong>  &#8192;&#8192;
                 <span style="text-color:white;">{{art_comment.timestamp}}</span>
-                {% if (art_comment.user == session.username or session.username == 'admin') %}
+                {% if (art_comment.user == session.username or session.username | lower == 'admin') %}
                 <a href="/delete_comment/{{ article.id }}/{{art_comment.id}}" style="color: inherit;float: right;"><i class='fas fa-trash-alt' style='font-size:18px'></i></a>
                 {% endif %}
             </div>
