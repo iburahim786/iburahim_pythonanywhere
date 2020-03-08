@@ -8,6 +8,7 @@ from email.mime.base import MIMEBase
 # import weasyprint
 import jinja2
 from flask import Flask, render_template, flash, session, redirect, send_from_directory, make_response
+from flask_avatars import Avatars
 from flask_ckeditor import *
 from flask_mysqldb import MySQL
 from flask_sqlalchemy import SQLAlchemy
@@ -47,6 +48,8 @@ mysql = MySQL(app)
 
 ##################### FILE UPLOAD SCRIPT ######################################
 ckeditor = CKEditor(app)
+
+avatars = Avatars(app)
 
 app.config['CKEDITOR_SERVE_LOCAL'] = False
 app.config['CKEDITOR_HEIGHT'] = 400
@@ -174,9 +177,9 @@ def is_logged_in_admin_user(f):
         if 'admin' == session['username']:
             return f(*args, **kwargs)
         else:
-            flash('Unauthorized, Please login with admin user!', 'danger')
-            app.logger.info(f.__name__)
-            return redirect(url_for('user_details'))
+            flash(Markup('Unauthorized, Please <a href="/logout" '
+                         'class="alert-link">logout</a> and login with admin user!'), 'danger')
+            return redirect(url_for('home'))
 
     return wrap
 
@@ -213,6 +216,7 @@ def about():
 
 # Articles page
 @app.route('/articles')
+@is_logged_in_admin_user
 def articles():
     # Get articles
     result = db.session.query(Articles).count()
@@ -1209,8 +1213,7 @@ def internal_error(error):
 
 # User Details page
 @app.route('/user_details')
-@is_logged_in
-# @is_logged_in_admin_user
+@is_logged_in_admin_user
 def user_details():
     # Get articles
     result = db.session.query(Users).count()
@@ -1224,8 +1227,7 @@ def user_details():
 
 
 @app.route('/delete_user/<string:id>', methods=['GET', 'POST'])
-@is_logged_in
-# @is_logged_in_admin_user
+@is_logged_in_admin_user
 def delete_user(id):
     # Execute
     user_delete = Users.query.get_or_404(id)

@@ -3,13 +3,17 @@
 {% block body %}
     <div class="container-fluid">
                   <div class="row">
-                    <div class="col-sm-8">
+                    <div class="col-sm-12">
        <div class="card bg-light" >
         <article class="card-body mx-auto" style="max-width: 400px;">
         <form action="/profile" method="post">
-        <h2 align="justify" class="text-black" ><u> Account Information</u></h2>
+        <h2 align="justify" class="text-black" style="margin-left:50px" ><u> Account Information</u></h2>
         <br>
              <div class="textbox-width">
+<!--                 <img class="navbar-brand image&#45;&#45;cover center" style="border-radius: 100%;" src="{{ avatars.default(size='s') }}">-->
+                 <img class="navbar-brand image--cover center" style="border-radius: 100%;"
+                      src="https://cdn1.vectorstock.com/i/thumbs/82/55/anonymous-user-circle-icon-vector-18958255.jpg">
+                 <br>
 <!--        <p align="justify" class="lead text-black" style="font-weight: 500;">-->
 <!--            Name : {{ session.name }}</p>-->
 <!--        <p align="justify" class="lead text-black" style="font-weight: 500; "> Username : {{ session.username }}</p>-->
@@ -17,13 +21,13 @@
 <!--        <p align="justify" class="lead text-black" style="font-weight: 500; "> Registered Date : {{ session.name }}</p>-->
         <div class="form-group input-group" >
 		<div class="input-group-prepend">
-		    <span class="input-group-text"> <i class="fa fa-user"></i> </span>
+		    <span class="input-group-text"> <i title="Name" class="fa fa-user"></i> </span>
 		 </div>
         <input name="name" id="name" class="form-control" placeholder="Full name" type="text" value="{{ check.name }}">
     </div> <!-- form-group// -->
                    <div class="form-group input-group">
 		<div class="input-group-prepend">
-		    <span class="input-group-text"> <i class="fa fa-user"></i> </span>
+		    <span class="input-group-text"> <i title="Username" class="fa fa-user"></i> </span>
 		 </div>
         <input name="username" id="username" class="form-control" placeholder="Username" type="text" value="{{ check.username }}">
     </div> <!-- form-group// -->
@@ -44,9 +48,10 @@
         </article>
       </div>
                     </div>
-                  <div class="col-sm-4">
-                      <img class="navbar-brand image--cover" width="250" style="border-radius: 30%;" src="/static/images/mflogo3.jpg">
-                    </div>
+<!--                  <div class="col-sm-4">-->
+<!--                      <img class="navbar-brand image&#45;&#45;cover" width="250" style="border-radius: 30%;" src="/static/images/mflogo3.jpg">-->
+<!--                          <img class="navbar-brand image&#45;&#45;cover" width="150" style="border-radius: 30%;" src="{{ avatars.default(size='s') }}">-->
+<!--                    </div>-->
                   </div>
     </div>
 
@@ -83,6 +88,12 @@
 .btn-twitter {
     background-color: #42AEEC;
     color: #fff;
+}
+.center {
+  display: block;
+  margin-left: auto;
+  margin-right: auto;
+  width: 30%;
 }
 </style>
 
