@@ -36,7 +36,7 @@
          {{ article.body | safe}}
     </div>
     <hr>
-    <p> <a class="btn btn-sm btn-info" style="color: inherit;" href="{{ url_for('art_category') }}">Back</a>
+    <p> <a class="btn btn-sm btn-info" style="color: inherit;" href="{{ url_for('art_category', category=article.category) }}">Back</a>
         {% if (session.logged_in and article.author == session.username )  %}
         <a  class="btn btn-warning btn-sm" style="color: inherit;margin-left:20px;" href="{{ url_for('edit_article', page='articles', id=article.id) }}">Edit</a>
         {% endif %}
