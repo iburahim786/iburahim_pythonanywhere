@@ -17,7 +17,8 @@
          </div>
          <p>
              <input type="submit" class="btn btn-primary" value="Save">
-             <a class="btn btn-info" style="color: inherit;margin-left:30px;" href="{{ url_for('articles') }}">Back</a>
+             <a class="btn btn-info" style="color: inherit;margin-left:30px;"
+                href="{{ url_for('art_category', category=article.category) }}">Back</a>
          </p>
      </form>
 {% endblock %}

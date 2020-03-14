@@ -616,7 +616,7 @@ def edit_article(page, id):
     # Get article by id
     article_edit = Articles.query.get_or_404(id)
     # Get form
-    if article_edit.author == session['username']:
+    if article_edit.author == session['username'] or 'admin' == session['username']:
         form = ArticlesForm(request.form)
     else:
         flash("Sorry, Author/Admin only has the rights to edit the articles. Please contact Author/Admin!", 'danger')
