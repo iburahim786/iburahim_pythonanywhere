@@ -653,7 +653,7 @@ def edit_article(page, id):
             else:
                 return redirect('/edit_article/' + page + '/' + id)
 
-    return render_template('edit_article.html', form=form)
+    return render_template('edit_article.html', form=form, article_id=id)
 
 
 @app.route('/delete_article/<string:id>', methods=['GET', 'POST'])
