@@ -1,4 +1,3 @@
-weasyprint
 wkhtmltopdf
 pdfkit
 django-sendgrid-webhook
@@ -29,5 +28,4 @@ SQLAlchemy==1.3.3
 sqlparse==0.3.0
 Werkzeug==0.16.0
 WTForms==2.2.1
-WeasyPrint
 pyopenssl
