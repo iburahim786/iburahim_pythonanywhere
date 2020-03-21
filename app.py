@@ -10,6 +10,7 @@ import jinja2
 from flask import Flask, render_template, flash, session, redirect, send_from_directory, make_response
 from flask_avatars import Avatars
 from flask_ckeditor import *
+from flask_dance.contrib.facebook import make_facebook_blueprint
 from flask_mysqldb import MySQL
 from flask_sqlalchemy import SQLAlchemy
 from passlib.hash import sha256_crypt
@@ -25,6 +26,16 @@ import uuid
 import random
 import sendgrid
 from sendgrid.helpers.mail import Mail, Attachment, FileContent, FileName, FileType, Disposition, ContentId
+# ###########################################
+from flask_dance.contrib.twitter import make_twitter_blueprint, twitter
+from flask_dance.contrib.github import make_github_blueprint, github
+from flask_dance.contrib.facebook import make_facebook_blueprint, facebook
+from flask_sqlalchemy import SQLAlchemy
+from flask_login import UserMixin, current_user, LoginManager, login_required, login_user, logout_user
+from flask_dance.consumer.storage.sqla import OAuthConsumerMixin, SQLAlchemyStorage
+from flask_dance.consumer import oauth_authorized
+from sqlalchemy.orm.exc import NoResultFound
+# ###########################################
 
 app = Flask(__name__)
 # app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///posts.db'
@@ -46,9 +57,9 @@ app.config['MYSQL_CURSORCLASS'] = 'DictCursor'
 # init MYSQL
 mysql = MySQL(app)
 
+
 ##################### FILE UPLOAD SCRIPT ######################################
 ckeditor = CKEditor(app)
-
 avatars = Avatars(app)
 
 app.config['CKEDITOR_SERVE_LOCAL'] = False
@@ -110,7 +121,7 @@ class Articles(db.Model):
         return 'Articles ' + str(self.id)
 
 
-class Users(db.Model):
+class Users(UserMixin, db.Model):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(100), nullable=False)
     email = db.Column(db.String(100), nullable=False)
@@ -157,6 +168,148 @@ class Comments(db.Model):
 app.config['GLOBAL_NO_ARTICLES'] = db.session.query(Articles).count()
 app.config['GLOBAL_ARTICLES'] = db.session.query(Articles.category).distinct()
 
+# Connect to twitter/github ###################################################
+os.environ['OAUTHLIB_INSECURE_TRANSPORT'] = '1'
+
+login_manager = LoginManager(app)
+
+
+class OAuth(OAuthConsumerMixin, db.Model):
+    user_id = db.Column(db.Integer, db.ForeignKey(Users.id))
+    user = db.relationship(Users)
+
+
+@login_manager.user_loader
+def load_user(user_id):
+    return Users.query.get(int(user_id))
+
+
+twitter_blueprint = make_twitter_blueprint(api_key='d4wull0Yxr8j5dodoomZnERao',
+                                           api_secret='hvsoBEFSRbUrUb2w6FtlKuwg6SkpdtdT8CcNt4Oeo7v8u81sRN')
+
+github_blueprint = make_github_blueprint(client_id='Iv1.4c8e3b57fb85d327',
+                                         client_secret='e478405b19836c32524f2edc2f1f623c6be6b6ee')
+
+facebook_blueprint = make_facebook_blueprint(client_id='541542180110438',
+                                             client_secret='4622783c7c26da9e3059fbd2bf4ebc5f')
+
+app.register_blueprint(twitter_blueprint, url_prefix='/twitter_login')
+app.register_blueprint(github_blueprint, url_prefix='/github_login')
+app.register_blueprint(facebook_blueprint, url_prefix='/facebook_login')
+
+twitter_blueprint.storage = SQLAlchemyStorage(OAuth, db.session, user=current_user, user_required=False)
+
+# @app.route('/twitter')
+# def twitter_login():
+#     if not twitter.authorized:
+#         return redirect(url_for('twitter.login'))
+#     account_info = twitter.get('account/verify_credentials.json?include_email=true')
+#     app.logger.info(account_info)
+#     app.logger.info(account_info.ok)
+#     if account_info.ok:
+#         app.logger.info("OK-1")
+#         account_info_json = account_info.json()
+#         app.logger.info(account_info_json)
+#         app.logger.info("OK-2")
+#         session['logged_in'] = True
+#         session['username'] = account_info_json['screen_name']
+#         session['name'] = account_info_json['name']
+#         session['email'] = account_info_json['email']
+#         app.logger.info(session['email'])
+#         session['rdate'] = 'None'
+#         flash("You are now logged in..", 'success')
+#         app.logger.info("OK-3")
+#         # return redirect(url_for('home'))
+#         # return '<h1>your Twitter name is @{}</h1>'.format(account_info_json['screen_name'])
+#     return '<h1>Request failed! </h1>'
+
+
+@app.route('/twitter')
+def twitter_login():
+    app.logger.info(twitter.authorized)
+    if not twitter.authorized:
+        return redirect(url_for('twitter.login'))
+    return redirect(url_for('home'))
+
+
+@oauth_authorized.connect_via(twitter_blueprint)
+def twitter_logged_in(blueprint, token):
+    account_info = blueprint.session.get('account/verify_credentials.json?include_email=true')
+    if account_info.ok:
+        account_info_json = account_info.json()
+        username = account_info_json['screen_name']
+        name = account_info_json['name']
+        email = account_info_json['email']
+        # query_email_or_uname = db.session.query(Users).filter((Users.username == username) | (Users.email == email))
+        query_email = Users.query.filter_by(email=email)
+        try:
+            user = query_email.one()
+        except NoResultFound:
+            password = sha256_crypt.encrypt(username)
+            user = Users(name=name, email=email, username=username, password=password)
+            db.session.add(user)
+            db.session.commit()
+        login_user(user)
+
+
+@app.route('/github')
+def github_login():
+    app.logger.info('github authorized: '+str(github.authorized))
+    if not github.authorized:
+        return redirect(url_for('github.login'))
+    return redirect(url_for('home'))
+
+
+@oauth_authorized.connect_via(github_blueprint)
+def github_logged_in(blueprint, token):
+    account_info = blueprint.session.get('/user')
+    if account_info.ok:
+        account_info_json = account_info.json()
+        username = account_info_json['login']
+        name = account_info_json['name']
+        email = account_info_json['email']
+        query_email = Users.query.filter_by(email=email)
+        # query_email_or_uname = db.session.query(Users).filter((Users.username == username) | (Users.email == email))
+        try:
+            user = query_email.one()
+        except NoResultFound:
+            password = sha256_crypt.encrypt(username)
+            user = Users(name=name, email=email, username=username, password=password)
+            db.session.add(user)
+            db.session.commit()
+        login_user(user)
+
+
+@app.route('/facebook')
+def facebook_login():
+    app.logger.info('facebook authorized: '+str(facebook.authorized))
+    if not facebook.authorized:
+        return redirect(url_for('facebook.login'))
+    return redirect(url_for('home'))
+
+
+@oauth_authorized.connect_via(facebook_blueprint)
+def facebook_logged_in(blueprint, token):
+    account_info = blueprint.session.get('me?fields=email,name,first_name')
+    if account_info.ok:
+        account_info_json = account_info.json()
+        raw_uname = account_info_json['first_name']
+        raw1_uname = raw_uname.split()
+        name = account_info_json['name']
+        email = account_info_json['email']
+        query_email = Users.query.filter_by(email=email)
+# query_email_or_uname = db.session.query(Users).filter((Users.username == raw1_uname[0]) | (Users.email == email))
+        try:
+            user = query_email.one()
+        except NoResultFound:
+            password = sha256_crypt.encrypt(raw1_uname[0])
+            user = Users(name=name, email=email, username=raw1_uname[0], password=password)
+            db.session.add(user)
+            db.session.commit()
+        login_user(user)
+
+# End of the implementation ######################################################################
+
 
 # role based control
 def is_logged_in(f):
@@ -200,7 +353,52 @@ def is_logged_in_admin_url(f):
 # Home Page
 @app.route('/', methods=['POST', 'GET'])
 def home():
+    if twitter.authorized:
+        account_info = twitter.get('account/verify_credentials.json?include_email=true')
+        account_info_json = account_info.json()
+        session['logged_in'] = True
+        session['username'] = account_info_json['screen_name']
+        session['name'] = account_info_json['name']
+        session['email'] = account_info_json['email']
+        app.logger.info(session['email'])
+        session['rdate'] = 'None'
+        flash("You are now logged in!", 'success')
+        return render_template('home.html')
+    elif github.authorized:
+        account_info = github.get('/user')
+        account_info_json = account_info.json()
+        session['logged_in'] = True
+        session['username'] = account_info_json['login']
+        session['name'] = account_info_json['name']
+        session['email'] = account_info_json['email']
+        app.logger.info(session['email'])
+        session['rdate'] = 'None'
+        flash("You are now logged in!", 'success')
+        return render_template('home.html')
+    elif facebook.authorized:
+        account_info = facebook.get('/me?fields=email,name,first_name')
+        account_info_json = account_info.json()
+        session['logged_in'] = True
+        session['username'] = account_info_json['first_name']
+        session['name'] = account_info_json['name']
+        session['email'] = account_info_json['email']
+        app.logger.info(session['email'])
+        session['rdate'] = 'None'
+        flash("You are now logged in!", 'success')
+        return render_template('home.html')
     return render_template('home.html')
+
+# @app.route('/', methods=['POST', 'GET'])
+# @login_required
+# def index():
+#     return '<h1>You are logged in as {}</h1>'.format(current_user.username)
+
+
+# @app.route('/logout_twitter', methods=['POST', 'GET'])
+# @login_required
+# def logout():
+#     logout_user()
+#     return redirect(url_for('index'))
 
 
 @app.route('/loading')
@@ -338,7 +536,7 @@ def register():
         account = Users.query.filter_by(username=username).first()
         # If account exists show error and validation checks
         if account:
-            error = 'Account already exists!'
+            error = 'Account  already exists!'
             return render_template('register.html', error=error)
         else:
             user = Users(name=name, email=email, username=username, password=password)
@@ -360,10 +558,13 @@ def signup():
         email = request.form['email']
         password = sha256_crypt.encrypt(str(request.form['password']))
         # Execute
-        account = Users.query.filter_by(username=username).first()
+        ## change start
+        account_username = Users.query.filter_by(username=username).first()
+        account_email = Users.query.filter_by(email=email).first()
         # If account exists show error and validation checks
-        if account:
-            error = 'Account already exists!'
+        if account_username or account_email:
+            ## change end
+            error = 'Username already exists!'
             return render_template('signup.html', error=error)
         else:
             user = Users(name=name, email=email, username=username, password=password)
@@ -569,6 +770,7 @@ def dashboard():
 @app.route('/logout')
 @is_logged_in
 def logout():
+    logout_user()
     session.clear()
     flash('You are now logged out', 'success')
     return redirect(url_for('home'))
@@ -1453,4 +1655,4 @@ def delete_comment(comment_id, article_id):
 
 
 if __name__ == '__main__':
-    app.run(debug=True)
+    app.run(debug=True, ssl_context='adhoc')

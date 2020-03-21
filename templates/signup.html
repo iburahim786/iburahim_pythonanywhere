@@ -1,10 +1,10 @@
 {% extends 'layout.html' %}
 
 {% block body %}
-    <div class="card bg-light">
-    <article class="card-body mx-auto" style="max-width: 800px;">
-	<h4 class="card-title mt-3 text-center">Create Account</h4>
-	<p class="text-center">Get started with your free account</p>
+    <div id="rcorners3" class="card bg-light" style="max-width: 600px;margin-left:330px;;" >
+    <article class="card-body mx-auto" >
+	<h4 class="card-title mt-3 text-center ">Create Account</h4>
+	<p class="text-center ">Get started with your free account</p>
     <div class="textbox-width" style="align:right">
     <form action="/signup" method="post">
 	<div class="form-group input-group" >
@@ -40,16 +40,15 @@
     <div class="form-group">
         <button type="submit" class="btn btn-primary btn-block"> Create Account  </button>
     </div> <!-- form-group// -->
-    <p class="text-center ">Have an account? <a href="/login">Log In</a> </p>
+    <p class="text-center ">Have an account? <a style="font-weight:bold;color: inherit;color:green;" href="/login">Log In</a> </p>
 </form>
     </div>
 </article>
 </div>
 
-</div>
 <style>
 .textbox-width{
-   width: 600px;
+   width: 500px;
 }
 .divider-text {
     position: relative;
@@ -80,6 +79,15 @@
 .btn-twitter {
     background-color: #42AEEC;
     color: #fff;
+}
+
+#rcorners3 {
+  border-radius: 20px 200px;
+  border: 2px solid #02b6f7;
+  background: #73AD21;
+  padding: 20px;
+  width: 600px;
+  height: 600px;
 }
 </style>
 {% endblock %}

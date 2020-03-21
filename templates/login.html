@@ -1,11 +1,24 @@
 {% extends 'layout.html' %}
 
 {% block body %}
-
-<div class="card bg-light">
-    <article class="card-body mx-auto" style="max-width: 400px;">
+<div id="rcorners4" class="card bg-light" style="max-width: 500px;margin-left:350px">
+    <article class="card-body mx-auto">
 	<h4 class="card-title mt-3 text-center">Sign in to continue</h4>
-	<i class="fa fa-sign-in" aria-hidden="true"></i>
+<!--	<i class="fa fa-sign-in" aria-hidden="true"></i>-->
+    <p class="text-center">Get started with your free account</p>
+    <div  class="col-md-12 text-center">
+        <a href="/facebook" class="btn-social btn-facebook"><i class="fab fa-facebook-f"></i></a>
+         <a href="/google" class="btn-social btn-google"><i class="fab fa-google"></i></a>
+        <a href="/github" class="btn-social btn-github"><i class="fab fa-github" style="font-size:23px;"></i></a>
+        <a href="/twitter" class="btn-social btn-twitter"><i class="fab fa-twitter"></i></a>
+    </div>
+<!--	<p class="social-width">-->
+<!--		<a href="/twitter" class="btn btn-block btn-twitter"> <i class="fab fa-twitter"></i>   Login via Twitter</a>-->
+<!--		<a href="" class="btn btn-block btn-facebook"> <i class="fab fa-facebook-f"></i>   Login via facebook</a>-->
+<!--	</p>-->
+	<p class="divider-text textbox-width">
+        <span class="bg-light">OR</span>
+    </p>
     <div class="textbox-width" style="align:right">
         <form action="/login" method="post">
          <div class="form-group input-group">
@@ -29,6 +42,8 @@
     </div>
     </article>
     </div>
+<script src="//maxcdn.bootstrapcdn.com/bootstrap/3.3.0/js/bootstrap.min.js"></script>
+<script src="//code.jquery.com/jquery-1.11.1.min.js"></script>
 <style>
 .textbox-width{
    width: 400px;
@@ -62,6 +77,119 @@
 .btn-twitter {
     background-color: #42AEEC;
     color: #fff;
+}
+
+.social-width{
+   width: 400px;
+}
+
+a.btn-social,
+.btn-social
+{
+    border-radius: 50%;
+    color: #ffffff !important;
+    display: inline-block;
+    height: 54px;
+    line-height: 54px;
+    margin: 8px 4px;
+    text-align: center;
+    text-decoration: none;
+    transition: background-color .3s;
+    webkit-transition: background-color .3s;
+    width: 54px;
+}
+
+.btn-social .fa,.btn-social i
+{
+    backface-visibility: hidden;
+    moz-backface-visibility: hidden;
+    ms-transform: scale(1);
+    o-transform: scale(1);
+    transform: scale(1);
+    transition: all .25s;
+    webkit-backface-visibility: hidden;
+    webkit-transform: scale(1);
+    webkit-transition: all .25s;
+}
+.btn-social:hover,.btn-social:focus
+{
+    color: #fff;
+    outline: none;
+    text-decoration: none;
+}
+.btn-social:hover .fa,.btn-social:focus .fa,.btn-social:hover i,.btn-social:focus i
+{
+    ms-transform: scale(1.3);
+    o-transform: scale(1.3);
+    transform: scale(1.3);
+    webkit-transform: scale(1.3);
+}
+.btn-social.btn-xs
+{
+    font-size: 9px;
+    height: 24px;
+    line-height: 13px;
+    margin: 6px 2px;
+    width: 24px;
+}
+.btn-social.btn-sm
+{
+    font-size: 13px;
+    height: 36px;
+    line-height: 18px;
+    margin: 6px 2px;
+    width: 36px;
+}
+.btn-social.btn-lg
+{
+    font-size: 22px;
+    height: 72px;
+    line-height: 40px;
+    margin: 10px 6px;
+    width: 72px;
+}
+.btn-facebook
+{
+    background-color: #3b5998;
+}
+.btn-facebook:hover
+{
+    background-color: #4c70ba;
+}
+.btn-twitter
+{
+    background-color: #55acee;
+}
+.btn-twitter:hover
+{
+    background-color: #83c3f3;
+}
+
+.btn-github
+{
+    background-color: #444444;
+}
+.btn-github:hover
+{
+    background-color: #666666;
+}
+
+.btn-google
+{
+    background-color: #dd4b39;
+}
+.btn-google:hover
+{
+    background-color: #e47365;
+}
+
+#rcorners4 {
+  border-radius: 15px;
+  border: 2px solid #02b6f7;
+  background: #73AD21;
+  padding: 20px;
+  width: 500px;
+  height: 500px;
 }
 </style>
 {% endblock%}
