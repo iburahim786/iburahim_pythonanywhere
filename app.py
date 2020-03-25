@@ -191,23 +191,14 @@ def load_user(user_id):
     return Users.query.get(int(user_id))
 
 
-twitter_blueprint = make_twitter_blueprint(api_key='d4wull0Yxr8j5dodoomZnERao',
-                                           api_secret='hvsoBEFSRbUrUb2w6FtlKuwg6SkpdtdT8CcNt4Oeo7v8u81sRN')
+twitter_blueprint = make_twitter_blueprint()
 
-github_blueprint = make_github_blueprint(client_id='Iv1.4c8e3b57fb85d327',
-                                         client_secret='e478405b19836c32524f2edc2f1f623c6be6b6ee')
+github_blueprint = make_github_blueprint()
 
-facebook_blueprint = make_facebook_blueprint(client_id='541542180110438',
-                                             client_secret='4622783c7c26da9e3059fbd2bf4ebc5f')
+facebook_blueprint = make_facebook_blueprint()
 
 google_blueprint = \
-    make_google_blueprint(client_id='781515448217-kma5c3i95fsmiscpmgfq3uoed89dhl2m.apps.googleusercontent.com',
-                          client_secret='s_z_HPRMuDehvf2T2z435vZ4',
-                          scope=['https://www.googleapis.com/auth/userinfo.email',
-                                 'https://www.googleapis.com/auth/userinfo.profile',
-                                 'openid'],
-                          offline=True,
-                          reprompt_consent=True)
+    make_google_blueprint()
 
 app.register_blueprint(twitter_blueprint, url_prefix='/twitter_login')
 app.register_blueprint(github_blueprint, url_prefix='/github_login')
