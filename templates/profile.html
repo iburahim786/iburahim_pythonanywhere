@@ -1,17 +1,17 @@
 {% extends 'layout.html' %}
 
 {% block body %}
-    <div class="container-fluid">
-                  <div class="row">
-                    <div class="col-sm-12">
-       <div class="card bg-light" >
+<!--    <div class="container-fluid">-->
+<!--                  <div class="row">-->
+<!--                    <div class="col-sm-12">-->
+       <div id="rcorners4" class="card bg-light" style="max-width: 600px;margin-left:300px">
         <article class="card-body mx-auto" style="max-width: 400px;">
         <form action="/profile" method="post">
-        <h2 align="justify" class="text-black" style="margin-left:50px" ><u> Account Information</u></h2>
+        <h2 align="justify" class="text-black text-center"><u> Account Information</u></h2>
         <br>
-             <div class="textbox-width">
+             <div class="textbox-width" style="align:right">
 <!--                 <img class="navbar-brand image&#45;&#45;cover center" style="border-radius: 100%;" src="{{ avatars.default(size='s') }}">-->
-                 <img class="navbar-brand image--cover center" style="border-radius: 100%;"
+                 <img class="navbar-brand image--cover" style="border-radius: 100%;margin-left:120px"
                       src="https://cdn1.vectorstock.com/i/thumbs/82/55/anonymous-user-circle-icon-vector-18958255.jpg">
                  <br>
 <!--        <p align="justify" class="lead text-black" style="font-weight: 500;">-->
@@ -47,13 +47,13 @@
         </form>
         </article>
       </div>
-                    </div>
+<!--                    </div>-->
 <!--                  <div class="col-sm-4">-->
 <!--                      <img class="navbar-brand image&#45;&#45;cover" width="250" style="border-radius: 30%;" src="/static/images/mflogo3.jpg">-->
 <!--                          <img class="navbar-brand image&#45;&#45;cover" width="150" style="border-radius: 30%;" src="{{ avatars.default(size='s') }}">-->
 <!--                    </div>-->
-                  </div>
-    </div>
+<!--                  </div>-->
+<!--    </div>-->
 
 <style>
 .textbox-width{
@@ -94,6 +94,14 @@
   margin-left: auto;
   margin-right: auto;
   width: 30%;
+}
+#rcorners4 {
+  border-radius: 15px;
+  border: 2px solid #02b6f7;
+  background: #73AD21;
+  padding: 20px;
+  width: 600px;
+  height: 600px;
 }
 </style>
 

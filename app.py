@@ -11,8 +11,10 @@ from flask import Flask, render_template, flash, session, redirect, send_from_di
 from flask_avatars import Avatars
 from flask_ckeditor import *
 from flask_dance.contrib.facebook import make_facebook_blueprint
+from flask_dance.contrib.google import make_google_blueprint
 from flask_mysqldb import MySQL
 from flask_sqlalchemy import SQLAlchemy
+from oauthlib import openid
 from passlib.hash import sha256_crypt
 import pdfkit
 from sendgrid import To, Bcc, Cc
@@ -30,11 +32,14 @@ from sendgrid.helpers.mail import Mail, Attachment, FileContent, FileName, FileT
 from flask_dance.contrib.twitter import make_twitter_blueprint, twitter
 from flask_dance.contrib.github import make_github_blueprint, github
 from flask_dance.contrib.facebook import make_facebook_blueprint, facebook
+from flask_dance.contrib.google import make_google_blueprint, google
 from flask_sqlalchemy import SQLAlchemy
 from flask_login import UserMixin, current_user, LoginManager, login_required, login_user, logout_user
 from flask_dance.consumer.storage.sqla import OAuthConsumerMixin, SQLAlchemyStorage
 from flask_dance.consumer import oauth_authorized
 from sqlalchemy.orm.exc import NoResultFound
+import requests
+
 # ###########################################
 
 app = Flask(__name__)
@@ -56,7 +61,6 @@ app.config['MYSQL_CURSORCLASS'] = 'DictCursor'
 
 # init MYSQL
 mysql = MySQL(app)
-
 
 ##################### FILE UPLOAD SCRIPT ######################################
 ckeditor = CKEditor(app)
@@ -190,35 +194,18 @@ github_blueprint = make_github_blueprint()
 
 facebook_blueprint = make_facebook_blueprint()
 
+google_blueprint = \
+    make_google_blueprint()
+
 app.register_blueprint(twitter_blueprint, url_prefix='/twitter_login')
 app.register_blueprint(github_blueprint, url_prefix='/github_login')
 app.register_blueprint(facebook_blueprint, url_prefix='/facebook_login')
+app.register_blueprint(google_blueprint, url_prefix='/google_login')
 
 twitter_blueprint.storage = SQLAlchemyStorage(OAuth, db.session, user=current_user, user_required=False)
-
-# @app.route('/twitter')
-# def twitter_login():
-#     if not twitter.authorized:
-#         return redirect(url_for('twitter.login'))
-#     account_info = twitter.get('account/verify_credentials.json?include_email=true')
-#     app.logger.info(account_info)
-#     app.logger.info(account_info.ok)
-#     if account_info.ok:
-#         app.logger.info("OK-1")
-#         account_info_json = account_info.json()
-#         app.logger.info(account_info_json)
-#         app.logger.info("OK-2")
-#         session['logged_in'] = True
-#         session['username'] = account_info_json['screen_name']
-#         session['name'] = account_info_json['name']
-#         session['email'] = account_info_json['email']
-#         app.logger.info(session['email'])
-#         session['rdate'] = 'None'
-#         flash("You are now logged in..", 'success')
-#         app.logger.info("OK-3")
-#         # return redirect(url_for('home'))
-#         # return '<h1>your Twitter name is @{}</h1>'.format(account_info_json['screen_name'])
-#     return '<h1>Request failed! </h1>'
+github_blueprint.storage = SQLAlchemyStorage(OAuth, db.session, user=current_user, user_required=False)
+facebook_blueprint.storage = SQLAlchemyStorage(OAuth, db.session, user=current_user, user_required=False)
+google_blueprint.storage = SQLAlchemyStorage(OAuth, db.session, user=current_user, user_required=False)
 
 
 @app.route('/twitter')
@@ -251,7 +238,7 @@ def twitter_logged_in(blueprint, token):
 
 @app.route('/github')
 def github_login():
-    app.logger.info('github authorized: '+str(github.authorized))
+    app.logger.info('github authorized: ' + str(github.authorized))
     if not github.authorized:
         return redirect(url_for('github.login'))
     return redirect(url_for('home'))
@@ -266,7 +253,6 @@ def github_logged_in(blueprint, token):
         name = account_info_json['name']
         email = account_info_json['email']
         query_email = Users.query.filter_by(email=email)
-        # query_email_or_uname = db.session.query(Users).filter((Users.username == username) | (Users.email == email))
         try:
             user = query_email.one()
         except NoResultFound:
@@ -279,7 +265,7 @@ def github_logged_in(blueprint, token):
 
 @app.route('/facebook')
 def facebook_login():
-    app.logger.info('facebook authorized: '+str(facebook.authorized))
+    app.logger.info('facebook authorized: ' + str(facebook.authorized))
     if not facebook.authorized:
         return redirect(url_for('facebook.login'))
     return redirect(url_for('home'))
@@ -295,7 +281,6 @@ def facebook_logged_in(blueprint, token):
         name = account_info_json['name']
         email = account_info_json['email']
         query_email = Users.query.filter_by(email=email)
-# query_email_or_uname = db.session.query(Users).filter((Users.username == raw1_uname[0]) | (Users.email == email))
         try:
             user = query_email.one()
         except NoResultFound:
@@ -304,6 +289,36 @@ def facebook_logged_in(blueprint, token):
             db.session.add(user)
             db.session.commit()
         login_user(user)
+
+
+@app.route('/google')
+def google_login():
+    app.logger.info('Google authorized: ' + str(google.authorized))
+    if not google.authorized:
+        return redirect(url_for('google.login'))
+    return redirect(url_for('home'))
+
+
+@oauth_authorized.connect_via(google_blueprint)
+def google_logged_in(blueprint, token):
+    account_info = blueprint.session.get('/oauth2/v1/userinfo')
+    if account_info.ok:
+        account_info_json = account_info.json()
+        username_raw = account_info_json['email']
+        username_spl = username_raw.split('@')
+        name = account_info_json['name']
+        email = account_info_json['email']
+        app.logger.info(account_info_json)
+        query_email = Users.query.filter_by(email=email)
+        try:
+            user = query_email.one()
+        except NoResultFound:
+            password = sha256_crypt.encrypt(email)
+            user = Users(name=name, email=email, username=username_spl[0], password=password)
+            db.session.add(user)
+            db.session.commit()
+        login_user(user)
+
 
 # End of the implementation ######################################################################
 
@@ -375,15 +390,33 @@ def home():
     elif facebook.authorized:
         account_info = facebook.get('/me?fields=email,name,first_name')
         account_info_json = account_info.json()
+        raw_uname = account_info_json['first_name']
+        raw1_uname = raw_uname.split()
         session['logged_in'] = True
-        session['username'] = account_info_json['first_name']
+        session['username'] = raw1_uname[0]
         session['name'] = account_info_json['name']
         session['email'] = account_info_json['email']
         app.logger.info(session['email'])
         session['rdate'] = 'None'
         flash("You are now logged in!", 'success')
         return render_template('home.html')
+    elif google.authorized:
+        account_info = google.get('/oauth2/v1/userinfo')
+        account_info_json = account_info.json()
+        app.logger.info(account_info_json)
+        session['logged_in'] = True
+        username_raw = account_info_json['email']
+        username_spl = username_raw.split('@')
+        session['username'] = username_spl[0]
+        session['name'] = account_info_json['name']
+        session['email'] = account_info_json['email']
+        app.logger.info('email address: '+str(account_info_json['email']))
+        app.logger.info('Username : ' + str(username_spl[0]))
+        session['rdate'] = 'None'
+        flash("You are now logged in!", 'success')
+        return render_template('home.html')
     return render_template('home.html')
+
 
 # @app.route('/', methods=['POST', 'GET'])
 # @login_required
@@ -1652,4 +1685,4 @@ def delete_comment(comment_id, article_id):
 
 
 if __name__ == '__main__':
-    app.run(debug=True)
+    app.run(debug=True, ssl_context='adhoc')
