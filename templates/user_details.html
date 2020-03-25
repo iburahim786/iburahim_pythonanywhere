@@ -35,4 +35,40 @@
         {% endfor %}
     </table>
     <hr>
+    <br>
+    <br>
+     <h2>Oauth foreign key user details</h2>
+     <small> Note : Please delete the foreign key user before deleting the user from main table</small>
+     <hr>
+    <table class="table table-striped">
+        <tr style="background: linear-gradient(to right, #056FF6 0%, #000000 100%);color:white;">
+            <th>S.No</th>
+            <th>Username</th>
+            <th>Email</th>
+            <th>Provider</th>
+            <th>Registered Date</th>
+            <th style="text-align:center" width="100px">Action</th>
+        </tr>
+        {% set count = [1] %}
+        {% for ouser in oauth_users %}
+            <tr>
+                <td>{{ count }}</td>
+                {% for usr in users %}
+                    {% if ouser.user_id == usr.id  %}
+                        <td>{{ usr.username }}</td>
+                        <td>{{ usr.email }}</td>
+                    {% endif %}
+                {% endfor %}
+                <td>{{ ouser.provider }}</td>
+                <td>{{ ouser.created_at }}</td>
+                <td>
+                    <form style="text-align:center" >
+                        <a href="delete_ouser/{{ ouser.id }}" style="color: red;padding-left:20px"><i class='fas fa-trash-alt' style='font-size:18px'></i></a>
+                    </form>
+                </td>
+            </tr>
+            {% if count.append(count.pop() + 1) %}{% endif %} {# increment count by 1 #}
+        {% endfor %}
+    </table>
+    <hr>
 {% endblock%}

@@ -7,6 +7,8 @@ from email.mime.base import MIMEBase
 
 # import weasyprint
 import jinja2
+import pymysql
+import sqlalchemy
 from flask import Flask, render_template, flash, session, redirect, send_from_directory, make_response
 from flask_avatars import Avatars
 from flask_ckeditor import *
@@ -18,6 +20,7 @@ from oauthlib import openid
 from passlib.hash import sha256_crypt
 import pdfkit
 from sendgrid import To, Bcc, Cc
+from sqlalchemy.dialects.mysql import pymysql
 from wtforms import Form, StringField, TextAreaField, PasswordField, validators, SubmitField
 from wtforms.fields.html5 import EmailField
 import os
@@ -188,14 +191,23 @@ def load_user(user_id):
     return Users.query.get(int(user_id))
 
 
-twitter_blueprint = make_twitter_blueprint()
+twitter_blueprint = make_twitter_blueprint(api_key='d4wull0Yxr8j5dodoomZnERao',
+                                           api_secret='hvsoBEFSRbUrUb2w6FtlKuwg6SkpdtdT8CcNt4Oeo7v8u81sRN')
 
-github_blueprint = make_github_blueprint()
+github_blueprint = make_github_blueprint(client_id='Iv1.4c8e3b57fb85d327',
+                                         client_secret='e478405b19836c32524f2edc2f1f623c6be6b6ee')
 
-facebook_blueprint = make_facebook_blueprint()
+facebook_blueprint = make_facebook_blueprint(client_id='541542180110438',
+                                             client_secret='4622783c7c26da9e3059fbd2bf4ebc5f')
 
 google_blueprint = \
-    make_google_blueprint()
+    make_google_blueprint(client_id='781515448217-kma5c3i95fsmiscpmgfq3uoed89dhl2m.apps.googleusercontent.com',
+                          client_secret='s_z_HPRMuDehvf2T2z435vZ4',
+                          scope=['https://www.googleapis.com/auth/userinfo.email',
+                                 'https://www.googleapis.com/auth/userinfo.profile',
+                                 'openid'],
+                          offline=True,
+                          reprompt_consent=True)
 
 app.register_blueprint(twitter_blueprint, url_prefix='/twitter_login')
 app.register_blueprint(github_blueprint, url_prefix='/github_login')
@@ -229,7 +241,7 @@ def twitter_logged_in(blueprint, token):
         try:
             user = query_email.one()
         except NoResultFound:
-            password = sha256_crypt.encrypt(username)
+            password = sha256_crypt.hash(username)
             user = Users(name=name, email=email, username=username, password=password)
             db.session.add(user)
             db.session.commit()
@@ -256,7 +268,7 @@ def github_logged_in(blueprint, token):
         try:
             user = query_email.one()
         except NoResultFound:
-            password = sha256_crypt.encrypt(username)
+            password = sha256_crypt.hash(username)
             user = Users(name=name, email=email, username=username, password=password)
             db.session.add(user)
             db.session.commit()
@@ -284,7 +296,7 @@ def facebook_logged_in(blueprint, token):
         try:
             user = query_email.one()
         except NoResultFound:
-            password = sha256_crypt.encrypt(raw1_uname[0])
+            password = sha256_crypt.hash(raw1_uname[0])
             user = Users(name=name, email=email, username=raw1_uname[0], password=password)
             db.session.add(user)
             db.session.commit()
@@ -313,7 +325,8 @@ def google_logged_in(blueprint, token):
         try:
             user = query_email.one()
         except NoResultFound:
-            password = sha256_crypt.encrypt(email)
+            # password = sha256_crypt.hash(email)
+            password = sha256_crypt.hash(username_spl[0])
             user = Users(name=name, email=email, username=username_spl[0], password=password)
             db.session.add(user)
             db.session.commit()
@@ -410,7 +423,7 @@ def home():
         session['username'] = username_spl[0]
         session['name'] = account_info_json['name']
         session['email'] = account_info_json['email']
-        app.logger.info('email address: '+str(account_info_json['email']))
+        app.logger.info('email address: ' + str(account_info_json['email']))
         app.logger.info('Username : ' + str(username_spl[0]))
         session['rdate'] = 'None'
         flash("You are now logged in!", 'success')
@@ -537,7 +550,7 @@ class RegisterForm(Form):
 #         name = form.name.data
 #         email = form.email.data
 #         username = form.username.data
-#         password = sha256_crypt.encrypt(str(form.password.data))
+#         password = sha256_crypt.hash(str(form.password.data))
 #
 #         # Create a Cursor
 #         account = Users.query.filter_by(username=username).first()
@@ -561,7 +574,7 @@ def register():
         name = request.form['name']
         username = request.form['username']
         email = request.form['email']
-        password = sha256_crypt.encrypt(str(request.form['password']))
+        password = sha256_crypt.hash(str(request.form['password']))
         # Execute
         account = Users.query.filter_by(username=username).first()
         # If account exists show error and validation checks
@@ -586,7 +599,7 @@ def signup():
         name = request.form['name']
         username = request.form['username']
         email = request.form['email']
-        password = sha256_crypt.encrypt(str(request.form['password']))
+        password = sha256_crypt.hash(str(request.form['password']))
         # Execute
         ## change start
         account_username = Users.query.filter_by(username=username).first()
@@ -612,7 +625,7 @@ def signup():
 def preset():
     if request.method == 'POST':
         email = request.form['email']
-        # password = sha256_crypt.encrypt(str(request.form['password']))
+        # password = sha256_crypt.hash(str(request.form['password']))
         # Execute
         account_email = Users.query.filter_by(email=email).first()
         # If account exists show error and validation checks
@@ -676,7 +689,7 @@ def hashcode(hashCode):
             newpwd = request.form['newpwd']
             confpwd = request.form['confpwd']
             if newpwd == confpwd:
-                check.password = sha256_crypt.encrypt(newpwd)
+                check.password = sha256_crypt.hash(newpwd)
                 check.hashCode = None
                 db.session.commit()
                 flash('Your password has been reset successfully!', 'success')
@@ -1450,9 +1463,10 @@ def user_details():
     # Get articles
     result = db.session.query(Users).count()
     users = Users.query.all()
+    oauth_users = OAuth.query.all()
 
     if result > 0:
-        return render_template('user_details.html', users=users)
+        return render_template('user_details.html', users=users, oauth_users=oauth_users)
     else:
         msg = "No users Found"
         return render_template('user_details.html', msg=msg)
@@ -1463,10 +1477,27 @@ def user_details():
 def delete_user(id):
     # Execute
     user_delete = Users.query.get_or_404(id)
-    db.session.delete(user_delete)
+    try:
+        db.session.delete(user_delete)
+        # Commit DB
+        db.session.commit()
+        flash("User deleted successfully!", 'success')
+        return redirect(url_for('user_details'))
+    except sqlalchemy.exc.IntegrityError as e:
+        flash("Check the foreign-key user details table, "
+              "if user exists, please delete the user from foreign-key table and then try! ", 'danger')
+        return redirect(url_for('user_details'))
+
+
+@app.route('/delete_ouser/<string:id>', methods=['GET', 'POST'])
+@is_logged_in_admin_user
+def delete_ouser(id):
+    # Execute
+    ouser_delete = OAuth.query.get_or_404(id)
+    db.session.delete(ouser_delete)
     # Commit DB
     db.session.commit()
-    flash("User deleted successfully!", 'success')
+    flash("Oauth Foreign User deleted successfully!, Now you can delete from main users table", 'success')
     return redirect(url_for('user_details'))
 
 
@@ -1611,7 +1642,7 @@ def add_user_task():
 @app.route('/profile', methods=['GET', 'POST'])
 @is_logged_in
 def profile():
-    check = Users.query.filter_by(username=session['username']).first()
+    check = Users.query.filter_by(username=session['email']).first()
     if request.method == 'POST':
         check.name = request.form['name']
         check.username = request.form['username']
@@ -1636,7 +1667,7 @@ def old_pwd_change():
         confpwd = request.form['confpwd']
         if sha256_crypt.verify(oldpwd, check.password):
             if newpwd == confpwd:
-                check.password = sha256_crypt.encrypt(newpwd)
+                check.password = sha256_crypt.hash(newpwd)
                 db.session.commit()
                 flash('Your password has been changed successfully!', 'success')
                 return redirect(url_for('old_pwd_change'))
