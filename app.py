@@ -1,26 +1,15 @@
-import base64
-from email import encoders
 from datetime import timedelta, datetime
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
-from email.mime.base import MIMEBase
-
-# import weasyprint
-import jinja2
-import pymysql
+from configparser import ConfigParser
 import sqlalchemy
 from flask import Flask, render_template, flash, session, redirect, send_from_directory, make_response
 from flask_avatars import Avatars
 from flask_ckeditor import *
-from flask_dance.contrib.facebook import make_facebook_blueprint
-from flask_dance.contrib.google import make_google_blueprint
 from flask_mysqldb import MySQL
-from flask_sqlalchemy import SQLAlchemy
-from oauthlib import openid
 from passlib.hash import sha256_crypt
 import pdfkit
-from sendgrid import To, Bcc, Cc
-from sqlalchemy.dialects.mysql import pymysql
+from sendgrid import To
 from wtforms import Form, StringField, TextAreaField, PasswordField, validators, SubmitField
 from wtforms.fields.html5 import EmailField
 import os
@@ -30,7 +19,7 @@ import ssl
 import uuid
 import random
 import sendgrid
-from sendgrid.helpers.mail import Mail, Attachment, FileContent, FileName, FileType, Disposition, ContentId
+from sendgrid.helpers.mail import Mail
 # ###########################################
 from flask_dance.contrib.twitter import make_twitter_blueprint, twitter
 from flask_dance.contrib.github import make_github_blueprint, github
@@ -41,9 +30,24 @@ from flask_login import UserMixin, current_user, LoginManager, login_required, l
 from flask_dance.consumer.storage.sqla import OAuthConsumerMixin, SQLAlchemyStorage
 from flask_dance.consumer import oauth_authorized
 from sqlalchemy.orm.exc import NoResultFound
-import requests
 
-# ###########################################
+# Config file for Credentials/token###########################################
+config = ConfigParser()
+config.read("config.ini")
+global_app_key = config.get("my_flask_app_vars", "sendgrid_app_key")
+twitter_api_key = config.get("my_flask_app_vars", "twitter_api_key")
+twitter_api_secret = config.get("my_flask_app_vars", "twitter_api_secret")
+github_client_id = config.get("my_flask_app_vars", "github_client_id")
+github_client_secret = config.get("my_flask_app_vars", "github_client_secret")
+facebook_client_id = config.get("my_flask_app_vars", "facebook_client_id")
+facebook_client_secret = config.get("my_flask_app_vars", "facebook_client_secret")
+google_client_id = config.get("my_flask_app_vars", "google_client_id")
+google_client_secret = config.get("my_flask_app_vars", "google_client_secret")
+
+
+
+
+# #############################################################################
 
 app = Flask(__name__)
 # app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///posts.db'
@@ -76,7 +80,7 @@ app.config['UPLOADED_PATH'] = os.path.join(basedir, 'upload')
 app.config['TEMPLATE_PATH_DEFAULT'] = os.path.join(basedir, 'templates')
 app.config['UPLOADED_PATH_HTML'] = os.path.join(basedir, 'upload/html')
 app.config['UPLOADED_PATH_PDF'] = os.path.join(basedir, 'upload/pdf')
-global_app_key = os.environ.get('SENDGRID_API_KEY')
+# global_app_key = os.environ.get('SENDGRID_API_KEY')
 
 
 @app.route('/files/<filename>')
@@ -191,14 +195,23 @@ def load_user(user_id):
     return Users.query.get(int(user_id))
 
 
-twitter_blueprint = make_twitter_blueprint()
+twitter_blueprint = make_twitter_blueprint(api_key=twitter_api_key,
+                                           api_secret=twitter_api_secret)
 
-github_blueprint = make_github_blueprint()
+github_blueprint = make_github_blueprint(client_id=github_client_id,
+                                         client_secret=github_client_secret)
 
-facebook_blueprint = make_facebook_blueprint()
+facebook_blueprint = make_facebook_blueprint(client_id=facebook_client_id,
+                                             client_secret=facebook_client_secret)
 
 google_blueprint = \
-    make_google_blueprint()
+    make_google_blueprint(client_id=google_client_id,
+                          client_secret=google_client_secret,
+                          scope=['https://www.googleapis.com/auth/userinfo.email',
+                                 'https://www.googleapis.com/auth/userinfo.profile',
+                                 'openid'],
+                          offline=True,
+                          reprompt_consent=True)
 
 app.register_blueprint(twitter_blueprint, url_prefix='/twitter_login')
 app.register_blueprint(github_blueprint, url_prefix='/github_login')
