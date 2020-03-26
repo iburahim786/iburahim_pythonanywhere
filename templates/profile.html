@@ -23,19 +23,19 @@
 		<div class="input-group-prepend">
 		    <span class="input-group-text"> <i title="Name" class="fa fa-user"></i> </span>
 		 </div>
-        <input name="name" id="name" class="form-control" placeholder="Full name" type="text" value="{{ check.name }}">
+        <input name="name" id="name" class="form-control" placeholder="Full name" type="text" required="" value="{{ check.name }}">
     </div> <!-- form-group// -->
                    <div class="form-group input-group">
 		<div class="input-group-prepend">
 		    <span class="input-group-text"> <i title="Username" class="fa fa-user"></i> </span>
 		 </div>
-        <input name="username" id="username" class="form-control" placeholder="Username" type="text" value="{{ check.username }}">
+        <input name="username" id="username" class="form-control" placeholder="Username" required="" type="text" value="{{ check.username }}">
     </div> <!-- form-group// -->
         <div class="form-group input-group">
     	<div class="input-group-prepend">
 		    <span class="input-group-text"> <i class="fa fa-envelope"></i> </span>
 		 </div>
-        <input name="email" id="email"  class="form-control" placeholder="Email address" type="email" value="{{ check.email }}">
+        <input name="email" id="email"  class="form-control" placeholder="Email address"  required="" type="email" value="{{ check.email }}">
     </div> <!-- form-group// -->
          <p align="justify" class="lead text-black" style="font-weight: 500; "> Registered Date : {{ check.register_date }}</p>
         <div class="form-group" >
