@@ -17,7 +17,7 @@
         {% for url_data in urls %}
             <tr style="text-align:left">
                 <td>{{ count }}</td>
-                <td><a  style="color: inherit;" href="{{ url_data.url }}">{{ url_data.url_name }}</a></td>
+                <td><a  style="color: inherit;" href="{{ url_data.url }}" target="_blank">{{ url_data.url_name }}</a></td>
                 <td>
                     <form style="text-align:center">
                         <a href="edit_url/{{ url_data.id }}" style="color: inherit;"><i class='fas fa-user-edit' style='font-size:18px'></i></a>
