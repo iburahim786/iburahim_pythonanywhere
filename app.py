@@ -1633,7 +1633,7 @@ def add_user_task():
 @app.route('/profile', methods=['GET', 'POST'])
 @is_logged_in
 def profile():
-    check = Users.query.filter_by(username=session['email']).first()
+    check = Users.query.filter_by(email=session['email']).first()
     if request.method == 'POST':
         check.name = request.form['name']
         check.username = request.form['username']
