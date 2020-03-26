@@ -1282,27 +1282,11 @@ def send_article():
           <p style="font-size: 15px;"> Happy Learning! </p>
           <p style="font-size: 15px;"> Thanks | Flask app Developers</p>
           """
-    # part_subject = MIMEText(mail_body, 'html')//
-    # Attach parts into message container.
-    # According to RFC 2046, the last part of a multipart message, in this case
-    # the HTML message, is best and preferred.
-    # msg.attach(part1)
-    # message.attach(attach)//
-    # message.attach(part_subject)//
-
-    # Send the message via local SMTP server.
-    # s = smtplib.SMTP('smtp.microfocus.com:25')//
-    # sendmail function takes 3 arguments: sender's address, recipient's address
-    # and message to send - here it is sent as one string.
-    # s.sendmail(me, you, message.as_string())//
-    # s.quit()//
     message = Mail(
         from_email='flaskapp@nam-qa-mf.com',
         to_emails=To(session['email']),
         subject='Article from flaskapp - ' + title + '.pdf',
         html_content='<strong>and easy to do anywhere, even with Python</strong>')
-    # message.attachment = attachment
-    # message.add_content('text/html', mail_body)
     try:
         sg = sendgrid.SendGridAPIClient(os.environ.get('SENDGRID_API_KEY'))
         response = sg.send(message)
@@ -1356,7 +1340,6 @@ def send_article_new(id):
     username = 'apikey'
     sender_email = "flask-app-noreply@nam-qa-mf.com"
     receiver_email = session['email']
-    # password = os.environ.get('SENDGRID_API_KEY')
     password = global_app_key
 
     d = Articles.query.get_or_404(id)
@@ -1441,7 +1424,7 @@ def send_article_new(id):
             sender_email, receiver_email, message.as_string()
         )
     flash("Mail sent successfully!", 'success')
-    return redirect(url_for('articles'))
+    return redirect(url_for('article', id=id))
 
 
 @app.before_request
