@@ -46,19 +46,19 @@
     <property name="settings.editor.selected.configurable" value="preferences.pluginManager" />
   </component>
   <component name="RecentsManager">
+    <key name="CopyFile.RECENT_KEYS">
+      <recent name="E:\heroku\herokuflask" />
+      <recent name="C:\Users\mis\PycharmProjects\FlaskAppAlchemyDB\templates" />
+      <recent name="C:\Users\mis\PycharmProjects\FlaskAppAlchemyDB\static\css" />
+      <recent name="C:\Users\mis\PycharmProjects\FlaskAppAlchemyDB\upload" />
+      <recent name="C:\Users\mis\PycharmProjects\FlaskAppAlchemyDB\static\images" />
+    </key>
     <key name="MoveFile.RECENT_KEYS">
       <recent name="C:\Users\mis\PycharmProjects\FlaskAppAlchemyDB\templates" />
       <recent name="C:\Users\mis\PycharmProjects\FlaskAppAlchemyDB\static" />
       <recent name="C:\Users\mis\PycharmProjects\FlaskAppAlchemyDB\static\js" />
       <recent name="C:\Users\mis\PycharmProjects\FlaskAppAlchemyDB" />
       <recent name="C:\Users\mis\PycharmProjects\FlaskAppAlchemyDB\ckeditor" />
-    </key>
-    <key name="CopyFile.RECENT_KEYS">
-      <recent name="C:\Users\mis\PycharmProjects\FlaskAppAlchemyDB\templates" />
-      <recent name="C:\Users\mis\PycharmProjects\FlaskAppAlchemyDB\static\css" />
-      <recent name="C:\Users\mis\PycharmProjects\FlaskAppAlchemyDB\upload" />
-      <recent name="C:\Users\mis\PycharmProjects\FlaskAppAlchemyDB\static\images" />
-      <recent name="C:\Users\mis\PycharmProjects\FlaskAppAlchemyDB\static\ckeditor" />
     </key>
   </component>
   <component name="RunManager" selected="Python.app">
@@ -206,13 +206,6 @@
       <option name="number" value="Default" />
       <option name="presentableId" value="Default" />
       <updated>1575731766741</updated>
-    </task>
-    <task id="LOCAL-00066" summary="New updates">
-      <created>1581880195483</created>
-      <option name="number" value="00066" />
-      <option name="presentableId" value="LOCAL-00066" />
-      <option name="project" value="LOCAL" />
-      <updated>1581880195484</updated>
     </task>
     <task id="LOCAL-00067" summary="New updates">
       <created>1581881040200</created>
@@ -550,7 +543,14 @@
       <option name="project" value="LOCAL" />
       <updated>1585861964584</updated>
     </task>
-    <option name="localTasksCounter" value="115" />
+    <task id="LOCAL-00115" summary="New updates">
+      <created>1585862091406</created>
+      <option name="number" value="00115" />
+      <option name="presentableId" value="LOCAL-00115" />
+      <option name="project" value="LOCAL" />
+      <updated>1585862091407</updated>
+    </task>
+    <option name="localTasksCounter" value="116" />
     <servers />
   </component>
   <component name="VcsManagerConfiguration">
@@ -570,11 +570,11 @@
       <screen x="0" y="0" width="1536" height="824" />
     </state>
     <state x="504" y="214" key="#com.intellij.fileTypes.FileTypeChooser/0.0.1536.824@0.0.1536.824" timestamp="1581768862958" />
-    <state x="424" y="0" width="1078" height="824" key="CommitChangelistDialog2" timestamp="1585861959941">
+    <state x="424" y="0" width="1078" height="824" key="CommitChangelistDialog2" timestamp="1585862087940">
       <screen x="0" y="0" width="1536" height="824" />
     </state>
     <state x="424" y="6" key="CommitChangelistDialog2/0.0.1536.824/1920.0.1920.1040@0.0.1536.824" timestamp="1582552047846" />
-    <state x="424" y="0" width="1078" height="824" key="CommitChangelistDialog2/0.0.1536.824@0.0.1536.824" timestamp="1585861959941" />
+    <state x="424" y="0" width="1078" height="824" key="CommitChangelistDialog2/0.0.1536.824@0.0.1536.824" timestamp="1585862087940" />
     <state x="503" y="175" key="EnvironmentVariablesDialog" timestamp="1582051125107">
       <screen x="0" y="0" width="1536" height="824" />
     </state>
@@ -612,11 +612,11 @@
     </state>
     <state x="555" y="17" key="SettingsEditor/0.0.1536.824/1920.0.1920.1040@0.0.1536.824" timestamp="1579690340387" />
     <state x="41" y="0" key="SettingsEditor/0.0.1536.824@0.0.1536.824" timestamp="1581963598657" />
-    <state x="361" y="144" key="Vcs.Push.Dialog.v2" timestamp="1584189472827">
+    <state x="361" y="144" key="Vcs.Push.Dialog.v2" timestamp="1585862094767">
       <screen x="0" y="0" width="1536" height="824" />
     </state>
     <state x="361" y="144" key="Vcs.Push.Dialog.v2/0.0.1536.824/1920.0.1920.1040@0.0.1536.824" timestamp="1582552058488" />
-    <state x="361" y="144" key="Vcs.Push.Dialog.v2/0.0.1536.824@0.0.1536.824" timestamp="1584189472827" />
+    <state x="361" y="144" key="Vcs.Push.Dialog.v2/0.0.1536.824@0.0.1536.824" timestamp="1585862094767" />
     <state width="775" height="419" key="XDebugger.FullValuePopup" timestamp="1583000362203">
       <screen x="0" y="0" width="1536" height="824" />
     </state>
