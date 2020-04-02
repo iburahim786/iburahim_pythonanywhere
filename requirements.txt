@@ -32,7 +32,6 @@ pyopenssl
 flask_avatars
 flask_ckeditor
 flask_dance
-flask_sqlalchemy
 sendgrid
 sqlalchemy_utils
 gevent
