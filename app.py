@@ -64,6 +64,7 @@ app.config['MYSQL_DATABASE_PASSWORD'] = 'c428bf9c'
 app.config['MYSQL_DATABASE_DB'] = 'heroku_c1a13ae923f2e59'
 app.config['MYSQL_DATABASE_HOST'] = 'us-cdbr-iron-east-01.cleardb.net'
 app.config['MYSQL_CURSORCLASS'] = 'DictCursor'
+app.config['SQLALCHEMY_POOL_RECYCLE'] = 3600
 
 # init MYSQL
 mysql = MySQL(app)
@@ -1700,6 +1701,13 @@ def delete_comment(comment_id, article_id):
     db.session.commit()
     flash("Comment deleted!", 'success')
     return redirect('/article/' + str(article_id))
+
+
+@app.teardown_request
+def session_clear(exception=None):
+    session.remove()
+    if exception and session.is_active:
+        session.rollback()
 
 
 if __name__ == '__main__':
