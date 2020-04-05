@@ -52,6 +52,7 @@ google_client_secret = config.get("my_flask_app_vars", "google_client_secret")
 app = Flask(__name__)
 # app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///posts.db'
 app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql://root:novell@123@localhost/mysqlalchemy'
+# mysql://b80c802f4d5475:c428bf9c@us-cdbr-iron-east-01.cleardb.net/heroku_c1a13ae923f2e59?reconnect=true
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 db = SQLAlchemy(app)
 
@@ -60,14 +61,15 @@ basedir = os.path.abspath(os.path.dirname(__file__))
 
 # engine = create_engine('mysql://root:novell@123@localhost/mysqlalchemy')
 
-app.config['MYSQL_HOST'] = 'localhost'
-app.config['MYSQL_USER'] = 'root'
-app.config['MYSQL_PASSWORD'] = 'novell@123'
-app.config['MYSQL_DB'] = 'mysqlalchemy'
+app.config['MYSQL_DATABASE_USER'] = 'b80c802f4d5475'
+app.config['MYSQL_DATABASE_PASSWORD'] = 'c428bf9c'
+app.config['MYSQL_DATABASE_DB'] = 'heroku_c1a13ae923f2e59'
+app.config['MYSQL_DATABASE_HOST'] = 'us-cdbr-iron-east-01.cleardb.net'
 app.config['MYSQL_CURSORCLASS'] = 'DictCursor'
 
 # init MYSQL
 mysql = MySQL(app)
+mysql.init_app(app)
 
 ##################### FILE UPLOAD SCRIPT ######################################
 ckeditor = CKEditor(app)
