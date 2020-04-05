@@ -1705,9 +1705,9 @@ def delete_comment(comment_id, article_id):
 
 @app.teardown_request
 def session_clear(exception=None):
-    session.remove()
-    if exception and session.is_active:
-        session.rollback()
+    db.session.remove()
+    if exception and db.session.is_active:
+        db.session.rollback()
 
 
 if __name__ == '__main__':
