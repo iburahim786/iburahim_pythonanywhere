@@ -45,8 +45,6 @@ google_client_id = config.get("my_flask_app_vars", "google_client_id")
 google_client_secret = config.get("my_flask_app_vars", "google_client_secret")
 
 
-
-
 # #############################################################################
 
 app = Flask(__name__)
@@ -69,7 +67,7 @@ app.config['MYSQL_CURSORCLASS'] = 'DictCursor'
 
 # init MYSQL
 mysql = MySQL(app)
-mysql.init_app(app)
+#mysql.init_app(app)
 
 ##################### FILE UPLOAD SCRIPT ######################################
 ckeditor = CKEditor(app)
