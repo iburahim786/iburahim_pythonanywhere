@@ -51,7 +51,7 @@ google_client_secret = config.get("my_flask_app_vars", "google_client_secret")
 
 app = Flask(__name__)
 # app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///posts.db'
-app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql://b80c802f4d5475:c428bf9c@us-cdbr-iron-east-01.cleardb.net/heroku_c1a13ae923f2e59?reconnect=true'
+app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql://b80c802f4d5475:c428bf9c@us-cdbr-iron-east-01.cleardb.net/heroku_c1a13ae923f2e59'
 # mysql://b80c802f4d5475:c428bf9c@us-cdbr-iron-east-01.cleardb.net/heroku_c1a13ae923f2e59?reconnect=true
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 db = SQLAlchemy(app)
