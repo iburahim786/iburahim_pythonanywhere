@@ -32,17 +32,29 @@ from flask_dance.consumer import oauth_authorized
 from sqlalchemy.orm.exc import NoResultFound
 
 # Config file for Credentials/token###########################################
-config = ConfigParser()
-config.read("config.ini")
-global_app_key = config.get("my_flask_app_vars", "sendgrid_app_key")
-twitter_api_key = config.get("my_flask_app_vars", "twitter_api_key")
-twitter_api_secret = config.get("my_flask_app_vars", "twitter_api_secret")
-github_client_id = config.get("my_flask_app_vars", "github_client_id")
-github_client_secret = config.get("my_flask_app_vars", "github_client_secret")
-facebook_client_id = config.get("my_flask_app_vars", "facebook_client_id")
-facebook_client_secret = config.get("my_flask_app_vars", "facebook_client_secret")
-google_client_id = config.get("my_flask_app_vars", "google_client_id")
-google_client_secret = config.get("my_flask_app_vars", "google_client_secret")
+# config = ConfigParser()
+# config.read("config.ini")
+# global_app_key = config.get("my_flask_app_vars", "sendgrid_app_key")
+# twitter_api_key = config.get("my_flask_app_vars", "twitter_api_key")
+# twitter_api_secret = config.get("my_flask_app_vars", "twitter_api_secret")
+# github_client_id = config.get("my_flask_app_vars", "github_client_id")
+# github_client_secret = config.get("my_flask_app_vars", "github_client_secret")
+# facebook_client_id = config.get("my_flask_app_vars", "facebook_client_id")
+# facebook_client_secret = config.get("my_flask_app_vars", "facebook_client_secret")
+# google_client_id = config.get("my_flask_app_vars", "google_client_id")
+# google_client_secret = config.get("my_flask_app_vars", "google_client_secret")
+
+
+global_app_key = os.environ['global_app_key']
+twitter_api_key = os.environ['twitter_api_key']
+twitter_api_secret = os.environ['twitter_api_secret']
+github_client_id = os.environ['github_client_id']
+github_client_secret = os.environ['github_client_secret']
+facebook_client_id = os.environ['facebook_client_id']
+facebook_client_secret = os.environ['facebook_client_secret']
+google_client_id = os.environ['google_client_id']
+google_client_secret = os.environ['google_client_secret']
+
 
 
 # #############################################################################
@@ -1606,9 +1618,10 @@ def delete_task(task_id):
 @app.route('/add_user_task', methods=['GET', 'POST'])
 @is_logged_in
 def add_user_task():
-    cur = mysql.connection.cursor()
-    cur.execute("SELECT name, COUNT( name ) x FROM tasks GROUP BY name HAVING x >0")
-    results = cur.fetchall()
+    # cur = mysql.connection.cursor()
+    # cur.execute("SELECT name, COUNT( name ) x FROM tasks GROUP BY name HAVING x >0")
+    # results = cur.fetchall()
+    results = db.engine.execute("SELECT name, COUNT( name ) x FROM tasks GROUP BY name HAVING x >0")
     if request.method == 'POST':
         task = request.form['task']
         name = request.form['name']
