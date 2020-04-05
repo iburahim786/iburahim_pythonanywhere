@@ -49,7 +49,7 @@ google_client_secret = config.get("my_flask_app_vars", "google_client_secret")
 
 app = Flask(__name__)
 # app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///posts.db'
-app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql://b80c802f4d5475:c428bf9c@us-cdbr-iron-east-01.cleardb.net/heroku_c1a13ae923f2e59'
+app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql://b8f26e95b83c51:f740742e@us-cdbr-iron-east-01.cleardb.net/heroku_0fc99c9e96072df'
 # mysql://b80c802f4d5475:c428bf9c@us-cdbr-iron-east-01.cleardb.net/heroku_c1a13ae923f2e59?reconnect=true
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 db = SQLAlchemy(app)
@@ -59,9 +59,9 @@ basedir = os.path.abspath(os.path.dirname(__file__))
 
 # engine = create_engine('mysql://root:novell@123@localhost/mysqlalchemy')
 
-app.config['MYSQL_DATABASE_USER'] = 'b80c802f4d5475'
-app.config['MYSQL_DATABASE_PASSWORD'] = 'c428bf9c'
-app.config['MYSQL_DATABASE_DB'] = 'heroku_c1a13ae923f2e59'
+app.config['MYSQL_DATABASE_USER'] = 'b8f26e95b83c51'
+app.config['MYSQL_DATABASE_PASSWORD'] = 'f740742e'
+app.config['MYSQL_DATABASE_DB'] = 'heroku_0fc99c9e96072df'
 app.config['MYSQL_DATABASE_HOST'] = 'us-cdbr-iron-east-01.cleardb.net'
 app.config['MYSQL_CURSORCLASS'] = 'DictCursor'
 app.config['SQLALCHEMY_POOL_RECYCLE'] = 3600
